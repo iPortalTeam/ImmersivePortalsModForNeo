@@ -1,7 +1,7 @@
 package qouteall.imm_ptl.core.platform_specific;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -36,7 +36,7 @@ public class O_O {
         return false;
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void onPlayerChangeDimensionClient(
         ResourceKey<Level> from, ResourceKey<Level> to
     ) {
@@ -81,7 +81,7 @@ public class O_O {
     
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static ClientChunkCache createMyClientChunkManager(ClientLevel world, int loadDistance) {
         return new ImmPtlClientChunkMap(world, loadDistance);
     }

@@ -1,8 +1,8 @@
 package qouteall.imm_ptl.core.portal;
 
 import com.mojang.logging.LogUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -258,7 +258,7 @@ public class Portal extends Entity implements
     @Nullable
     public List<String> commandsOnTeleported;
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     PortalRenderInfo portalRenderInfo;
     
     public final PortalAnimation animation = new PortalAnimation();
@@ -711,7 +711,7 @@ public class Portal extends Entity implements
      *                                  Every 3 vertices correspond to a triangle.
      *                                  In camera-centered coordinate.
      */
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void renderViewAreaMesh(
         Vec3 portalPosRelativeToCamera, TriangleConsumer vertexOutput
     ) {
@@ -1098,7 +1098,7 @@ public class Portal extends Entity implements
         return false;
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private boolean isPortalValidClient() {
         boolean contains = ClientWorldLoader.getServerDimensions().contains(dimensionTo);
         if (!contains) {
@@ -1523,7 +1523,7 @@ public class Portal extends Entity implements
     }
     
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Deprecated
     @Override
     public BoxPredicate getInnerFrustumCullingFunc(
@@ -1598,7 +1598,7 @@ public class Portal extends Entity implements
         unsetRemoved();
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public PortalLike getRenderingDelegate() {
         if (IPGlobal.enablePortalRenderingMerge) {
             PortalGroup group = PortalRenderInfo.getGroupOf(this);
@@ -1818,7 +1818,7 @@ public class Portal extends Entity implements
         setPortalState(newPortalState);
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void acceptDataSync(Vec3 pos, CompoundTag customData) {
         PortalState oldState = getPortalState();
         

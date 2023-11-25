@@ -2,8 +2,8 @@ package qouteall.imm_ptl.peripheral.dim_stack;
 
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -185,7 +185,7 @@ public class DimStackManagement {
     }
     
     public static class RemoteCallables {
-        @Environment(EnvType.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         public static void clientOpenScreen(List<String> dimensions) {
             List<ResourceKey<Level>> dimensionList =
                 dimensions.stream().map(DimId::idToKey).collect(Collectors.toList());

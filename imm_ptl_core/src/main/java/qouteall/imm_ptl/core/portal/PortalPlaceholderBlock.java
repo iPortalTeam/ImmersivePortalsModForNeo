@@ -1,7 +1,7 @@
 package qouteall.imm_ptl.core.portal;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -158,7 +158,7 @@ public class PortalPlaceholderBlock extends Block {
         return RenderShape.INVISIBLE;
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
     public float getShadeBrightness(
         BlockState blockState_1,

@@ -12,7 +12,7 @@ base {
     archivesName = mod_id
 }
 
-
+jarJar.enable()
 
 //minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
 //minecraft.accessTransformers.entry public net.minecraft.client.Minecraft textureManager # textureManager
@@ -98,7 +98,13 @@ dependencies {
 //    // http://www.gradle.org/docs/current/userguide/dependency_management.html
     implementation project(":imm_ptl_core")
     implementation project(":q_misc_util")
+
+    implementation(jarJar("io.github.llamalad7:mixinextras-neoforge:0.2.1")) {
+        jarJar.ranged(it, "[0.2.1,)")
+    }
 }
+
+tasks.named('build').configure { dependsOn('jarJar') }
 
 // This block of code expands all declared replace properties in the specified resource targets.
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.

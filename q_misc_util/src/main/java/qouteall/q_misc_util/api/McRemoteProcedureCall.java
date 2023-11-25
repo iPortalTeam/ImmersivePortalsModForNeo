@@ -1,7 +1,7 @@
 package qouteall.q_misc_util.api;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
@@ -143,7 +143,7 @@ public class McRemoteProcedureCall {
      * @param arguments The arguments. The types must match the remotely invoked method signature.
      *                  The remote method's first argument must be the player that's sending the packet.
      */
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void tellServerToInvoke(
         String methodPath, Object... arguments
     ) {

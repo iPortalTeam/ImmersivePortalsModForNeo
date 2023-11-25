@@ -1,8 +1,8 @@
 package qouteall.imm_ptl.core.compat;
 
 import com.mojang.logging.LogUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.ChatFormatting;
@@ -122,7 +122,7 @@ public class IPModInfoChecking {
         }
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void initClient() {
         Util.backgroundExecutor().execute(() -> {
             if (!IPGlobal.checkModInfoFromInternet) {

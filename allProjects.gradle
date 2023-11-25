@@ -62,5 +62,9 @@ allprojects {
 
         implementation "maven.modrinth:embeddium:0.2.10+mc1.20.2"
         implementation files(new File(rootDir, "libs/iris-1.6.10.jar"))
+
+        implementation "maven.modrinth:cloth-config:12.0.111+neoforge"
+
+        implementation "io.github.llamalad7:mixinextras-neoforge:0.2.1"
     }
 }

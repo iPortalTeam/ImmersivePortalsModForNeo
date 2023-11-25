@@ -1,7 +1,7 @@
 package qouteall.imm_ptl.core.portal.nether_portal;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -83,7 +83,7 @@ public class NetherPortalEntity extends BreakablePortalEntity {
     }
     
     @Override
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     protected void addSoundAndParticle() {
         if (!IPGlobal.enableNetherPortalEffect) {
             return;

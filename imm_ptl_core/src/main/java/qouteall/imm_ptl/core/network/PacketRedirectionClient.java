@@ -1,7 +1,7 @@
 package qouteall.imm_ptl.core.network;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.protocol.Packet;
@@ -16,7 +16,7 @@ import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.mixin.client.sync.MixinMinecraft_RedirectedPacket;
 import qouteall.q_misc_util.my_util.LimitedLogger;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class PacketRedirectionClient {
     
     public static final Minecraft client = Minecraft.getInstance();

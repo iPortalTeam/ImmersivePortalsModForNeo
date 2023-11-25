@@ -1,7 +1,7 @@
 package qouteall.imm_ptl.core.network;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.BundleDelimiterPacket;
@@ -226,7 +226,7 @@ public class PacketRedirection {
         }
         
         @SuppressWarnings("unchecked")
-        @Environment(EnvType.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         public void handle(ClientGamePacketListener listener) {
             if (DimensionIdRecord.clientRecord == null) {
                 throw new RuntimeException(

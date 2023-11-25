@@ -1,7 +1,7 @@
 package qouteall.imm_ptl.core.platform_specific;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -115,7 +115,7 @@ public class PehkuiInterfaceInitializer {
         PehkuiInterface.invoker = new OnPehkuiPresent();
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private static void onPlayerTeleportedClient(Portal portal) {
         if (portal.hasScaling() && portal.teleportChangesScale) {
             Minecraft client = Minecraft.getInstance();

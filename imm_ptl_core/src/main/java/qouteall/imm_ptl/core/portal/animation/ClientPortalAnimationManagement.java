@@ -1,7 +1,7 @@
 package qouteall.imm_ptl.core.portal.animation;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.fabricmc.fabric.api.event.Event;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPGlobal;
@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Consumer;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ClientPortalAnimationManagement {
     public static final Event<Consumer<Portal>> CLIENT_PORTAL_DEFAULT_ANIMATION_FINISH =
         Helper.createConsumerEvent();

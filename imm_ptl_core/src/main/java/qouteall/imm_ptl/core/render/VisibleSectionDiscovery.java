@@ -1,8 +1,8 @@
 package qouteall.imm_ptl.core.render;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher.RenderSection;
@@ -30,7 +30,7 @@ import java.util.Stack;
  * No cave culling because vanilla has a multithreaded cave culling that's hard to integrate with portal rendering.
  * The cave culling is conditionally enabled with Sodium: {@link PortalRendering#shouldEnableSodiumCaveCulling()}
  */
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class VisibleSectionDiscovery {
     
     private static ImmPtlViewArea builtChunks;

@@ -10,8 +10,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.MappedRegistry;
@@ -88,7 +88,7 @@ public class MiscHelper {
      * {@link ReentrantThreadExecutor#shouldExecuteAsync()}
      * The execution may get deferred on the render thread
      */
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void executeOnRenderThread(Runnable runnable) {
         Minecraft client = Minecraft.getInstance();
         

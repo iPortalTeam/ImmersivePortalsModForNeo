@@ -1,7 +1,7 @@
 package qouteall.q_misc_util.api;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.core.RegistryAccess;
@@ -181,7 +181,7 @@ public class DimensionAPI {
         return DimensionIdRecord.serverRecord.getIntId(dimension);
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static int getClientDimIntId(
         ResourceKey<Level> dimension
     ) {
@@ -194,7 +194,7 @@ public class DimensionAPI {
         return DimensionIdRecord.serverRecord.getDim(intId);
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static ResourceKey<Level> getClientDimKeyFromIntId(
         int intId
     ) {

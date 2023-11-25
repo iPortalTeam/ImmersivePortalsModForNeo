@@ -2,8 +2,8 @@ package qouteall.imm_ptl.core.compat;
 
 import gravity_changer.api.GravityChangerAPI;
 import gravity_changer.util.RotationUtil;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -76,7 +76,7 @@ public class GravityChangerInterface {
     
     private static boolean warned = false;
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private static void warnGravityChangerNotPresent() {
         if (!warned) {
             warned = true;
@@ -117,7 +117,7 @@ public class GravityChangerInterface {
             setClientPlayerGravityDirectionClientOnly(player, direction);
         }
         
-        @Environment(EnvType.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         private void setClientPlayerGravityDirectionClientOnly(
             Player player, Direction direction
         ) {

@@ -1,8 +1,8 @@
 package qouteall.imm_ptl.core.network;
 
 import com.mojang.logging.LogUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.FabricPacket;
 import net.fabricmc.fabric.api.networking.v1.PacketType;
@@ -106,7 +106,7 @@ public class ImmPtlNetworking {
             return TYPE;
         }
         
-        @Environment(EnvType.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         public void handle() {
             ResourceKey<Level> dim = DimensionAPI.getClientDimKeyFromIntId(dimensionId);
             
@@ -167,7 +167,7 @@ public class ImmPtlNetworking {
         /**
          * {@link ClientPacketListener#handleAddEntity(ClientboundAddEntityPacket)}
          */
-        @Environment(EnvType.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         public void handle() {
             ResourceKey<Level> dimension = DimensionAPI.getClientDimKeyFromIntId(dimensionId);
             ClientLevel world = ClientWorldLoader.getWorld(dimension);

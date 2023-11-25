@@ -2,8 +2,8 @@ package qouteall.imm_ptl.core.network;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -116,7 +116,7 @@ public class ImmPtlNetworkConfig {
         }
         
         // handled on client side
-        @Environment(EnvType.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         public void handle(PacketSender responseSender) {
             LOGGER.info(
                 "Client received ImmPtl config packet. Server mod version: {}", versionFromServer
@@ -239,7 +239,7 @@ public class ImmPtlNetworkConfig {
         );
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void initClient() {
         // ClientConfigurationNetworking.ConfigurationPacketHandler does not provide
         // ClientConfigurationPacketListenerImpl argument

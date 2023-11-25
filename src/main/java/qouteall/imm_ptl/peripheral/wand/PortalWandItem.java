@@ -1,8 +1,8 @@
 package qouteall.imm_ptl.peripheral.wand;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.minecraft.ChatFormatting;
@@ -130,7 +130,7 @@ public class PortalWandItem extends Item {
         super(properties);
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void onClientLeftClick(LocalPlayer player, ItemStack itemStack) {
         if (player.isShiftKeyDown()) {
             showSettings(player);
@@ -176,7 +176,7 @@ public class PortalWandItem extends Item {
         return super.use(world, player, hand);
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private void onUseClient(Mode mode) {
         switch (mode) {
             case CREATE_PORTAL -> {
@@ -191,7 +191,7 @@ public class PortalWandItem extends Item {
         }
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
         super.appendHoverText(stack, world, tooltip, context);
@@ -250,7 +250,7 @@ public class PortalWandItem extends Item {
     
     private static boolean instructionInformed = false;
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private static void updateDisplay(ItemStack itemStack) {
         Mode mode = Mode.fromTag(itemStack.getOrCreateTag());
         
@@ -261,7 +261,7 @@ public class PortalWandItem extends Item {
         }
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void clientRender(
         LocalPlayer player, ItemStack itemStack, PoseStack poseStack, MultiBufferSource.BufferSource bufferSource,
         double camX, double camY, double camZ

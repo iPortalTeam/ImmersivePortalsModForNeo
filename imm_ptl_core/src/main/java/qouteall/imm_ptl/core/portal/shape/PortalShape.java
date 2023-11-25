@@ -1,7 +1,7 @@
 package qouteall.imm_ptl.core.portal.shape;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -93,7 +93,7 @@ public interface PortalShape {
         Vec3 cameraPos
     );
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void renderViewAreaMesh(
         Vec3 portalOriginRelativeToCamera,
         UnilateralPortalState portalState,
@@ -164,20 +164,20 @@ public interface PortalShape {
     
     public PortalShape cloneIfNecessary();
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public default boolean canDoOuterFrustumCulling() {
         return false;
     }
     
     // the func returning true for culled
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public default @Nullable BoxPredicateF getInnerFrustumCullingFunc(
         Portal portal, Vec3 cameraPos
     ) {
         return null;
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public default @Nullable BoxPredicateF getOuterFrustumCullingFunc(
         Portal portal, Vec3 cameraPos
     ) {

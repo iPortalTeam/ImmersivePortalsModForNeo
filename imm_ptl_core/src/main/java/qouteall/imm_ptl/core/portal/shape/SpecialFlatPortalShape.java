@@ -1,7 +1,7 @@
 package qouteall.imm_ptl.core.portal.shape;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
@@ -148,7 +148,7 @@ public final class SpecialFlatPortalShape implements PortalShape {
         return getFlipped();
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void renderViewAreaMesh(
         Vec3 portalOriginRelativeToCamera,
@@ -242,7 +242,7 @@ public final class SpecialFlatPortalShape implements PortalShape {
         return new SpecialFlatPortalShape(Mesh2D.createNewFullQuadMesh());
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
     public BoxPredicateF getInnerFrustumCullingFunc(
         Portal portal,
@@ -253,7 +253,7 @@ public final class SpecialFlatPortalShape implements PortalShape {
         );
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
     public BoxPredicateF getOuterFrustumCullingFunc(
         Portal portal,

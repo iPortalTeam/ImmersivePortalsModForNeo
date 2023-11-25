@@ -1,7 +1,7 @@
 package qouteall.imm_ptl.core.miscellaneous;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -38,7 +38,7 @@ public class GcMonitor {
     
     public static final String LINK = "https://filmora.wondershare.com/game-recording/how-to-allocate-more-ram-to-minecraft.html";
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void initClient() {
         IPGlobal.preGameRenderSignal.register(GcMonitor::update);
         
@@ -144,7 +144,7 @@ public class GcMonitor {
         }
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private static void informMemoryNotEnoughClient() {
         Minecraft client = Minecraft.getInstance();
         if (client.player != null) {

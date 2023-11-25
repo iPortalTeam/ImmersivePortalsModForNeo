@@ -11,8 +11,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -2780,7 +2780,7 @@ public class PortalCommand {
     }
     
     public static class RemoteCallables {
-        @Environment(EnvType.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         public static void clientAccelerate(Vec3 vec) {
             Minecraft client = Minecraft.getInstance();
             

@@ -1,7 +1,7 @@
 package qouteall.imm_ptl.core.portal;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -62,7 +62,7 @@ public class LoadingIndicatorEntity extends Entity {
         }
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private void tickClient() {
         addParticles();
         
@@ -78,7 +78,7 @@ public class LoadingIndicatorEntity extends Entity {
         }
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private void addParticles() {
         int num = tickCount < 100 ? 50 : 20;
         
@@ -146,7 +146,7 @@ public class LoadingIndicatorEntity extends Entity {
         );
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private void showMessageClient() {
         Gui inGameHud = Minecraft.getInstance().gui;
         inGameHud.setOverlayMessage(

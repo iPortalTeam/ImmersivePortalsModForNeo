@@ -9,8 +9,8 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import io.netty.buffer.Unpooled;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
@@ -134,7 +134,7 @@ public class ImplRemoteProcedureCall {
         
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void initClient() {
         ClientPlayNetworking.registerGlobalReceiver(
             MiscNetworking.id_stcRemote,
@@ -196,7 +196,7 @@ public class ImplRemoteProcedureCall {
         buf.writeUtf(jsonString);
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static Packet<ServerCommonPacketListener> createC2SPacket(
         String methodPath,
         Object... arguments
@@ -219,7 +219,7 @@ public class ImplRemoteProcedureCall {
         return ServerPlayNetworking.createS2CPacket(MiscNetworking.id_stcRemote, buf);
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static Runnable clientReadPacketAndGetHandler(FriendlyByteBuf buf) {
         String methodPath = null;
         
@@ -260,7 +260,7 @@ public class ImplRemoteProcedureCall {
         }
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private static void clientTellFailure() {
         Minecraft.getInstance().gui.getChat().addMessage(Component.literal(
             "The client failed to process a packet from server. See the log for details."

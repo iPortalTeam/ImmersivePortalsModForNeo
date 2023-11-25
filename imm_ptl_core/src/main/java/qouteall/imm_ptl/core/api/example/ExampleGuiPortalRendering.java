@@ -2,8 +2,8 @@ package qouteall.imm_ptl.core.api.example;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -57,7 +57,7 @@ public class ExampleGuiPortalRendering {
     /**
      * The Framebuffer that the GUI portal is going to render onto
      */
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private static RenderTarget frameBuffer;
     
     /**
@@ -101,7 +101,7 @@ public class ExampleGuiPortalRendering {
     }
     
     public static class RemoteCallables {
-        @Environment(EnvType.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         public static void clientActivateExampleGuiPortal(
             ResourceKey<Level> dimension,
             Vec3 position
@@ -120,7 +120,7 @@ public class ExampleGuiPortalRendering {
         }
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static class GuiPortalScreen extends Screen {
         
         private final ResourceKey<Level> viewingDimension;

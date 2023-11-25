@@ -1,8 +1,8 @@
 package qouteall.imm_ptl.core.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
  * The right side of multiplication applies first.
  * finalRot = rawCameraRotation * gravity * animationDelta * portalRot
  */
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class TransformationManager {
     
     // the animation delta gradually reduces to identity
@@ -279,7 +279,7 @@ public class TransformationManager {
     
     public static boolean isCalculatingViewBobbingOffset = false;
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static class RemoteCallables {
         public static void enableIsometricView(float viewLength) {
             isometricViewLength = viewLength;

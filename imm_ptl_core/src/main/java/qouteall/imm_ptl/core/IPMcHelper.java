@@ -2,8 +2,8 @@ package qouteall.imm_ptl.core;
 
 import com.mojang.blaze3d.platform.GlUtil;
 import io.netty.buffer.Unpooled;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -311,7 +311,7 @@ public class IPMcHelper {
         ));
     }
     
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static boolean isNvidiaVideocard() {
         return GlUtil.getVendor().toLowerCase().contains("nvidia");
     }
