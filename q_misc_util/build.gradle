@@ -1,9 +1,9 @@
-archivesBaseName = "q_misc_util"
+//archivesBaseName = "q_misc_util"
 group = "qouteall"
 
-loom {
-    accessWidenerPath = file("src/main/resources/imm_ptl.accesswidener")
-}
+//loom {
+//    accessWidenerPath = file("src/main/resources/imm_ptl.accesswidener")
+//}
 
 dependencies {
 

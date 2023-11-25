@@ -1,6 +1,7 @@
-archivesBaseName = "imm_ptl_core"
+//archivesBaseName = "imm_ptl_core"
 group = "qouteall"
 
 dependencies {
-    implementation project(path: ":q_misc_util", configuration: "namedElements")
+//    implementation project(path: ":q_misc_util", configuration: "namedElements")
+    implementation project(":q_misc_util")
 }
