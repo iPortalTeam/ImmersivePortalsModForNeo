@@ -1,11 +1,12 @@
 package qouteall.imm_ptl.core.miscellaneous;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TickEvent;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.IPMcHelper;
@@ -40,7 +41,7 @@ public class GcMonitor {
     
     @OnlyIn(Dist.CLIENT)
     public static void initClient() {
-        IPGlobal.preGameRenderSignal.register(GcMonitor::update);
+        NeoForge.EVENT_BUS.addListener(IPGlobal.PreGameRenderEvent.class, preGameRenderEvent -> GcMonitor.update());
         
         long maxMemory = Runtime.getRuntime().maxMemory();
         long maxMemoryMB = PortalDebugCommands.toMiB(maxMemory);
@@ -64,9 +65,11 @@ public class GcMonitor {
     }
     
     public static void initCommon() {
-        ServerTickEvents.END_SERVER_TICK.register((server) -> {
-            if (server.isDedicatedServer()) {
-                update();
+        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
+            if (event.phase == TickEvent.Phase.END) {
+                if (event.getServer().isDedicatedServer()) {
+                    update();
+                }
             }
         });
     }

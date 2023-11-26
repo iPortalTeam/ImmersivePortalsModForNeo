@@ -13,6 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
@@ -46,7 +47,7 @@ public class CrossPortalEntityRenderer {
     public static boolean isRenderingEntityProjection = false;
     
     public static void init() {
-        IPGlobal.postClientTickEvent.register(CrossPortalEntityRenderer::onClientTick);
+        NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> CrossPortalEntityRenderer.onClientTick());
         
         IPGlobal.clientCleanupSignal.connect(CrossPortalEntityRenderer::cleanUp);
         

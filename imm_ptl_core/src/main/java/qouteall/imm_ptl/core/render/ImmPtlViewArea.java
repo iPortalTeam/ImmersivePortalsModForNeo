@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.ClientWorldLoader;
@@ -79,8 +80,8 @@ public class ImmPtlViewArea extends ViewArea {
                 }
             }
         });
-        
-        IPGlobal.postClientTickEvent.register(() -> {
+
+        NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> {
             if (ClientWorldLoader.getIsInitialized()) {
                 for (ClientLevel world : ClientWorldLoader.getClientWorlds()) {
                     LevelRenderer worldRenderer =

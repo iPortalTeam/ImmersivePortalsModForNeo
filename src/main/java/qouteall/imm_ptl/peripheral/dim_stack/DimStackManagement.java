@@ -16,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.IPGlobal;
@@ -28,6 +29,7 @@ import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.api.DimensionAPI;
 import qouteall.q_misc_util.api.McRemoteProcedureCall;
 import qouteall.q_misc_util.dimension.DimId;
+import qouteall.q_misc_util.dimension.DimensionEvents;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,10 +45,9 @@ public class DimStackManagement {
     public static Map<ResourceKey<Level>, BlockState> bedrockReplacementMap = new HashMap<>();
     
     public static void init() {
-        DimensionAPI.SERVER_DIMENSIONS_LOAD_EVENT.register(server -> {
+        NeoForge.EVENT_BUS.addListener(DimensionEvents.ServerDimensionsLoadEvent.class, event -> {
             if (dimStackToApply != null) {
-                DimensionStackAPI.DIMENSION_STACK_PRE_UPDATE_EVENT.invoker()
-                    .run(server, dimStackToApply);
+                NeoForge.EVENT_BUS.post(new DimensionStackAPI.DimensionStackPreUpdateEvent(event.server, dimStackToApply));
             }
         });
         
@@ -161,10 +162,12 @@ public class DimStackManagement {
         LinkedHashSet<ResourceKey<Level>> result = new LinkedHashSet<>(server.levelKeys());
         
         Collection<ResourceKey<Level>> extra =
-            DimensionStackAPI.DIMENSION_STACK_CANDIDATE_COLLECTION_EVENT
-                .invoker().getExtraDimensionKeys(
-                    server.registryAccess(), server.getWorldData().worldGenOptions()
-                );
+            NeoForge.EVENT_BUS.post(new DimensionStackAPI.DimensionStackCandidateCollectionEvent(server.registryAccess(),
+                    server.getWorldData().worldGenOptions())).getDimensionsResult();
+//            DimensionStackAPI.DIMENSION_STACK_CANDIDATE_COLLECTION_EVENT
+//                .invoker().getExtraDimensionKeys(
+//                    server.registryAccess(), server.getWorldData().worldGenOptions()
+//                );
         
         result.addAll(extra);
         
@@ -256,8 +259,7 @@ public class DimStackManagement {
     }
     
     private static void updateDimStack(MinecraftServer server, DimStackInfo dimStackInfo) {
-        DimensionStackAPI.DIMENSION_STACK_PRE_UPDATE_EVENT.invoker()
-            .run(server, dimStackInfo);
+        NeoForge.EVENT_BUS.post(new DimensionStackAPI.DimensionStackPreUpdateEvent(server, dimStackInfo));
         
         clearDimStackPortals(server);
         

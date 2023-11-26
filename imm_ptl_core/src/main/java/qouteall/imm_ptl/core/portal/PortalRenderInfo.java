@@ -4,6 +4,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -87,11 +88,11 @@ public class PortalRenderInfo {
                 presentation.tick(portal);
             }
         });
-        
-        Portal.CLIENT_PORTAL_ACCEPT_SYNC_EVENT.register(PortalRenderInfo::updateGroupBinding);
-        ClientPortalAnimationManagement.CLIENT_PORTAL_DEFAULT_ANIMATION_FINISH.register(
-            PortalRenderInfo::updateGroupBinding
-        );
+
+        NeoForge.EVENT_BUS.addListener(Portal.ClientPortalAcceptSyncEvent.class, clientPortalAcceptSyncEvent ->
+                PortalRenderInfo.updateGroupBinding(clientPortalAcceptSyncEvent.portal));
+        NeoForge.EVENT_BUS.addListener(ClientPortalAnimationManagement.ClientPortalDefaultAnimationFinishEvent.class, event ->
+                PortalRenderInfo.updateGroupBinding(event.portal));
         
         Portal.portalDisposeSignal.connect(portal -> {
             if (portal.level().isClientSide()) {

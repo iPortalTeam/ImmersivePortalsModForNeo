@@ -16,8 +16,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 import qouteall.q_misc_util.api.DimensionAPI;
+import qouteall.q_misc_util.dimension.DimensionEvents;
 import qouteall.q_misc_util.dimension.DimensionIdRecord;
 import qouteall.q_misc_util.dimension.DimensionTypeSync;
 import qouteall.q_misc_util.mixin.client.IEClientPacketListener_Misc;
@@ -87,7 +89,7 @@ public class MiscNetworking {
             ((IEClientPacketListener_Misc) packetListener).ip_setLevels(dimIdSet);
             
             MiscHelper.executeOnRenderThread(() -> {
-                DimensionAPI.CLIENT_DIMENSION_UPDATE_EVENT.invoker().run(dimIdSet);
+                NeoForge.EVENT_BUS.post(new DimensionEvents.ClientDimensionUpdateEvent(dimIdSet));
             });
         }
     }

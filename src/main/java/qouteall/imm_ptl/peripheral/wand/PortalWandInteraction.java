@@ -1,7 +1,6 @@
 package qouteall.imm_ptl.peripheral.wand;
 
 import com.mojang.logging.LogUtils;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -12,6 +11,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TickEvent;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -302,28 +303,30 @@ public class PortalWandInteraction {
     private static final WeakHashMap<ServerPlayer, DraggingSession> draggingSessionMap = new WeakHashMap<>();
     
     public static void init() {
-        ServerTickEvents.END_SERVER_TICK.register((server) -> {
-            draggingSessionMap.entrySet().removeIf(
-                e -> {
-                    ServerPlayer player = e.getKey();
-                    if (player.isRemoved()) {
-                        return true;
-                    }
-                    
-                    if (player.getMainHandItem().getItem() != PortalWandItem.instance) {
-                        return true;
-                    }
-                    
-                    return false;
-                }
-            );
-            
-            copyingSessionMap.entrySet().removeIf(
-                e -> {
-                    ServerPlayer player = e.getKey();
-                    return player.isRemoved();
-                }
-            );
+        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
+            if (event.phase == TickEvent.Phase.END) {
+                draggingSessionMap.entrySet().removeIf(
+                        e -> {
+                            ServerPlayer player = e.getKey();
+                            if (player.isRemoved()) {
+                                return true;
+                            }
+
+                            if (player.getMainHandItem().getItem() != PortalWandItem.instance) {
+                                return true;
+                            }
+
+                            return false;
+                        }
+                );
+
+                copyingSessionMap.entrySet().removeIf(
+                        e -> {
+                            ServerPlayer player = e.getKey();
+                            return player.isRemoved();
+                        }
+                );
+            }
         });
         
         IPGlobal.serverCleanupSignal.connect(draggingSessionMap::clear);

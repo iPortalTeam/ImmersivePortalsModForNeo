@@ -2,7 +2,8 @@ package qouteall.imm_ptl.core.portal.animation;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.fabricmc.fabric.api.event.Event;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.portal.Portal;
@@ -18,8 +19,15 @@ import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientPortalAnimationManagement {
-    public static final Event<Consumer<Portal>> CLIENT_PORTAL_DEFAULT_ANIMATION_FINISH =
-        Helper.createConsumerEvent();
+    public static class ClientPortalDefaultAnimationFinishEvent extends Event {
+        public final Portal portal;
+
+        public ClientPortalDefaultAnimationFinishEvent(Portal portal) {
+            this.portal = portal;
+        }
+    }
+//    public static final Event<Consumer<Portal>> CLIENT_PORTAL_DEFAULT_ANIMATION_FINISH =
+//        Helper.createConsumerEvent();
     
     private static final Map<Portal, RunningDefaultAnimation> defaultAnimatedPortals = new HashMap<>();
     private static final HashSet<Portal> customAnimatedPortals = new HashSet<>();
@@ -95,7 +103,7 @@ public class ClientPortalAnimationManagement {
             if (currTime > animation.toTimeNano) {
                 portal.setPortalState(animation.toState);
                 // animation finished
-                CLIENT_PORTAL_DEFAULT_ANIMATION_FINISH.invoker().accept(portal);
+                NeoForge.EVENT_BUS.post(new ClientPortalDefaultAnimationFinishEvent(portal));
                 return true;
             }
             

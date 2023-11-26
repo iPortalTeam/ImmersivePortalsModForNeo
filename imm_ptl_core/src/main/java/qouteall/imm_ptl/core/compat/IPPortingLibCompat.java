@@ -1,10 +1,11 @@
 package qouteall.imm_ptl.core.compat;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.Minecraft;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLEnvironment;
 import qouteall.imm_ptl.core.ducks.IEFrameBuffer;
 import qouteall.q_misc_util.Helper;
 
@@ -17,11 +18,11 @@ public class IPPortingLibCompat {
     private static Field f_port_lib$stencilEnabled;
     
     public static void init() {
-        if (FabricLoader.getInstance().isModLoaded("porting_lib")) {
+        if (ModList.get().isLoaded("porting_lib")) {
             Helper.log("Porting Lib is present");
             isPortingLibPresent = true;
             
-            if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            if (FMLEnvironment.dist == Dist.CLIENT) {
                 f_port_lib$stencilEnabled = Helper.noError(
                     () -> RenderTarget.class.getDeclaredField("port_lib$stencilEnabled")
                 );

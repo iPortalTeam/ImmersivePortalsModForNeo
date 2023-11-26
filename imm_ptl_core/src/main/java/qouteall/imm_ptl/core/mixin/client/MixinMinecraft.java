@@ -9,6 +9,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
@@ -129,8 +130,8 @@ public abstract class MixinMinecraft implements IEMinecraftClient {
         StableClientTimer.update(level.getGameTime(), RenderStates.getPartialTick());
         ClientPortalAnimationManagement.tick(); // must be after remote world ticking
         ClientTeleportationManager.manageTeleportation(true);
-        
-        IPGlobal.postClientTickEvent.invoker().run();
+
+        NeoForge.EVENT_BUS.post(new IPGlobal.PostClientTickEvent());
         
         getProfiler().pop();
     }

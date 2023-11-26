@@ -1,6 +1,5 @@
 package qouteall.imm_ptl.core.chunk_loading;
 
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
 import net.minecraft.resources.ResourceKey;
@@ -8,6 +7,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TickEvent;
 import org.apache.commons.lang3.Validate;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.network.PacketRedirection;
@@ -16,30 +17,32 @@ import java.util.Set;
 
 public class WorldInfoSender {
     public static void init() {
-        ServerTickEvents.END_SERVER_TICK.register((server) -> {
-            server.getProfiler().push("portal_send_world_info");
-            if (McHelper.getServerGameTime() % 100 == 42) {
-                for (ServerPlayer player : McHelper.getRawPlayerList()) {
-                    Set<ResourceKey<Level>> visibleDimensions = ImmPtlChunkTracking.getVisibleDimensions(player);
-                    
-                    // sync overworld status when the player is not in overworld
-                    if (player.level().dimension() != Level.OVERWORLD) {
-                        ServerLevel overworld = server.getLevel(Level.OVERWORLD);
-                        Validate.notNull(overworld, "missing overworld");
-                        sendWorldInfo(player, overworld);
-                    }
-                    
-                    server.getAllLevels().forEach(thisWorld -> {
-                        if (isNonOverworldSurfaceDimension(thisWorld)) {
-                            if (visibleDimensions.contains(thisWorld.dimension())) {
-                                sendWorldInfo(player, thisWorld);
-                            }
+        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
+            if (event.phase == TickEvent.Phase.END) {
+                event.getServer().getProfiler().push("portal_send_world_info");
+                if (McHelper.getServerGameTime() % 100 == 42) {
+                    for (ServerPlayer player : McHelper.getRawPlayerList()) {
+                        Set<ResourceKey<Level>> visibleDimensions = ImmPtlChunkTracking.getVisibleDimensions(player);
+
+                        // sync overworld status when the player is not in overworld
+                        if (player.level().dimension() != Level.OVERWORLD) {
+                            ServerLevel overworld = event.getServer().getLevel(Level.OVERWORLD);
+                            Validate.notNull(overworld, "missing overworld");
+                            sendWorldInfo(player, overworld);
                         }
-                    });
-                    
+
+                        event.getServer().getAllLevels().forEach(thisWorld -> {
+                            if (isNonOverworldSurfaceDimension(thisWorld)) {
+                                if (visibleDimensions.contains(thisWorld.dimension())) {
+                                    sendWorldInfo(player, thisWorld);
+                                }
+                            }
+                        });
+
+                    }
                 }
+                event.getServer().getProfiler().pop();
             }
-            server.getProfiler().pop();
         });
     }
     

@@ -18,6 +18,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,6 +38,7 @@ import qouteall.imm_ptl.core.render.context_management.DimensionRenderHelper;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.api.DimensionAPI;
+import qouteall.q_misc_util.dimension.DimensionEvents;
 import qouteall.q_misc_util.dimension.DimensionTypeSync;
 import qouteall.q_misc_util.my_util.LimitedLogger;
 import qouteall.q_misc_util.my_util.SignalArged;
@@ -73,12 +75,12 @@ public class ClientWorldLoader {
     
     public static void init() {
         IPGlobal.clientCleanupSignal.connect(ClientWorldLoader::cleanUp);
-        
-        DimensionAPI.CLIENT_DIMENSION_UPDATE_EVENT.register((serverDimensions) -> {
+
+        NeoForge.EVENT_BUS.addListener(DimensionEvents.ClientDimensionUpdateEvent.class, event -> {
             if (getIsInitialized()) {
                 List<ResourceKey<Level>> dimensionsToRemove =
                     clientWorldMap.keySet().stream()
-                        .filter(dim -> !serverDimensions.contains(dim)).toList();
+                        .filter(dim -> !event.dimensions.contains(dim)).toList();
                 
                 for (ResourceKey<Level> dim : dimensionsToRemove) {
                     disposeDimensionDynamically(dim);

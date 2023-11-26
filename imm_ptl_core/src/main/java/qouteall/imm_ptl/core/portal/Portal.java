@@ -1,9 +1,6 @@
 package qouteall.imm_ptl.core.portal;
 
 import com.mojang.logging.LogUtils;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.Util;
@@ -18,13 +15,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.level.ChunkPos;
@@ -32,6 +23,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,11 +43,7 @@ import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
 import qouteall.imm_ptl.core.mc_utils.IPEntityEventListenableEntity;
 import qouteall.imm_ptl.core.network.ImmPtlNetworking;
 import qouteall.imm_ptl.core.platform_specific.IPConfig;
-import qouteall.imm_ptl.core.portal.animation.AnimationView;
-import qouteall.imm_ptl.core.portal.animation.DefaultPortalAnimation;
-import qouteall.imm_ptl.core.portal.animation.PortalAnimation;
-import qouteall.imm_ptl.core.portal.animation.PortalAnimationDriver;
-import qouteall.imm_ptl.core.portal.animation.UnilateralPortalState;
+import qouteall.imm_ptl.core.portal.animation.*;
 import qouteall.imm_ptl.core.portal.shape.PortalShape;
 import qouteall.imm_ptl.core.portal.shape.PortalShapeSerialization;
 import qouteall.imm_ptl.core.portal.shape.RectangularPortalShape;
@@ -64,19 +55,10 @@ import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.MiscHelper;
 import qouteall.q_misc_util.api.DimensionAPI;
 import qouteall.q_misc_util.dimension.DimId;
-import qouteall.q_misc_util.my_util.BoxPredicate;
-import qouteall.q_misc_util.my_util.DQuaternion;
-import qouteall.q_misc_util.my_util.MyTaskList;
-import qouteall.q_misc_util.my_util.Plane;
-import qouteall.q_misc_util.my_util.Range;
-import qouteall.q_misc_util.my_util.RayTraceResult;
-import qouteall.q_misc_util.my_util.SignalArged;
-import qouteall.q_misc_util.my_util.SignalBiArged;
-import qouteall.q_misc_util.my_util.TriangleConsumer;
+import qouteall.q_misc_util.my_util.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -87,9 +69,15 @@ public class Portal extends Entity implements
     private static final Logger LOGGER = LogUtils.getLogger();
     
     public static final EntityType<Portal> entityType = createPortalEntityType(Portal::new);
-    
-    public static final Event<Consumer<Portal>> CLIENT_PORTAL_ACCEPT_SYNC_EVENT =
-        Helper.createConsumerEvent();
+
+    public static class ClientPortalAcceptSyncEvent extends Event {
+        public final Portal portal;
+        public ClientPortalAcceptSyncEvent(Portal portal) {
+            this.portal = portal;
+        }
+    }
+//    public static final Event<Consumer<Portal>> CLIENT_PORTAL_ACCEPT_SYNC_EVENT =
+//        Helper.createConsumerEvent();
     
     @Deprecated
     public static final SignalArged<Portal> clientPortalSpawnSignal = new SignalArged<>();
@@ -1828,8 +1816,8 @@ public class Portal extends Entity implements
         if (animation.defaultAnimation.durationTicks > 0) {
             animation.defaultAnimation.startClientDefaultAnimation(this, oldState);
         }
-        
-        CLIENT_PORTAL_ACCEPT_SYNC_EVENT.invoker().accept(this);
+
+        NeoForge.EVENT_BUS.post(new ClientPortalAcceptSyncEvent(this));
     }
     
     public CompoundTag writePortalDataToNbt() {

@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.WorldDimensions;
 import net.minecraft.world.level.levelgen.presets.WorldPreset;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
@@ -109,10 +110,12 @@ public abstract class MixinCreateWorldScreen extends Screen implements IECreateW
             
             // add other dimensions via the event
             Collection<ResourceKey<Level>> other =
-                DimensionStackAPI.DIMENSION_STACK_CANDIDATE_COLLECTION_EVENT
-                    .invoker().getExtraDimensionKeys(
-                        registryAccess, settings.options()
-                    );
+                    NeoForge.EVENT_BUS.post(new DimensionStackAPI.DimensionStackCandidateCollectionEvent(registryAccess,
+                            settings.options())).getDimensionsResult();
+//                DimensionStackAPI.DIMENSION_STACK_CANDIDATE_COLLECTION_EVENT
+//                    .invoker().getExtraDimensionKeys(
+//                        registryAccess, settings.options()
+//                    );
             result.addAll(other);
         }
         catch (Exception e) {

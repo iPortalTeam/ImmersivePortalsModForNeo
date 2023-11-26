@@ -1,6 +1,5 @@
 package qouteall.imm_ptl.peripheral.alternate_dimension;
 
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -20,6 +19,8 @@ import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
 import net.minecraft.world.level.levelgen.flat.FlatLayerInfo;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TickEvent;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.ducks.IEWorld;
@@ -109,17 +110,19 @@ public class AlternateDimensions {
     
     
     public static void init() {
-        DimensionStackAPI.DIMENSION_STACK_CANDIDATE_COLLECTION_EVENT.register(
-            (registryAccess, options) -> {
-                return List.of(BRIGHT_SKYLAND, SKYLAND, CHAOS, VOID);
+        NeoForge.EVENT_BUS.addListener(DimensionStackAPI.DimensionStackCandidateCollectionEvent.class, event -> {
+            event.addToResult(List.of(BRIGHT_SKYLAND, SKYLAND, CHAOS, VOID));
+        });
+
+        NeoForge.EVENT_BUS.addListener(DimensionStackAPI.DimensionStackPreUpdateEvent.class, event -> {
+            AlternateDimensions.addAltDimsIfUsedInDimStack(event.server, event.dimStackInfo);
+        });
+
+        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, serverTickEvent -> {
+            if (serverTickEvent.phase == TickEvent.Phase.END) {
+                AlternateDimensions.tick(serverTickEvent.getServer());
             }
-        );
-        
-        DimensionStackAPI.DIMENSION_STACK_PRE_UPDATE_EVENT.register(
-            AlternateDimensions::addAltDimsIfUsedInDimStack
-        );
-        
-        ServerTickEvents.END_SERVER_TICK.register(AlternateDimensions::tick);
+        });
         
         DimensionTemplate.registerDimensionTemplate(
             "skyland", SKYLAND_TEMPLATE

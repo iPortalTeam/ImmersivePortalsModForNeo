@@ -7,12 +7,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,10 +62,10 @@ public class AxisArgumentType implements ArgumentType<Direction.Axis> {
     }
     
     public static void init() {
-        ArgumentTypeRegistry.registerArgumentType(
-            new ResourceLocation("imm_ptl:axis"),
-            AxisArgumentType.class,
-            SingletonArgumentInfo.contextFree(() -> AxisArgumentType.instance)
-        );
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(RegisterEvent.class, registerEvent -> {
+            registerEvent.register(BuiltInRegistries.COMMAND_ARGUMENT_TYPE.key(),
+                    new ResourceLocation("imm_ptl:axis"),
+                    () -> SingletonArgumentInfo.contextFree(() -> AxisArgumentType.instance));
+        });
     }
 }

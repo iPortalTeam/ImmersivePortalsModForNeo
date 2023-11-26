@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -51,7 +52,7 @@ public class IrisPortalRenderer extends PortalRenderer {
     private boolean nextFramePortalRenderingNeeded = false;
     
     IrisPortalRenderer() {
-        IPGlobal.preGameRenderSignal.register(() -> {
+        NeoForge.EVENT_BUS.addListener(IPGlobal.PreGameRenderEvent.class, preGameRenderEvent -> {
             updateNeedsPortalRendering();
         });
     }

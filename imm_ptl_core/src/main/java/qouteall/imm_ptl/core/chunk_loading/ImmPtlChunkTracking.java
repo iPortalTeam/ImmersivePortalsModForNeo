@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.network.protocol.game.ClientboundForgetLevelChunkPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -15,6 +14,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TickEvent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.IPGlobal;
@@ -23,7 +24,7 @@ import qouteall.imm_ptl.core.ducks.IEChunkMap;
 import qouteall.imm_ptl.core.mixin.common.chunk_sync.IEServerCommonPacketListenerImpl;
 import qouteall.imm_ptl.core.network.PacketRedirection;
 import qouteall.q_misc_util.MiscHelper;
-import qouteall.q_misc_util.dimension.DynamicDimensionsImpl;
+import qouteall.q_misc_util.dimension.DimensionEvents;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,12 +42,15 @@ public class ImmPtlChunkTracking {
     public static final int defaultDelayUnloadGenerations = 4;
     
     public static void init() {
-        ServerTickEvents.END_SERVER_TICK.register(ImmPtlChunkTracking::tick);
+        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
+            if (event.phase == TickEvent.Phase.END) {
+                ImmPtlChunkTracking.tick(event.getServer());
+            }
+        });
         IPGlobal.serverCleanupSignal.connect(ImmPtlChunkTracking::cleanup);
-        
-        DynamicDimensionsImpl.beforeRemovingDimensionEvent.register(
-            ImmPtlChunkTracking::onDimensionRemove
-        );
+
+        NeoForge.EVENT_BUS.addListener(DimensionEvents.BeforeRemovingDimensionEvent.class,
+                beforeRemovingDimensionEvent -> ImmPtlChunkTracking.onDimensionRemove(beforeRemovingDimensionEvent.dimension));
     }
     
     public static void onChunkProvidedDeferred(LevelChunk chunk) {

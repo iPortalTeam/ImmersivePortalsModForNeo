@@ -18,6 +18,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.ChunkEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.chunk_loading.ImmPtlClientChunkMap;
@@ -52,7 +58,7 @@ public class O_O {
     }
     
     public static Path getGameDir() {
-        return FabricLoader.getInstance().getGameDir();
+        return FMLPaths.GAMEDIR.get();
     }
     
     private static final BlockState obsidianState = Blocks.OBSIDIAN.defaultBlockState();
@@ -87,7 +93,7 @@ public class O_O {
     }
     
     public static boolean getIsPehkuiPresent() {
-        return FabricLoader.getInstance().isModLoaded("pehkui");
+        return ModList.get().isLoaded("pehkui");
     }
     
     @Nullable

@@ -1,9 +1,6 @@
 package qouteall.imm_ptl.core.collision;
 
 import com.google.common.collect.ImmutableList;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Direction;
@@ -18,6 +15,10 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TickEvent;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
@@ -432,16 +433,18 @@ public class CollisionHelper {
     }
     
     public static void init() {
-        ServerTickEvents.END_SERVER_TICK.register((server) -> {
-            for (ServerLevel world : server.getAllLevels()) {
-                updateCollidingPortalForWorld(world, 0);
+        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
+            if (event.phase == TickEvent.Phase.END) {
+                for (ServerLevel world : event.getServer().getAllLevels()) {
+                    updateCollidingPortalForWorld(world, 0);
+                }
             }
         });
     }
     
     @OnlyIn(Dist.CLIENT)
     public static void initClient() {
-        IPGlobal.postClientTickEvent.register(CollisionHelper::tickClient);
+        NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> CollisionHelper.tickClient());
     }
     
     @OnlyIn(Dist.CLIENT)

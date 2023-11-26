@@ -1,63 +1,59 @@
 package qouteall.q_misc_util.api;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.LevelStem;
-import net.minecraft.world.level.storage.WorldData;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import qouteall.q_misc_util.dimension.DimensionEvents;
 import qouteall.q_misc_util.dimension.DimensionIdRecord;
 import qouteall.q_misc_util.dimension.DimensionImpl;
 import qouteall.q_misc_util.dimension.DynamicDimensionsImpl;
 import qouteall.q_misc_util.ducks.IEMinecraftServer_Misc;
 
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class DimensionAPI {
     public static final Logger LOGGER = LogManager.getLogger();
     
-    public static interface ServerDimensionsLoadCallback {
-        /**
-         * See {@link DimensionAPI#SERVER_DIMENSIONS_LOAD_EVENT}
-         */
-        void run(MinecraftServer server);
-    }
+//    public static interface ServerDimensionsLoadCallback {
+//        /**
+//         * See {@link DimensionAPI#SERVER_DIMENSIONS_LOAD_EVENT}
+//         */
+//        void run(MinecraftServer server);
+//    }
     
-    /**
-     * This event is fired when loading custom dimensions when the server is starting.
-     * Inside this event, you can:
-     * - use {@link MinecraftServer#registryAccess()} and {@link RegistryAccess#registryOrThrow(ResourceKey)} to access registries (including dimension type registry)
-     * - use {@link MinecraftServer#getWorldData()} {@link WorldData#worldGenOptions()} to access world information like seed.
-     * - use {@link DimensionAPI#addDimension(MinecraftServer, ResourceLocation, LevelStem)}.
-     */
-    public static final Event<ServerDimensionsLoadCallback> SERVER_DIMENSIONS_LOAD_EVENT =
-        EventFactory.createArrayBacked(
-            ServerDimensionsLoadCallback.class,
-            (listeners) -> ((server) -> {
-                for (ServerDimensionsLoadCallback listener : listeners) {
-                    try {
-                        listener.run(server);
-                    }
-                    catch (Exception e) {
-                        LOGGER.error("Error during server dimensions load event", e);
-                    }
-                }
-            })
-        );
+//    /**
+//     * This event is fired when loading custom dimensions when the server is starting.
+//     * Inside this event, you can:
+//     * - use {@link MinecraftServer#registryAccess()} and {@link RegistryAccess#registryOrThrow(ResourceKey)} to access registries (including dimension type registry)
+//     * - use {@link MinecraftServer#getWorldData()} {@link WorldData#worldGenOptions()} to access world information like seed.
+//     * - use {@link DimensionAPI#addDimension(MinecraftServer, ResourceLocation, LevelStem)}.
+//     */
+//    public static final Event<ServerDimensionsLoadCallback> SERVER_DIMENSIONS_LOAD_EVENT =
+//        EventFactory.createArrayBacked(
+//            ServerDimensionsLoadCallback.class,
+//            (listeners) -> ((server) -> {
+//                for (ServerDimensionsLoadCallback listener : listeners) {
+//                    try {
+//                        listener.run(server);
+//                    }
+//                    catch (Exception e) {
+//                        LOGGER.error("Error during server dimensions load event", e);
+//                    }
+//                }
+//            })
+//        );
     
     /**
      * Add a new dimension.
-     * Can be used both when server is running or during {@link DimensionAPI#SERVER_DIMENSIONS_LOAD_EVENT}.
+     * Can be used both when server is running or during {@link DimensionEvents.ServerDimensionsLoadEvent}.
      * Note: Should not register a dimension that already exists.
      * The added dimension's config will be saved into `level.dat`
      */
@@ -139,40 +135,40 @@ public class DimensionAPI {
         DynamicDimensionsImpl.removeDimensionDynamically(world);
     }
     
-    public static interface ServerDynamicUpdateListener {
-        void run(MinecraftServer server, Set<ResourceKey<Level>> dimensions);
-    }
+//    public static interface ServerDynamicUpdateListener {
+//        void run(MinecraftServer server, Set<ResourceKey<Level>> dimensions);
+//    }
     
-    public static interface ClientDynamicUpdateListener {
-        void run(Set<ResourceKey<Level>> dimensions);
-    }
+//    public static interface ClientDynamicUpdateListener {
+//        void run(Set<ResourceKey<Level>> dimensions);
+//    }
     
-    /**
-     * Will be triggered when the server dynamically add or remove a dimension.
-     * Does not trigger during server initialization.
-     */
-    public static final Event<ServerDynamicUpdateListener> SERVER_DIMENSION_DYNAMIC_UPDATE_EVENT =
-        EventFactory.createArrayBacked(
-            ServerDynamicUpdateListener.class,
-            arr -> (server, dims) -> {
-                for (ServerDynamicUpdateListener runnable : arr) {
-                    runnable.run(server, dims);
-                }
-            }
-        );
+//    /**
+//     * Will be triggered when the server dynamically add or remove a dimension.
+//     * Does not trigger during server initialization.
+//     */
+//    public static final Event<ServerDynamicUpdateListener> SERVER_DIMENSION_DYNAMIC_UPDATE_EVENT =
+//        EventFactory.createArrayBacked(
+//            ServerDynamicUpdateListener.class,
+//            arr -> (server, dims) -> {
+//                for (ServerDynamicUpdateListener runnable : arr) {
+//                    runnable.run(server, dims);
+//                }
+//            }
+//        );
     
-    /**
-     * Will be triggered when the client receives dimension data synchronization
-     */
-    public static final Event<ClientDynamicUpdateListener> CLIENT_DIMENSION_UPDATE_EVENT =
-        EventFactory.createArrayBacked(
-            ClientDynamicUpdateListener.class,
-            arr -> (set) -> {
-                for (ClientDynamicUpdateListener runnable : arr) {
-                    runnable.run(set);
-                }
-            }
-        );
+//    /**
+//     * Will be triggered when the client receives dimension data synchronization
+//     */
+//    public static final Event<ClientDynamicUpdateListener> CLIENT_DIMENSION_UPDATE_EVENT =
+//        EventFactory.createArrayBacked(
+//            ClientDynamicUpdateListener.class,
+//            arr -> (set) -> {
+//                for (ClientDynamicUpdateListener runnable : arr) {
+//                    runnable.run(set);
+//                }
+//            }
+//        );
     
     public static int getServerDimIntId(
         MinecraftServer server,

@@ -5,3 +5,13 @@ dependencies {
 //    implementation project(path: ":q_misc_util", configuration: "namedElements")
     implementation project(":q_misc_util")
 }
+
+// AccessTransformers
+minecraft.accessTransformers.entry 'public net.minecraft.server.level.ChunkMap$TrackedEntity # TrackedEntity class'
+minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.ClientChunkCache level # level field'
+minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.ClientChunkCache emptyChunk # emptyChunk field'
+minecraft.accessTransformers.entry 'public-f net.minecraft.util.profiling.ActiveProfiler WARNING_TIME_NANOS # WARNING_TIME_NANOS field'
+minecraft.accessTransformers.entry 'public net.minecraft.resources.RegistryDataLoader$Loader # Loader class'
+minecraft.accessTransformers.entry 'public net.minecraft.client.renderer.chunk.SectionRenderDispatcher.RenderSection$CompileTask # CompileTask class' // TODO Deal with abstract classes
+minecraft.accessTransformers.entry 'public net.minecraft.world.level.biome.BiomeManager biomeZoomSeed # biomeZoomSeed field'
+minecraft.accessTransformers.entry 'public net.minecraft.server.MinecraftServer storageSource # storageSource field'

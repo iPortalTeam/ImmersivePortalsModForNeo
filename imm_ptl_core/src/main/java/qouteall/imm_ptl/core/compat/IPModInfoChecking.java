@@ -1,15 +1,16 @@
 package qouteall.imm_ptl.core.compat;
 
 import com.mojang.logging.LogUtils;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLEnvironment;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -215,9 +216,10 @@ public class IPModInfoChecking {
         IPGlobal.clientTaskList.addTask(MyTaskList.withDelayCondition(
             () -> Minecraft.getInstance().level == null,
             MyTaskList.oneShotTask(() -> {
-                if (IPConfig.getConfig().shouldDisplayWarning("many_mods") && !FabricLoader.getInstance().isDevelopmentEnvironment()) {
-                    List<ModContainer> topLevelMods = FabricLoader.getInstance().getAllMods().stream()
-                        .filter(modContainer -> modContainer.getContainingMod().isEmpty()).toList();
+                if (IPConfig.getConfig().shouldDisplayWarning("many_mods") && FMLEnvironment.production) {
+                    List<ModContainer> topLevelMods = ModList.get().getSortedMods(); // TODO @Nick1st Fix this up
+//                    FabricLoader.getInstance().getAllMods().stream()
+//                        .filter(modContainer -> modContainer.getContainingMod().isEmpty()).toList();
                     
                     if (topLevelMods.size() > 20) {
                         CHelper.printChat(Component.literal(

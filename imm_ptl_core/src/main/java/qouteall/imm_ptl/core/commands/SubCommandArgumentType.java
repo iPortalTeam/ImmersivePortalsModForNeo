@@ -12,9 +12,11 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.Collection;
 import java.util.List;
@@ -75,11 +77,10 @@ public class SubCommandArgumentType implements ArgumentType<String> {
     }
     
     public static void init() {
-        ArgumentTypeRegistry.registerArgumentType(
-            new ResourceLocation("imm_ptl:sub_command_argument_type"),
-            SubCommandArgumentType.class,
-            SingletonArgumentInfo.contextFree(() -> instance)
-        );
-        
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(RegisterEvent.class, registerEvent -> {
+            registerEvent.register(BuiltInRegistries.COMMAND_ARGUMENT_TYPE.key(),
+                    new ResourceLocation("imm_ptl:sub_command_argument_type"),
+                    () -> SingletonArgumentInfo.contextFree(() -> instance));
+        });
     }
 }

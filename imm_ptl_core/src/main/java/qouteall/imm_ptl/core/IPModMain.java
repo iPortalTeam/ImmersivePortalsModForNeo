@@ -3,18 +3,15 @@ package qouteall.imm_ptl.core;
 import com.mojang.logging.LogUtils;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.TickEvent;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer;
-import qouteall.imm_ptl.core.chunk_loading.EntitySync;
-import qouteall.imm_ptl.core.chunk_loading.ImmPtlChunkTickets;
-import qouteall.imm_ptl.core.chunk_loading.ImmPtlChunkTracking;
-import qouteall.imm_ptl.core.chunk_loading.ServerPerformanceMonitor;
-import qouteall.imm_ptl.core.chunk_loading.WorldInfoSender;
+import qouteall.imm_ptl.core.chunk_loading.*;
 import qouteall.imm_ptl.core.collision.CollisionHelper;
 import qouteall.imm_ptl.core.commands.AxisArgumentType;
 import qouteall.imm_ptl.core.commands.PortalCommand;
@@ -27,13 +24,7 @@ import qouteall.imm_ptl.core.network.ImmPtlNetworkConfig;
 import qouteall.imm_ptl.core.network.ImmPtlNetworking;
 import qouteall.imm_ptl.core.platform_specific.IPConfig;
 import qouteall.imm_ptl.core.platform_specific.O_O;
-import qouteall.imm_ptl.core.portal.BreakableMirror;
-import qouteall.imm_ptl.core.portal.EndPortalEntity;
-import qouteall.imm_ptl.core.portal.LoadingIndicatorEntity;
-import qouteall.imm_ptl.core.portal.Mirror;
-import qouteall.imm_ptl.core.portal.Portal;
-import qouteall.imm_ptl.core.portal.PortalExtension;
-import qouteall.imm_ptl.core.portal.PortalPlaceholderBlock;
+import qouteall.imm_ptl.core.portal.*;
 import qouteall.imm_ptl.core.portal.animation.NormalAnimation;
 import qouteall.imm_ptl.core.portal.animation.RotationAnimation;
 import qouteall.imm_ptl.core.portal.global_portals.GlobalPortalStorage;
@@ -63,15 +54,17 @@ public class IPModMain {
         
         ImmPtlNetworking.init();
         ImmPtlNetworkConfig.init();
-        
-        IPGlobal.postClientTickEvent.register(IPGlobal.clientTaskList::processTasks);
-        
-        ServerTickEvents.END_SERVER_TICK.register(server -> {
-            // TODO make it per-server
-            IPGlobal.serverTaskList.processTasks();
+
+        NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> IPGlobal.clientTaskList.processTasks());
+
+        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
+            if (event.phase == TickEvent.Phase.END) {
+                // TODO make it per-server
+                IPGlobal.serverTaskList.processTasks();
+            }
         });
-        
-        IPGlobal.preGameRenderSignal.register(IPGlobal.preGameRenderTaskList::processTasks);
+
+        NeoForge.EVENT_BUS.addListener(IPGlobal.PreGameRenderEvent.class, preGameRenderEvent -> IPGlobal.preGameRenderTaskList.processTasks());
         
         IPGlobal.clientCleanupSignal.connect(() -> {
             if (ClientWorldLoader.getIsInitialized()) {
@@ -109,10 +102,10 @@ public class IPModMain {
         IPPortingLibCompat.init();
         
         BlockManipulationServer.init();
-        
-        CommandRegistrationCallback.EVENT.register(
-            (dispatcher, registryAccess, environment) -> PortalCommand.register(dispatcher)
-        );
+
+        NeoForge.EVENT_BUS.addListener(RegisterCommandsEvent.class, event -> {
+            PortalCommand.register(event.getDispatcher());
+        });
         SubCommandArgumentType.init();
         TimingFunctionArgumentType.init();
         AxisArgumentType.init();

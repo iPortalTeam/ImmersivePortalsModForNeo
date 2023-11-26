@@ -1,15 +1,26 @@
 package qouteall.q_misc_util;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.TickEvent;
 import qouteall.q_misc_util.dimension.DimensionMisc;
 import qouteall.q_misc_util.dimension.DimensionTemplate;
 import qouteall.q_misc_util.dimension.DimsCommand;
 import qouteall.q_misc_util.dimension.DynamicDimensionsImpl;
 
-public class MiscUtilModEntry implements ModInitializer {
-    @Override
+@Mod(MiscUtilModEntry.MODID)
+public class MiscUtilModEntry {
+    public static final String MODID = "q_misc_util";
+
+    public MiscUtilModEntry(IEventBus modEventBus) {
+        modEventBus.addListener((FMLCommonSetupEvent event) -> onInitialize());
+        modEventBus.addListener((FMLClientSetupEvent event) -> new MiscUtilModEntryClient().onInitializeClient());
+    }
+
     public void onInitialize() {
         DimensionMisc.init();
         
@@ -18,13 +29,15 @@ public class MiscUtilModEntry implements ModInitializer {
         ImplRemoteProcedureCall.init();
         
         MiscNetworking.init();
-        
-        ServerTickEvents.END_SERVER_TICK.register(server -> {
-            MiscGlobals.serverTaskList.processTasks();
+
+        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, serverTickEvent -> {
+            if (serverTickEvent.phase == TickEvent.Phase.END) {
+                MiscGlobals.serverTaskList.processTasks();
+            }
         });
-        
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            DimsCommand.register(dispatcher);
+
+        NeoForge.EVENT_BUS.addListener(RegisterCommandsEvent.class, registerCommandsEvent -> {
+            DimsCommand.register(registerCommandsEvent.getDispatcher());
         });
         
         DimensionTemplate.init();

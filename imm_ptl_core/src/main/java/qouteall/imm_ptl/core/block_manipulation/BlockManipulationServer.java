@@ -1,8 +1,6 @@
 package qouteall.imm_ptl.core.block_manipulation;
 
 import com.mojang.logging.LogUtils;
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
@@ -22,6 +20,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.IPGlobal;
@@ -34,7 +34,6 @@ import qouteall.imm_ptl.core.portal.global_portals.GlobalPortalStorage;
 import qouteall.q_misc_util.MiscHelper;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 public class BlockManipulationServer {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -46,23 +45,40 @@ public class BlockManipulationServer {
      * Use this event to conditionally disable cross portal block interaction.
      * The result will be ANDed.
      */
-    public static final Event<Predicate<Player>> canDoCrossPortalInteractionEvent =
-        EventFactory.createArrayBacked(Predicate.class,
-            handlers -> player -> {
-                for (Predicate<Player> handler : handlers) {
-                    if (!handler.test(player)) {
-                        return false;
-                    }
-                }
-                return true;
-            });
+    public static class CrossPortalInteractionEvent extends Event {
+        public final Player player;
+
+        boolean canDo = true;
+
+        public CrossPortalInteractionEvent(Player player) {
+            this.player = player;
+        }
+
+        public boolean canDo() {
+            return this.canDo;
+        }
+
+        public void setCanDo(boolean canDo) {
+            this.canDo = this.canDo && canDo;
+        }
+    }
+//    public static final Event<Predicate<Player>> canDoCrossPortalInteractionEvent =
+//        EventFactory.createArrayBacked(Predicate.class,
+//            handlers -> player -> {
+//                for (Predicate<Player> handler : handlers) {
+//                    if (!handler.test(player)) {
+//                        return false;
+//                    }
+//                }
+//                return true;
+//            });
     
     private static boolean canPlayerReach(
         ResourceKey<Level> dimension,
         ServerPlayer player,
         BlockPos requestPos
     ) {
-        if (!canDoCrossPortalInteractionEvent.invoker().test(player)) {
+        if (!NeoForge.EVENT_BUS.post(new CrossPortalInteractionEvent(player)).canDo()) {
             return false;
         }
         

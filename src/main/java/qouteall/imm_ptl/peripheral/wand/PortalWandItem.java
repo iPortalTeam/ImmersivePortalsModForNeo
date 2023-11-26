@@ -22,6 +22,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TickEvent;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.IPMcHelper;
@@ -41,10 +43,9 @@ public class PortalWandItem extends Item {
             }
             return InteractionResult.PASS;
         });
-        
-        BlockManipulationServer.canDoCrossPortalInteractionEvent.register(p -> {
-            return p.getMainHandItem().getItem() != instance;
-        });
+
+        NeoForge.EVENT_BUS.addListener(BlockManipulationServer.CrossPortalInteractionEvent.class, crossPortalInteractionEvent ->
+            crossPortalInteractionEvent.setCanDo(crossPortalInteractionEvent.player.getMainHandItem().getItem() != instance));
     }
     
     public static void initClient() {

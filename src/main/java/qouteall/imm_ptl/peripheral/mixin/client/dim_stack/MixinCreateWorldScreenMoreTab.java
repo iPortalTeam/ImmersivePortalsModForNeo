@@ -18,7 +18,7 @@ public class MixinCreateWorldScreenMoreTab {
     // the implicit parent object reference
     @Final
     @Shadow
-    CreateWorldScreen field_42178;
+    CreateWorldScreen  field_42178;
     
     @Inject(
         method = "<init>",

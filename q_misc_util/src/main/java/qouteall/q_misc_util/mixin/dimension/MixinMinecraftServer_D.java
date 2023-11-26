@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.progress.ChunkProgressListener;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.WorldData;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,7 +17,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import qouteall.q_misc_util.api.DimensionAPI;
+import qouteall.q_misc_util.dimension.DimensionEvents;
 import qouteall.q_misc_util.dimension.DimensionIdManagement;
 import qouteall.q_misc_util.ducks.IEMinecraftServer_Misc;
 
@@ -52,10 +53,8 @@ public abstract class MixinMinecraftServer_D implements IEMinecraftServer_Misc {
             !ip_canDirectlyRegisterDimension, "invalid server initialization status"
         );
         ip_canDirectlyRegisterDimension = true;
-        
-        DimensionAPI.SERVER_DIMENSIONS_LOAD_EVENT.invoker().run(
-            (MinecraftServer) (Object) this
-        );
+
+        NeoForge.EVENT_BUS.post(new DimensionEvents.ServerDimensionsLoadEvent((MinecraftServer) (Object) this));
         
         ip_canDirectlyRegisterDimension = false;
     }

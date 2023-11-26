@@ -2,11 +2,9 @@ package qouteall.imm_ptl.core;
 
 import com.google.gson.Gson;
 import me.shedaniel.autoconfig.ConfigHolder;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.event.Event;
+import net.neoforged.bus.api.Event;
 import qouteall.imm_ptl.core.platform_specific.IPConfig;
 import qouteall.imm_ptl.core.teleportation.ServerTeleportationManager;
-import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.MiscHelper;
 import qouteall.q_misc_util.my_util.MyTaskList;
 import qouteall.q_misc_util.my_util.Signal;
@@ -22,9 +20,11 @@ public class IPGlobal {
      * This is different to {@link ClientTickEvents#END_CLIENT_TICK}
      * It fires right after ticking client world, which is earlier than the Fabric event.
      */
-    public static final Event<Runnable> postClientTickEvent = Helper.createRunnableEvent();
-    
-    public static final Event<Runnable> preGameRenderSignal = Helper.createRunnableEvent();
+    public static class PostClientTickEvent extends Event {}
+//    public static final Event<Runnable> postClientTickEvent = Helper.createRunnableEvent();
+
+    public static class PreGameRenderEvent extends Event {}
+//    public static final Event<Runnable> preGameRenderSignal = Helper.createRunnableEvent();
     
     // executed after ticking. will be cleared when client encounter loading screen
     public static final MyTaskList clientTaskList = new MyTaskList();
