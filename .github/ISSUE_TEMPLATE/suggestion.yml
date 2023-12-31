@@ -1,5 +1,5 @@
 name: Suggestion
-description: Provide a suggestion
+description: Please provide suggestions on the Upstream Fabric repository, unless you want to make a Neoforge specific compatibility request.
 body:
   - type: textarea
     id: suggestion
