@@ -6,7 +6,6 @@ body:
     attributes:
       label: Is it a mod compatibility issue?
       options:
-        - "Select One"
         - "Yes"
         - "No"
     validations:
@@ -38,13 +37,12 @@ body:
     attributes:
       label: Minecraft version
       options:
-        - "Select One"
         - "1.20.2"
     validations:
       required: true
   - type: markdown
     attributes:
-      value: "### Note: Only MC versions **1.20.2 +** is being maintained for now. It's highly recommended to use MC 1.20.2. Fixing issues on older MC versions is in low priority (except security issues)."
+      value: "### Note: Only MC versions **1.20.2 +** are currently being maintained. It's highly recommended to use MC 1.20.2. Fixing issues on older MC versions is in low priority (except security issues)."
   - type: textarea
     id: what-happened
     attributes:
