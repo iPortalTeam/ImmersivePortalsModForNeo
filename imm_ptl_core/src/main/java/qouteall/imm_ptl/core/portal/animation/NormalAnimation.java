@@ -26,7 +26,7 @@ public class NormalAnimation implements PortalAnimationDriver {
         );
     }
     
-    public static record Phase(
+    public record Phase(
         long durationTicks,
         DeltaUnilateralPortalState delta,
         TimingFunction timingFunction

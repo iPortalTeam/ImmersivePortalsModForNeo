@@ -78,7 +78,7 @@ public class DimId {
         }
         
         if (term instanceof StringTag) {
-            String id = ((StringTag) term).getAsString();
+            String id = term.getAsString();
             return idToKey(id);
         }
         

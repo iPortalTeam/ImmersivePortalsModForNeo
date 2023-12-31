@@ -3,7 +3,7 @@ package qouteall.q_misc_util.my_util;
 import java.util.HashMap;
 
 public class KeyedTaskList<K> {
-    public static interface Task<Key> {
+    public interface Task<Key> {
         boolean runAndGetIsSucceeded(Key key);
     }
     

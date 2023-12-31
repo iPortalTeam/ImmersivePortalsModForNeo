@@ -213,12 +213,12 @@ public class CollisionHelper {
             // the entity is touching ground and has horizontal collision now
             // try to directly move to stepped position, make it approach the stair
             Vec3 stepping = collisionFunc.apply(
-                new Vec3(attemptedMove.x, (double) maxUpStep, attemptedMove.z),
+                new Vec3(attemptedMove.x, maxUpStep, attemptedMove.z),
                 boundingBox
             );
             // try to move up in step height with expanded box
             Vec3 verticalStep = collisionFunc.apply(
-                new Vec3(0.0D, (double) maxUpStep, 0.0D),
+                new Vec3(0.0D, maxUpStep, 0.0D),
                 boundingBox.expandTowards(attemptedMove.x, 0.0D, attemptedMove.z)
             );
             if (verticalStep.y < (double) maxUpStep) {

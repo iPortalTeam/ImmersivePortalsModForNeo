@@ -84,7 +84,7 @@ public class PortalAnimationCommand {
                             portal, Portal::pauseAnimation
                         );
                         context.getSource().sendSuccess(() -> 
-                            Component.literal("Paused " + portal.toString()),
+                            Component.literal("Paused " + portal),
                             false
                         );
                     }
@@ -645,7 +645,7 @@ public class PortalAnimationCommand {
         return portal.getAnimationView().getInfo();
     }
     
-    public static record AnimationBuilderContext(
+    public record AnimationBuilderContext(
         Portal portal,
         Access<NormalAnimation> thisSideAnimation,
         Access<NormalAnimation> otherSideAnimation

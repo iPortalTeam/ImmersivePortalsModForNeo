@@ -99,19 +99,34 @@ public class MixinServerPlayerGameMode {
     }
     
     // disable distance check when doing cross-portal interaction
+//    @WrapOperation( // TODO @Nick1st PRIO check if my fix for this mixin below works as expected
+//        method = "handleBlockBreakAction",
+//        at = @At(
+//            value = "INVOKE",
+//            target = "Lnet/minecraft/world/phys/Vec3;distanceToSqr(Lnet/minecraft/world/phys/Vec3;)D"
+//        )
+//    )
+//    private double wrapDistanceInHandleBlockBreakAction(Vec3 instance, Vec3 vec, Operation<Double> original) {
+//        ServerLevel redirect = BlockManipulationServer.SERVER_PLAYER_INTERACTION_REDIRECT.get();
+//        if (redirect != null) {
+//            return 0;
+//        }
+//        return original.call(instance, vec);
+//    }
+
     @WrapOperation(
-        method = "handleBlockBreakAction",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/world/phys/Vec3;distanceToSqr(Lnet/minecraft/world/phys/Vec3;)D"
-        )
+            method = "handleBlockBreakAction",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/level/ServerPlayer;canReach(Lnet/minecraft/core/BlockPos;D)Z"
+            )
     )
-    private double wrapDistanceInHandleBlockBreakAction(Vec3 instance, Vec3 vec, Operation<Double> original) {
+    private boolean wrapDistanceInHandleBlockBreakAction(ServerPlayer instance, BlockPos blockPos, double v, Operation<Boolean> original) {
         ServerLevel redirect = BlockManipulationServer.SERVER_PLAYER_INTERACTION_REDIRECT.get();
         if (redirect != null) {
-            return 0;
+            return true;
         }
-        return original.call(instance, vec);
+        return original.call(instance, blockPos, v);
     }
     
     // record the world for the destroying pos

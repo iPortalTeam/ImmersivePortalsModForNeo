@@ -10,6 +10,5 @@ public interface IEEntityTrackingSection<T extends EntityAccess> {
     /**
      * Easier to use than AbortableIterationConsumer
      */
-    @Nullable
-    public <Sub extends T, R> R ip_traverse(EntityTypeTest<T, Sub> type, Function<Sub, R> func);
+    @Nullable <Sub extends T, R> R ip_traverse(EntityTypeTest<T, Sub> type, Function<Sub, R> func);
 }

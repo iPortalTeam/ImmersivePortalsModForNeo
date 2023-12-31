@@ -73,7 +73,7 @@ public class MixinPlayerList {
                 PacketRedirection.sendRedirectedMessage(
                     player,
                     dimension,
-                    (Packet<ClientGamePacketListener>) (Packet) packet
+                    (Packet<ClientGamePacketListener>) packet
                 );
             }
         }

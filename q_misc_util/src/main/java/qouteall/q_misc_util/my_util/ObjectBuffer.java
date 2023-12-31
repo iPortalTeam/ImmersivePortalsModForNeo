@@ -5,10 +5,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ObjectBuffer<T> {
-    private ArrayDeque<T> objects = new ArrayDeque<>();
+    private final ArrayDeque<T> objects = new ArrayDeque<>();
     private int cacheSize;
-    private Supplier<T> creator;
-    private Consumer<T> destroyer;
+    private final Supplier<T> creator;
+    private final Consumer<T> destroyer;
     
     private int currentConsumption = 0;
     

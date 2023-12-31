@@ -16,7 +16,7 @@ import java.util.Set;
 // 1. vertex shader clipping(requires GL3)
 // 2. fragment shader clipping
 public class ShaderCodeTransformation {
-    public static enum ShaderType {
+    public enum ShaderType {
         vs, fs
     }
     

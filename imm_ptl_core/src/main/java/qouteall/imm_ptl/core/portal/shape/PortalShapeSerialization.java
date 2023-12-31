@@ -12,7 +12,7 @@ import java.util.function.Function;
 public class PortalShapeSerialization {
     private static final Logger LOGGER = LogUtils.getLogger();
     
-    public static record Serializer<T extends PortalShape>(
+    public record Serializer<T extends PortalShape>(
         String typeName,
         Class<T> clazz,
         Function<T, CompoundTag> serializer,

@@ -66,7 +66,7 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
         doPortalRendering(matrixStack);
         
         // Resume Iris world rendering
-        ((IEIrisNewWorldRenderingPipeline) (Object) Iris.getPipelineManager().getPipeline().get())
+        ((IEIrisNewWorldRenderingPipeline) Iris.getPipelineManager().getPipeline().get())
             .ip_setIsRenderingWorld(true);
     }
     
@@ -153,7 +153,7 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
         }
         
         // Avoid Iris from force-disabling depth mask
-        ((IEIrisNewWorldRenderingPipeline) (Object) pipeline)
+        ((IEIrisNewWorldRenderingPipeline) pipeline)
             .ip_setIsRenderingWorld(false);
         
 //        if (shadowMapCache != null) {

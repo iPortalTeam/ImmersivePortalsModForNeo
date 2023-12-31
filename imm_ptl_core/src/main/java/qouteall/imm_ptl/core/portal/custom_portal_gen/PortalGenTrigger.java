@@ -38,9 +38,7 @@ public abstract class PortalGenTrigger {
             
             Player player = context.getPlayer();
             if (player != null) {
-                if (player.isCreative()) {
-                    return false;
-                }
+                return !player.isCreative();
             }
             
             return true;

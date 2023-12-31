@@ -66,7 +66,7 @@ public class ImmPtlChunkTickets {
         TicketType.create("imm_ptl", Comparator.comparingLong(ChunkPos::toLong));
     
     // for debugging
-    private static boolean enableDebugRateStat = false;
+    private static final boolean enableDebugRateStat = false;
     private static final RateStat debugRateStat = new RateStat("imm_ptl_chunk_ticket");
     
     // the fields of ImmPtlChunkTickets should avoid referencing ServerLevel

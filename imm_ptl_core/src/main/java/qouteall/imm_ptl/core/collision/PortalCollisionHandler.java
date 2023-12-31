@@ -56,13 +56,9 @@ public class PortalCollisionHandler {
             // the camera pos is behind this tick pos,
             // this tick pos may go behind the portal before teleportation.
             // use last tick pos to check whether it should collide
-            if (!CollisionHelper.mayEntityCollideWithPortal(
-                entity, p.portal, entity.getEyePosition(0), entity.getBoundingBox()
-            )) {
-                return true;
-            }
-            
-            return false;
+            return !CollisionHelper.mayEntityCollideWithPortal(
+                    entity, p.portal, entity.getEyePosition(0), entity.getBoundingBox()
+            );
         });
     }
     

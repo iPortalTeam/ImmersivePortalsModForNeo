@@ -51,12 +51,7 @@ public class ViewAreaRenderer {
         }
         
         if (doModifyDepth) {
-            if (portalLike.isFuseView()) {
-                GlStateManager._depthMask(false);
-            }
-            else {
-                GlStateManager._depthMask(true);
-            }
+            GlStateManager._depthMask(!portalLike.isFuseView());
         }
         else {
             GlStateManager._depthMask(false);

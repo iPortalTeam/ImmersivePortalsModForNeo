@@ -72,7 +72,7 @@ public class ImmPtlChunkTracking {
     public static void onDimensionRemove(ResourceKey<Level> dimension) {
         ServerLevel world = McHelper.getServerWorld(dimension);
         
-        ServerChunkCache chunkManager = (ServerChunkCache) world.getChunkSource();
+        ServerChunkCache chunkManager = world.getChunkSource();
         IEChunkMap storage =
             (IEChunkMap) chunkManager.chunkMap;
         storage.ip_onDimensionRemove();
@@ -303,10 +303,7 @@ public class ImmPtlChunkTracking {
                     if (watchRecs != null && watchRecs.containsKey(chunkPos)) {
                         return true;
                     }
-                    if (additional != null && additional.contains(chunkPos)) {
-                        return true;
-                    }
-                    return false;
+                    return additional != null && additional.contains(chunkPos);
                 }
             );
         }

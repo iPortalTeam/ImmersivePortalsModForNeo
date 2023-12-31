@@ -42,7 +42,7 @@ public class IrisInterface {
     
     public static class OnIrisPresent extends Invoker {
         
-        private Field worldRendererPipelineField = Helper.noError(() -> {
+        private final Field worldRendererPipelineField = Helper.noError(() -> {
             Field field = LevelRenderer.class.getDeclaredField("pipeline");
             field.setAccessible(true);
             return field;

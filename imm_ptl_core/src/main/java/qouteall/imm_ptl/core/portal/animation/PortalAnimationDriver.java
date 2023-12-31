@@ -12,10 +12,10 @@ import java.util.Map;
 import java.util.function.Function;
 
 public interface PortalAnimationDriver {
-    static final Map<ResourceLocation, Function<CompoundTag, PortalAnimationDriver>> deserializerRegistry =
+    Map<ResourceLocation, Function<CompoundTag, PortalAnimationDriver>> deserializerRegistry =
         new HashMap<>();
     
-    public static void registerDeserializer(ResourceLocation key, Function<CompoundTag, PortalAnimationDriver> deserializer) {
+    static void registerDeserializer(ResourceLocation key, Function<CompoundTag, PortalAnimationDriver> deserializer) {
         PortalAnimationDriver.deserializerRegistry.put(
             key,
             deserializer
@@ -23,7 +23,7 @@ public interface PortalAnimationDriver {
     }
     
     @Nullable
-    public static PortalAnimationDriver fromTag(CompoundTag tag) {
+    static PortalAnimationDriver fromTag(CompoundTag tag) {
         String type = tag.getString("type");
         Function<CompoundTag, PortalAnimationDriver> deserializer = deserializerRegistry.get(
             new ResourceLocation(type)

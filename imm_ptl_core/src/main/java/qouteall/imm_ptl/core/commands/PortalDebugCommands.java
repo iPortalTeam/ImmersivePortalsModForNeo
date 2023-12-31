@@ -402,11 +402,11 @@ public class PortalDebugCommands {
                 result.append("Server Portals\n");
                 
                 for (ServerLevel world : MiscHelper.getServer().getAllLevels()) {
-                    result.append(world.dimension().location().toString() + "\n");
+                    result.append(world.dimension().location() + "\n");
                     for (Entity entity : world.getAllEntities()) {
                         for (Entity e : world.getAllEntities()) {
                             if (e instanceof Portal) {
-                                result.append(e.toString());
+                                result.append(e);
                                 result.append("\n");
                             }
                         }

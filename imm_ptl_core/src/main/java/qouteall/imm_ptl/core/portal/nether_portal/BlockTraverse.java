@@ -8,15 +8,15 @@ import java.util.function.Predicate;
 
 public class BlockTraverse {
     
-    public static interface IntFunc<T> {
+    public interface IntFunc<T> {
         T eval(int i);
     }
     
-    public static interface BiIntFunc<T> {
+    public interface BiIntFunc<T> {
         T eval(int x, int z);
     }
     
-    public static interface TriIntFunc<T> {
+    public interface TriIntFunc<T> {
         T eval(int x, int y, int z);
     }
     

@@ -19,7 +19,7 @@ public record DeltaUnilateralPortalState(
     @Nullable Vec3 sizeScaling
 ) {
     public static final DeltaUnilateralPortalState identity =
-        new DeltaUnilateralPortalState(null, null, (Vec3) null);
+        new DeltaUnilateralPortalState(null, null, null);
     
     public DeltaUnilateralPortalState getInverse() {
         return new DeltaUnilateralPortalState(

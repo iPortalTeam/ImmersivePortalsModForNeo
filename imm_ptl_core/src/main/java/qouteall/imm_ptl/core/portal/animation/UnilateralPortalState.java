@@ -341,7 +341,7 @@ public record UnilateralPortalState(
     // treating UnilateralPortalState as a rectangle,
     // then it has these invariants
     // (only for flat portal)
-    public static enum RectInvariant {
+    public enum RectInvariant {
         IDENTITY, ROTATE_90, ROTATE_180, ROTATE_270,
         FLIP_X, FLIP_X_ROTATE_90, FLIP_X_ROTATE_180, FLIP_X_ROTATE_270;
         

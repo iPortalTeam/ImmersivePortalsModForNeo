@@ -6,12 +6,49 @@ dependencies {
     implementation project(":q_misc_util")
 }
 
+java.sourceSets {
+    main {
+        java {
+            srcDirs = ["src/main/java"]
+        }
+        resources {
+            srcDirs = ["src/main/resources"]
+        }
+        runs {
+            modIdentifier = project.mod_id
+        }
+    }
+}
+
 // AccessTransformers
 minecraft.accessTransformers.entry 'public net.minecraft.server.level.ChunkMap$TrackedEntity # TrackedEntity class'
 minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.ClientChunkCache level # level field'
 minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.ClientChunkCache emptyChunk # emptyChunk field'
 minecraft.accessTransformers.entry 'public-f net.minecraft.util.profiling.ActiveProfiler WARNING_TIME_NANOS # WARNING_TIME_NANOS field'
 minecraft.accessTransformers.entry 'public net.minecraft.resources.RegistryDataLoader$Loader # Loader class'
-minecraft.accessTransformers.entry 'public net.minecraft.client.renderer.chunk.SectionRenderDispatcher.RenderSection$CompileTask # CompileTask class' // TODO Deal with abstract classes
+minecraft.accessTransformers.entry 'public net.minecraft.client.renderer.chunk.SectionRenderDispatcher$RenderSection$CompileTask # CompileTask class'
 minecraft.accessTransformers.entry 'public net.minecraft.world.level.biome.BiomeManager biomeZoomSeed # biomeZoomSeed field'
 minecraft.accessTransformers.entry 'public net.minecraft.server.MinecraftServer storageSource # storageSource field'
+minecraft.accessTransformers.entry 'public-f net.minecraft.world.entity.Entity getBoundingBox()Lnet/minecraft/world/phys/AABB; # getBoundingBox()'
+minecraft.accessTransformers.entry 'public  net.minecraft.world.entity.EntityType$Builder dimensions # dimensions field'
+
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+            minecraft_version   : minecraft_version, minecraft_version_range: minecraft_version_range,
+            neo_version         : neo_version, neo_version_range: neo_version_range,
+            loader_version_range: loader_version_range,
+            mod_id              : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+            mod_authors         : mod_authors, mod_description: mod_description, pack_format_number: pack_format_number,
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
+}
+
+mixin {
+    configs.add("imm_ptl.mixins.json")
+    configs.add("imm_ptl_compat.mixins.json")
+    configs.add("imm_ptl_fabric.mixins.json")
+}

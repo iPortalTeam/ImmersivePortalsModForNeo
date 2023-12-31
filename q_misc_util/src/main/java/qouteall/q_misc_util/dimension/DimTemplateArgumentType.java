@@ -9,8 +9,11 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
@@ -34,11 +37,11 @@ public class DimTemplateArgumentType implements ArgumentType<DimensionTemplate> 
     }
     
     public static void init() {
-//        ArgumentTypeRegistry.registerArgumentType(
-//            new ResourceLocation("q_misc_util:dim_template"),
-//            DimTemplateArgumentType.class,
-//            SingletonArgumentInfo.contextFree(() -> INSTANCE)
-//        );
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(RegisterEvent.class, registerEvent -> {
+            registerEvent.register(BuiltInRegistries.COMMAND_ARGUMENT_TYPE.key(),
+                    new ResourceLocation("q_misc_util:dim_template"),
+                    () -> SingletonArgumentInfo.contextFree(() -> DimTemplateArgumentType.INSTANCE));
+        });
     }
     
     @Override

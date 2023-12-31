@@ -69,7 +69,7 @@ public class NormalSkylandGenerator extends NoiseBasedChunkGenerator {
             .apply(instance, NormalSkylandGenerator::create)
     );
     
-    private RandomState delegatedRandomState;
+    private final RandomState delegatedRandomState;
     
     private final HolderGetter<Biome> biomeHolderGetter;
     private final HolderGetter<DensityFunction> densityFunctionHolderGetter;
@@ -97,7 +97,7 @@ public class NormalSkylandGenerator extends NoiseBasedChunkGenerator {
         
         this.delegatedRandomState = RandomState.create(
             (delegate.generatorSettings().value()),
-            ((HolderLookup.RegistryLookup<NormalNoise.NoiseParameters>) noiseParametersHolderGetter),
+                noiseParametersHolderGetter,
             seed
         );
     }

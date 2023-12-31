@@ -18,7 +18,7 @@ public class MixinCreateWorldScreenMoreTab {
     // the implicit parent object reference
     @Final
     @Shadow
-    CreateWorldScreen  field_42178;
+    CreateWorldScreen this$0;
     
     @Inject(
         method = "<init>",
@@ -32,7 +32,7 @@ public class MixinCreateWorldScreenMoreTab {
         rowHelper.addChild(
             Button.builder(
                 Component.translatable("imm_ptl.altius_screen_button"),
-                button -> ((IECreateWorldScreen) field_42178).ip_openDimStackScreen()
+                button -> ((IECreateWorldScreen) this$0).ip_openDimStackScreen()
             ).width(210).build()
         );
     }

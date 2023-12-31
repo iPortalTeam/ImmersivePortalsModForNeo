@@ -293,7 +293,7 @@ public class MyRenderHelper {
         
         drawFramebufferWithViewport(
             textureProvider, doUseAlphaBlend, doEnableModifyAlpha,
-            left, (double) right, bottom, (double) up,
+            left, right, bottom, up,
             viewportWidth, viewportHeight
         );
     }
@@ -346,13 +346,8 @@ public class MyRenderHelper {
         else {
             RenderSystem.disableBlend();
         }
-        
-        if (doEnableModifyAlpha) {
-            GlStateManager._colorMask(true, true, true, true);
-        }
-        else {
-            GlStateManager._colorMask(true, true, true, false);
-        }
+
+        GlStateManager._colorMask(true, true, true, doEnableModifyAlpha);
         
         ShaderInstance shader = doUseAlphaBlend ? client.gameRenderer.blitShader : blitScreenNoBlendShader;
         

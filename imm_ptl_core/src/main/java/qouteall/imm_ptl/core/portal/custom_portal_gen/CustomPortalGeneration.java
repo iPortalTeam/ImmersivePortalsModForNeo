@@ -182,12 +182,8 @@ public class CustomPortalGeneration {
         if (!form.initAndCheck()) {
             return false;
         }
-        
-        if (fromDimensions.isEmpty()) {
-            return false;
-        }
-        
-        return true;
+
+        return !fromDimensions.isEmpty();
     }
     
     @Override

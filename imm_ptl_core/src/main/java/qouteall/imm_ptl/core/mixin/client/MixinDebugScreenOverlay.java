@@ -30,7 +30,7 @@ public class MixinDebugScreenOverlay {
         if (player != null) {
             Portal collidingPortal = ((IEEntity) player).ip_getCollidingPortal();
             if (collidingPortal != null) {
-                String text = "Colliding " + collidingPortal.toString();
+                String text = "Colliding " + collidingPortal;
                 returnValue.addAll(Helper.splitStringByLen(text, 50));
             }
         }

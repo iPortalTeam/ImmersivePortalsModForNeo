@@ -58,7 +58,7 @@ public class DimensionIdRecord {
     public String toString() {
         return idMap.entrySet().stream()
             .sorted(Comparator.comparingInt(e -> e.getValue()))
-            .map(e -> e.getKey().location().toString() + " -> " + e.getValue())
+            .map(e -> e.getKey().location() + " -> " + e.getValue())
             .collect(Collectors.joining("\n"));
     }
     

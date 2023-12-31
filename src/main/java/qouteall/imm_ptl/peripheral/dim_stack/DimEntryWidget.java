@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 public class DimEntryWidget extends ContainerObjectSelectionList.Entry<DimEntryWidget> {
     private static final Logger LOGGER = LogUtils.getLogger();
     
-    public static enum ArrowType {
+    public enum ArrowType {
         none, enabled, conflicting
     }
     
@@ -96,13 +96,13 @@ public class DimEntryWidget extends ContainerObjectSelectionList.Entry<DimEntryW
         
         guiGraphics.drawString(
             client.font, dimensionName.getString(),
-            x + widgetHeight + 3, (int) (y),
+            x + widgetHeight + 3, y,
             0xFFFFFFFF
         );
         
         guiGraphics.drawString(
             client.font, dimension.location().toString(),
-            x + widgetHeight + 3, (int) (y + 10),
+            x + widgetHeight + 3, y + 10,
             0xFF999999
         );
         
@@ -131,12 +131,12 @@ public class DimEntryWidget extends ContainerObjectSelectionList.Entry<DimEntryW
         if (entry != null) {
             guiGraphics.drawString(
                 client.font, getText1(),
-                x + widgetHeight + 3, (int) (y + 20),
+                x + widgetHeight + 3, y + 20,
                 0xFF999999
             );
             guiGraphics.drawString(
                 client.font, getText2(),
-                x + widgetHeight + 3, (int) (y + 30),
+                x + widgetHeight + 3, y + 30,
                 0xFF999999
             );
             
@@ -169,7 +169,7 @@ public class DimEntryWidget extends ContainerObjectSelectionList.Entry<DimEntryW
     private Component getText1() {
         MutableComponent scaleText = entry.scale != 1.0 ?
             Component.translatable("imm_ptl.scale")
-                .append(Component.literal(":" + Double.toString(entry.scale)))
+                .append(Component.literal(":" + entry.scale))
             : Component.literal("");
         
         return scaleText;
@@ -178,7 +178,7 @@ public class DimEntryWidget extends ContainerObjectSelectionList.Entry<DimEntryW
     private Component getText2() {
         MutableComponent horizontalRotationText = entry.horizontalRotation != 0 ?
             Component.translatable("imm_ptl.horizontal_rotation")
-                .append(Component.literal(":" + Double.toString(entry.horizontalRotation)))
+                .append(Component.literal(":" + entry.horizontalRotation))
                 .append(Component.literal(" "))
             : Component.literal("");
         

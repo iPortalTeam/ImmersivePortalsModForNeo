@@ -194,8 +194,7 @@ public class FlippingFloorSquareForm extends PortalGenForm {
             180
         ));
         
-        GeneralBreakablePortal pb = (GeneralBreakablePortal)
-            PortalManipulation.createReversePortal(pa, GeneralBreakablePortal.entityType);
+        GeneralBreakablePortal pb = PortalManipulation.createReversePortal(pa, GeneralBreakablePortal.entityType);
         
         pa.blockPortalShape = fromShape;
         pb.blockPortalShape = toShape;

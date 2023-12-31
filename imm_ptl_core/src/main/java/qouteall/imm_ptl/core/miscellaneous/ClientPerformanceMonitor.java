@@ -54,7 +54,7 @@ public class ClientPerformanceMonitor {
         }
         
         averageFps = (int) records.stream().mapToInt(r -> r.FPS).average().orElse(60);
-        minimumFps = (int) records.stream().mapToInt(r -> r.FPS).min().orElse(60);
+        minimumFps = records.stream().mapToInt(r -> r.FPS).min().orElse(60);
         averageFreeMemoryMB = (int) records.stream()
             .mapToInt(r -> r.freeMemoryMB).average().orElse(1000);
         

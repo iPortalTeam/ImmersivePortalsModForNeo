@@ -9,10 +9,6 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import io.netty.buffer.Unpooled;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -34,8 +30,14 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.INetworkDirection;
+import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.PlayNetworkDirection;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
+import qouteall.q_misc_util.de.nick1st.neo.networking.NeoPacket;
 import qouteall.q_misc_util.my_util.DQuaternion;
 import qouteall.q_misc_util.my_util.LimitedLogger;
 
@@ -124,25 +126,39 @@ public class ImplRemoteProcedureCall {
     }
     
     public static void init() {
-        ServerPlayNetworking.registerGlobalReceiver(
-            MiscNetworking.id_ctsRemote,
-            (server, player, handler, buf, responseSender) -> {
-                Runnable runnable = serverReadPacketAndGetHandler(player, buf);
-                MiscHelper.executeOnServerThread(server, runnable);
+//        ServerPlayNetworking.registerGlobalReceiver(
+//            MiscNetworking.id_ctsRemote,
+//            (server, player, handler, buf, responseSender) -> {
+//                Runnable runnable = serverReadPacketAndGetHandler(player, buf);
+//                MiscHelper.executeOnServerThread(server, runnable);
+//            }
+//        );
+        NeoPacket.register(MiscNetworking.id_ctsRemote, networkEvent -> { // TODO @Nick1st check
+            if (!(networkEvent instanceof NetworkEvent.ChannelRegistrationChangeEvent)) {
+                Runnable runnable = serverReadPacketAndGetHandler(networkEvent.getSource().getSender(), networkEvent.getPayload());
+                MiscHelper.executeOnServerThread(networkEvent.getSource().getSender().server, runnable);
             }
-        );
-        
+            networkEvent.getSource().setPacketHandled(true);
+        });
+
+        NeoPacket.register(MiscNetworking.id_stcRemote, networkEvent -> { // TODO @Nick1st check
+            if (!(networkEvent instanceof NetworkEvent.ChannelRegistrationChangeEvent)) {
+                Runnable runnable = clientReadPacketAndGetHandler(networkEvent.getPayload());
+                MiscHelper.executeOnRenderThread(runnable);
+            }
+            networkEvent.getSource().setPacketHandled(true);
+        });
     }
     
     @OnlyIn(Dist.CLIENT)
     public static void initClient() {
-        ClientPlayNetworking.registerGlobalReceiver(
-            MiscNetworking.id_stcRemote,
-            (client, handler, buf, responseSender) -> {
-                Runnable runnable = clientReadPacketAndGetHandler(buf);
-                MiscHelper.executeOnRenderThread(runnable);
-            }
-        );
+//        ClientPlayNetworking.registerGlobalReceiver(
+//            MiscNetworking.id_stcRemote,
+//            (client, handler, buf, responseSender) -> {
+//                Runnable runnable = clientReadPacketAndGetHandler(buf);
+//                MiscHelper.executeOnRenderThread(runnable);
+//            }
+//        );
     }
     
     @SuppressWarnings("rawtypes")
@@ -204,8 +220,9 @@ public class ImplRemoteProcedureCall {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         
         serializeStringWithArguments(methodPath, arguments, buf);
-        
-        return ClientPlayNetworking.createC2SPacket(MiscNetworking.id_ctsRemote, buf);
+
+        return (Packet<ServerCommonPacketListener>) PlayNetworkDirection.PLAY_TO_SERVER.buildPacket(new INetworkDirection.PacketData(buf, 0), MiscNetworking.id_ctsRemote); // TODO @Nick1st check
+//        return ClientPlayNetworking.createC2SPacket(MiscNetworking.id_ctsRemote, buf);
     }
     
     public static Packet<ClientCommonPacketListener> createS2CPacket(
@@ -215,8 +232,9 @@ public class ImplRemoteProcedureCall {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         
         serializeStringWithArguments(methodPath, arguments, buf);
-        
-        return ServerPlayNetworking.createS2CPacket(MiscNetworking.id_stcRemote, buf);
+
+        return (Packet<ClientCommonPacketListener>) PlayNetworkDirection.PLAY_TO_CLIENT.buildPacket(new INetworkDirection.PacketData(buf, 0), MiscNetworking.id_stcRemote); // TODO @Nick1st check
+//        return ServerPlayNetworking.createS2CPacket(MiscNetworking.id_stcRemote, buf);
     }
     
     @OnlyIn(Dist.CLIENT)

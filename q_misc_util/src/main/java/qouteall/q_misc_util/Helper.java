@@ -1064,7 +1064,7 @@ public class Helper {
         return value;
     }
     
-    public static interface IntObjectConsumer<T> {
+    public interface IntObjectConsumer<T> {
         void consume(int index, T object);
     }
     
@@ -1171,9 +1171,9 @@ public class Helper {
         HashSet<LongBlockPos> set = new HashSet<>();
         for (Vec3 point : points) {
             set.add(new LongBlockPos(
-                (long) Math.round(point.x * precision),
-                (long) Math.round(point.y * precision),
-                (long) Math.round(point.z * precision)
+                    Math.round(point.x * precision),
+                    Math.round(point.y * precision),
+                    Math.round(point.z * precision)
             ));
         }
         return set.stream().map(
@@ -1199,7 +1199,7 @@ public class Helper {
         return pointToLineOriginProjected.length();
     }
     
-    public static interface BoxEdgeConsumer {
+    public interface BoxEdgeConsumer {
         void consume(
             int ax, int ay, int az,
             int bx, int by, int bz
@@ -1313,7 +1313,7 @@ public class Helper {
     }
     
     @FunctionalInterface
-    public static interface SwappingFunc {
+    public interface SwappingFunc {
         void swap(int validElementIndex, int invalidElementIndex);
     }
     

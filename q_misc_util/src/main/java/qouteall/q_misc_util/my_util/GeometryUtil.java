@@ -144,14 +144,10 @@ public class GeometryUtil {
         )) {
             return false;
         }
-        
-        if (isAABBFullyOnRightSideOfLine(
-            minX, minY, maxX, maxY, tx2, ty2, tx0 - tx2, ty0 - ty2
-        )) {
-            return false;
-        }
-        
-        return true;
+
+        return !isAABBFullyOnRightSideOfLine(
+                minX, minY, maxX, maxY, tx2, ty2, tx0 - tx2, ty0 - ty2
+        );
     }
     
     private static boolean isAABBFullyOnLeftSideOfLine(
@@ -184,11 +180,11 @@ public class GeometryUtil {
     }
     
     @FunctionalInterface
-    public static interface BiDoublePredicate {
+    public interface BiDoublePredicate {
         boolean test(double x, double y);
     }
     
-    public static record Line2D(double linePX, double linePY, double dirX, double dirY) {
+    public record Line2D(double linePX, double linePY, double dirX, double dirY) {
         
         public static Line2D fromTwoPoints(
             double x1, double y1,
@@ -347,7 +343,7 @@ public class GeometryUtil {
         for (int i = 0; i < 12; i++) {
             int ei = i * 6;
             
-            double p0x = boxEdges[ei + 0]; double p0y = boxEdges[ei + 1]; double p0z = boxEdges[ei + 2];
+            double p0x = boxEdges[ei]; double p0y = boxEdges[ei + 1]; double p0z = boxEdges[ei + 2];
             double p1x = boxEdges[ei + 3]; double p1y = boxEdges[ei + 4]; double p1z = boxEdges[ei + 5];
             double vx = p1x - p0x; double vy = p1y - p0y; double vz = p1z - p0z;
             

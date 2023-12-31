@@ -1,7 +1,6 @@
 package qouteall.imm_ptl.core.teleportation;
 
 import com.mojang.logging.LogUtils;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -17,6 +16,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.PlayNetworkDirection;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -28,12 +28,7 @@ import qouteall.imm_ptl.core.collision.CollisionHelper;
 import qouteall.imm_ptl.core.collision.PortalCollisionHandler;
 import qouteall.imm_ptl.core.compat.GravityChangerInterface;
 import qouteall.imm_ptl.core.compat.PehkuiInterface;
-import qouteall.imm_ptl.core.ducks.IEAbstractClientPlayer;
-import qouteall.imm_ptl.core.ducks.IEClientPlayNetworkHandler;
-import qouteall.imm_ptl.core.ducks.IEEntity;
-import qouteall.imm_ptl.core.ducks.IEGameRenderer;
-import qouteall.imm_ptl.core.ducks.IEMinecraftClient;
-import qouteall.imm_ptl.core.ducks.IEParticleManager;
+import qouteall.imm_ptl.core.ducks.*;
 import qouteall.imm_ptl.core.network.ImmPtlNetworking;
 import qouteall.imm_ptl.core.network.PacketRedirectionClient;
 import qouteall.imm_ptl.core.platform_specific.O_O;
@@ -49,6 +44,7 @@ import qouteall.imm_ptl.core.render.context_management.RenderStates;
 import qouteall.imm_ptl.core.render.context_management.WorldRenderInfo;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.api.DimensionAPI;
+import qouteall.q_misc_util.de.nick1st.neo.networking.NeoPacket;
 import qouteall.q_misc_util.my_util.Vec2d;
 
 import java.util.ArrayList;
@@ -199,7 +195,7 @@ public class ClientTeleportationManager {
         client.getProfiler().pop();
     }
     
-    private static record TeleportationRec(
+    private record TeleportationRec(
         Portal portal, Vec2d portalLocalXY, Vec3 collisionPos
     ) {}
     
@@ -363,13 +359,13 @@ public class ClientTeleportationManager {
         
         PehkuiInterface.invoker.onClientPlayerTeleported(portal);
         
-        player.connection.send(ClientPlayNetworking.createC2SPacket(
+        player.connection.send(NeoPacket.channels.get(ImmPtlNetworking.TeleportPacket.TYPE.identifier).toVanillaPacket(
             new ImmPtlNetworking.TeleportPacket(
                 DimensionAPI.getClientDimIntId(fromDimension),
                 lastTickEyePos,
                 portal.getUUID()
             )
-        ));
+        , PlayNetworkDirection.PLAY_TO_SERVER));
         
         PortalCollisionHandler.updateCollidingPortalAfterTeleportation(
             player, newThisTickEyePos, newLastTickEyePos, RenderStates.getPartialTick()

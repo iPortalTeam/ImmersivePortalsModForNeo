@@ -44,7 +44,7 @@ public class MixinEnderEyeItem {
                 return InteractionResult.SUCCESS;
             }
             else {
-                BlockState blockState_2 = (BlockState) blockState.setValue(
+                BlockState blockState_2 = blockState.setValue(
                     EndPortalFrameBlock.HAS_EYE,
                     true
                 );

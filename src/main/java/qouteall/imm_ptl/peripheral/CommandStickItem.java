@@ -56,7 +56,7 @@ public class CommandStickItem extends Item {
                         StringTag.valueOf("").getId()
                     )
                     .stream()
-                    .map(tag1 -> ((StringTag) tag1).getAsString())
+                    .map(tag1 -> tag1.getAsString())
                     .collect(Collectors.toList())
             );
         }
@@ -149,7 +149,7 @@ public class CommandStickItem extends Item {
     }
     
     public static void sendMessage(Player player, Component message) {
-        ((ServerPlayer) player).sendSystemMessage(message);
+        player.sendSystemMessage(message);
     }
     
     public static void init() {

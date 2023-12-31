@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Random;
 
 public class RandomSelector<T> {
-    private Object[] entries;
-    private int[] subWeightSum;
-    private int weightSum;
+    private final Object[] entries;
+    private final int[] subWeightSum;
+    private final int weightSum;
     
     public RandomSelector(List<Tuple<T, Integer>> data) {
         entries = data.stream().map(Tuple::getA).toArray();
@@ -19,7 +19,7 @@ public class RandomSelector<T> {
         subWeightSum = Helper.mapReduce(
             data.stream(),
             (preSum, curr) -> preSum + curr.getB(),
-            new Helper.SimpleBox<>((Integer) 0)
+            new Helper.SimpleBox<>(0)
         ).mapToInt(i -> i).toArray();
         
         weightSum = subWeightSum[subWeightSum.length - 1];
@@ -49,7 +49,7 @@ public class RandomSelector<T> {
     }
     
     public static class Builder<A> {
-        private ArrayList<Tuple<A, Integer>> data = new ArrayList<>();
+        private final ArrayList<Tuple<A, Integer>> data = new ArrayList<>();
         
         public Builder() {
         }

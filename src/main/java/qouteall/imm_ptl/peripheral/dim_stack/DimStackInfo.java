@@ -225,7 +225,7 @@ public class DimStackInfo {
         }
     }
     
-    public static record PortalInfo(
+    public record PortalInfo(
         ResourceKey<Level> dimension,
         VerticalConnectingPortal.ConnectorType connectorType
     ) {}

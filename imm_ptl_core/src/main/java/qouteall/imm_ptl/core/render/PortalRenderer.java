@@ -6,14 +6,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -37,7 +37,6 @@ import qouteall.q_misc_util.Helper;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public abstract class PortalRenderer {
@@ -46,20 +45,37 @@ public abstract class PortalRenderer {
      * An event for filtering whether a portal should render.
      * All listeners' results are ANDed.
      */
-    public static final Event<Predicate<Portal>> PORTAL_RENDERING_PREDICATE =
-        EventFactory.createArrayBacked(
-            Predicate.class,
-            (listeners) -> (portal) -> {
-                for (Predicate<Portal> listener : listeners) {
-                    if (!listener.test(portal)) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        );
+    public static class PortalRenderingPredicateEvent extends Event {
+        public final Portal portal;
+
+        boolean canRender = true;
+
+        public PortalRenderingPredicateEvent(Portal portal) {
+            this.portal = portal;
+        }
+
+        public void setCanRender(boolean canRender) {
+            this.canRender = this.canRender && canRender;
+        }
+
+        public boolean canRender() {
+            return canRender;
+        }
+    }
+//    public static final Event<Predicate<Portal>> PORTAL_RENDERING_PREDICATE =
+//        EventFactory.createArrayBacked(
+//            Predicate.class,
+//            (listeners) -> (portal) -> {
+//                for (Predicate<Portal> listener : listeners) {
+//                    if (!listener.test(portal)) {
+//                        return false;
+//                    }
+//                }
+//                return true;
+//            }
+//        );
     
-    public static record PortalGroupToRender(
+    public record PortalGroupToRender(
         PortalGroup group,
         List<Portal> portals
     ) implements PortalRenderable {
@@ -120,8 +136,7 @@ public abstract class PortalRenderer {
             new Object2ObjectOpenHashMap<>();
         
         client.level.entitiesForRendering().forEach(e -> {
-            if (e instanceof Portal) {
-                Portal portal = (Portal) e;
+            if (e instanceof Portal portal) {
                 if (!shouldSkipRenderingPortal(portal, frustumSupplier)) {
                     PortalLike renderingDelegate = portal.getRenderingDelegate();
                     
@@ -197,12 +212,8 @@ public abstract class PortalRenderer {
             }
         }
         
-        boolean predicateTest = PORTAL_RENDERING_PREDICATE.invoker().test(portal);
-        if (!predicateTest) {
-            return true;
-        }
-        
-        return false;
+        boolean predicateTest = NeoForge.EVENT_BUS.post(new PortalRenderingPredicateEvent(portal)).canRender();
+        return !predicateTest;
     }
     
     public static double getRenderRange() {

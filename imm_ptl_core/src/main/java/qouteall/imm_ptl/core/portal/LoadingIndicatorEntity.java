@@ -1,8 +1,5 @@
 package qouteall.imm_ptl.core.portal;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.player.LocalPlayer;
@@ -20,16 +17,23 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import qouteall.q_misc_util.my_util.IntBox;
 
 public class LoadingIndicatorEntity extends Entity {
-    public static final EntityType<LoadingIndicatorEntity> entityType =
-        FabricEntityTypeBuilder.create(
-            MobCategory.MISC,
-            (EntityType.EntityFactory<LoadingIndicatorEntity>) LoadingIndicatorEntity::new
-        ).dimensions(
-            new EntityDimensions(1, 1, true)
-        ).fireImmune().trackable(96, 20).build();
+    public static final EntityType<LoadingIndicatorEntity> entityType = getEntityType();
+
+    static EntityType<LoadingIndicatorEntity> getEntityType() {
+        EntityType.Builder<LoadingIndicatorEntity> builder = EntityType.Builder.of(
+                        LoadingIndicatorEntity::new,
+                        MobCategory.MISC)
+                .fireImmune()
+                .clientTrackingRange(96)
+                .updateInterval(20);
+        builder.dimensions = new EntityDimensions(1, 1, true);
+        return builder.build("");
+    }
     
     private static final EntityDataAccessor<Component> TEXT = SynchedEntityData.defineId(
         LoadingIndicatorEntity.class, EntityDataSerializers.COMPONENT

@@ -1,10 +1,5 @@
 package qouteall.imm_ptl.peripheral;
 
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -14,11 +9,10 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import qouteall.imm_ptl.peripheral.alternate_dimension.AlternateDimensions;
-import qouteall.imm_ptl.peripheral.alternate_dimension.ChaosBiomeSource;
-import qouteall.imm_ptl.peripheral.alternate_dimension.ErrorTerrainGenerator;
-import qouteall.imm_ptl.peripheral.alternate_dimension.FormulaGenerator;
-import qouteall.imm_ptl.peripheral.alternate_dimension.NormalSkylandGenerator;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import qouteall.imm_ptl.peripheral.alternate_dimension.*;
 import qouteall.imm_ptl.peripheral.dim_stack.DimStackManagement;
 import qouteall.imm_ptl.peripheral.portal_generation.IntrinsicPortalGeneration;
 import qouteall.imm_ptl.peripheral.wand.ClientPortalWandPortalDrag;
@@ -36,8 +30,7 @@ public class PeripheralModMain {
     public static final BlockItem portalHelperBlockItem =
         new PortalHelperItem(PeripheralModMain.portalHelperBlock, new Item.Properties());
     
-    public static final CreativeModeTab TAB =
-        FabricItemGroup.builder()
+    public static final CreativeModeTab TAB = CreativeModeTab.builder()
             .icon(() -> new ItemStack(PortalWandItem.instance))
             .title(Component.translatable("imm_ptl.item_group"))
             .displayItems((enabledFeatures, entries) -> {

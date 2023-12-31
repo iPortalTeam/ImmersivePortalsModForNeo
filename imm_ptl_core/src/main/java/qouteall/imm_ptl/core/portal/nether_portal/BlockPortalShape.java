@@ -68,7 +68,7 @@ public class BlockPortalShape {
         
         for (int i = 0; i < size / 3; i++) {
             result.add(new BlockPos(
-                list.getInt(i * 3 + 0),
+                list.getInt(i * 3),
                 list.getInt(i * 3 + 1),
                 list.getInt(i * 3 + 2)
             ));
@@ -102,9 +102,9 @@ public class BlockPortalShape {
             .min(
                 Comparator.<BlockPos>comparingInt(
                     Vec3i::getX
-                ).<BlockPos>thenComparingInt(
+                ).thenComparingInt(
                     Vec3i::getY
-                ).<BlockPos>thenComparingInt(
+                ).thenComparingInt(
                     Vec3i::getZ
                 )
             ).get();

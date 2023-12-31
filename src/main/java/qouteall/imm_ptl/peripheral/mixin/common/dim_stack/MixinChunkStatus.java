@@ -15,7 +15,7 @@ import java.util.List;
 @Mixin(ChunkStatus.class)
 public class MixinChunkStatus {
     @Inject(
-        method = "method_17033", at = @At("HEAD"),
+        method = "lambda$static$16", at = @At("HEAD"),
         remap = false
     )
     private static void redirectPopulateEntities(

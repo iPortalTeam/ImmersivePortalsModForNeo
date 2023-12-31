@@ -16,7 +16,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class DimensionStackAPI {
-    public static interface DimensionCollectionCallback {
+    public interface DimensionCollectionCallback {
         Collection<ResourceKey<Level>> getExtraDimensionKeys(
             RegistryAccess.Frozen registryAccess,
             WorldOptions options
@@ -26,7 +26,7 @@ public class DimensionStackAPI {
     /**
      * See {@link DimensionStackAPI.DimensionStackPreUpdateEvent}
      */
-    public static interface DimensionStackPreUpdateCallback {
+    public interface DimensionStackPreUpdateCallback {
         void run(MinecraftServer server, @Nullable DimStackInfo dimStackInfo);
     }
 

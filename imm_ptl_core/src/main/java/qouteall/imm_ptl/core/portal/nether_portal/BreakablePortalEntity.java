@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.UUID;
 
 public abstract class BreakablePortalEntity extends Portal {
-    public static record OverlayInfo(
+    public record OverlayInfo(
         BlockState blockState,
         double opacity,
         double offset,
@@ -214,22 +214,12 @@ public abstract class BreakablePortalEntity extends Portal {
 //        }
         
         List<BreakablePortalEntity> revs = findReversePortals(this);
+        //            limitedLogger.err("Missing Reverse Portal " + this);
         if (revs.size() == 1) {
             BreakablePortalEntity reversePortal = revs.get(0);
-            if (reversePortal.getDestPos().distanceToSqr(getOriginPos()) > 1) {
-                return false;
-            }
-            else {
-                return true;
-            }
+            return !(reversePortal.getDestPos().distanceToSqr(getOriginPos()) > 1);
         }
-        else if (revs.size() > 1) {
-            return false;
-        }
-        else {
-//            limitedLogger.err("Missing Reverse Portal " + this);
-            return true;
-        }
+        else return revs.size() <= 1;
     }
     
     public void markShouldBreak() {

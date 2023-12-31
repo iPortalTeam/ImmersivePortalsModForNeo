@@ -2,16 +2,6 @@ package qouteall.imm_ptl.core.network;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
-import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -20,7 +10,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
-import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.LoginNetworkDirection;
+import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.PlayNetworkDirection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -29,14 +24,17 @@ import qouteall.imm_ptl.core.IPMcHelper;
 import qouteall.imm_ptl.core.mixin.common.other_sync.IEServerConfigurationPacketListenerImpl;
 import qouteall.imm_ptl.core.platform_specific.IPConfig;
 import qouteall.imm_ptl.core.platform_specific.O_O;
+import qouteall.q_misc_util.de.nick1st.neo.networking.NeoPacket;
+import qouteall.q_misc_util.de.nick1st.neo.networking.PacketType;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @SuppressWarnings("UnstableApiUsage")
 public class ImmPtlNetworkConfig {
     private static final Logger LOGGER = LogUtils.getLogger();
     
-    public static record ModVersion(
+    public record ModVersion(
         int major, int minor, int patch
     ) {
         // for dev env
@@ -72,7 +70,7 @@ public class ImmPtlNetworkConfig {
     public static ModVersion immPtlVersion;
     
     @SuppressWarnings("UnstableApiUsage")
-    public static record ImmPtlConfigurationTask(
+    public record ImmPtlConfigurationTask(
     ) implements ConfigurationTask {
         public static final ConfigurationTask.Type TYPE =
             new ConfigurationTask.Type("imm_ptl_core:config");
@@ -80,9 +78,12 @@ public class ImmPtlNetworkConfig {
         @Override
         public void start(Consumer<Packet<?>> consumer) {
             consumer.accept(
-                ServerConfigurationNetworking.createS2CPacket(new S2CConfigStartPacket(
-                    immPtlVersion
-                ))
+                    NeoPacket.channels.get(S2CConfigStartPacket.TYPE).toVanillaPacket(new S2CConfigStartPacket(
+                            immPtlVersion
+                    ), PlayNetworkDirection.PLAY_TO_CLIENT)
+//                ServerConfigurationNetworking.createS2CPacket(new S2CConfigStartPacket(
+//                    immPtlVersion
+//                ))
             );
         }
         
@@ -92,9 +93,9 @@ public class ImmPtlNetworkConfig {
         }
     }
     
-    public static record S2CConfigStartPacket(
+    public record S2CConfigStartPacket(
         ModVersion versionFromServer
-    ) implements FabricPacket {
+    ) implements NeoPacket {
         public static final PacketType<S2CConfigStartPacket> TYPE =
             PacketType.create(
                 new ResourceLocation("imm_ptl_core:config_packet"),
@@ -117,13 +118,13 @@ public class ImmPtlNetworkConfig {
         
         // handled on client side
         @OnlyIn(Dist.CLIENT)
-        public void handle(PacketSender responseSender) {
+        public void handle(Supplier<NetworkEvent.Context> ctx) {
             LOGGER.info(
                 "Client received ImmPtl config packet. Server mod version: {}", versionFromServer
             );
             
             serverVersion = versionFromServer;
-            responseSender.sendPacket(new C2SConfigCompletePacket(
+            NeoPacket.channels.get(C2SConfigCompletePacket.TYPE.identifier).sendToServer(new C2SConfigCompletePacket(
                 immPtlVersion, IPConfig.getConfig().clientTolerantVersionMismatchWithServer
             ));
         }
@@ -132,7 +133,7 @@ public class ImmPtlNetworkConfig {
     public record C2SConfigCompletePacket(
         ModVersion versionFromClient,
         boolean clientTolerantVersionMismatch
-    ) implements FabricPacket {
+    ) implements NeoPacket {
         public static final PacketType<C2SConfigCompletePacket> TYPE = PacketType.create(
             new ResourceLocation("imm_ptl_core:configure_complete"),
             C2SConfigCompletePacket::read
@@ -157,10 +158,10 @@ public class ImmPtlNetworkConfig {
         
         // handled on server side
         public void handle(
-            ServerConfigurationPacketListenerImpl networkHandler, PacketSender responseSender
+            Supplier<NetworkEvent.Context> ctx
         ) {
-            GameProfile gameProfile =
-                ((IEServerConfigurationPacketListenerImpl) networkHandler).ip_getGameProfile();
+            GameProfile gameProfile = ((IEServerConfigurationPacketListenerImpl)
+                    ctx.get().getNetworkManager().getPacketListener()).ip_getGameProfile();
             
             LOGGER.info(
                 "Server received ImmPtl config packet. Mod version: {} Player: {} {}",
@@ -173,7 +174,7 @@ public class ImmPtlNetworkConfig {
                     !IPConfig.getConfig().serverTolerantVersionMismatchWithClient &&
                     !clientTolerantVersionMismatch
                 ) {
-                    networkHandler.disconnect(Component.translatable(
+                    ctx.get().getNetworkManager().disconnect(Component.translatable(
                         "imm_ptl.mod_major_minor_version_mismatch",
                         immPtlVersion.toString(),
                         versionFromClient.toString()
@@ -186,11 +187,10 @@ public class ImmPtlNetworkConfig {
                             Server ImmPtl version: {}""",
                         gameProfile, versionFromClient, immPtlVersion
                     );
-                    return;
                 }
             }
             
-            networkHandler.completeTask(ImmPtlConfigurationTask.TYPE);
+//            networkHandler.completeTask(ImmPtlConfigurationTask.TYPE); // TODO @Nick1st figure out what this line is
         }
     }
     
@@ -198,17 +198,17 @@ public class ImmPtlNetworkConfig {
         immPtlVersion = O_O.getImmPtlVersion();
         
         LOGGER.info("Immersive Portals Core version {}", immPtlVersion);
-        
-        ServerConfigurationConnectionEvents.CONFIGURE.register((handler, server) -> {
-            if (ServerConfigurationNetworking.canSend(handler, S2CConfigStartPacket.TYPE)) {
-                handler.addTask(new ImmPtlConfigurationTask());
-            }
-            else {
-                if (server.isDedicatedServer()) {
+
+        NeoForge.EVENT_BUS.addListener(NetworkEvent.ServerCustomPayloadLoginEvent.class, event -> {
+//            if (ServerConfigurationNetworking.canSend(event.getSource().getNetworkManager(), S2CConfigStartPacket.TYPE)) {
+////                event.getSource().getNetworkManager().addTask(new ImmPtlConfigurationTask()); // TODO @Nick1st figure out what this line is
+//            }
+//            else {
+                if (event.getSource().getSender().getServer().isDedicatedServer()) {
                     if (IPConfig.getConfig().serverRejectClientWithoutImmPtl) {
                         // cannot use translation key here
                         // because the translation does not exist on client without the mod
-                        handler.disconnect(Component.literal(
+                        event.getSource().getNetworkManager().disconnect(Component.literal(
                             """
                                 The server detected that client does not install Immersive Portals mod.
                                 A server with Immersive Portals mod only works with the clients that have it.
@@ -219,7 +219,7 @@ public class ImmPtlNetworkConfig {
                     }
                     else {
                         GameProfile gameProfile =
-                            ((IEServerConfigurationPacketListenerImpl) handler).ip_getGameProfile();
+                            ((IEServerConfigurationPacketListenerImpl) event.getSource().getNetworkManager()).ip_getGameProfile();
                         
                         LOGGER.warn(
                             "Fabric API's sendable channel sync detected that client does not install ImmPtl. {} {}",
@@ -230,37 +230,57 @@ public class ImmPtlNetworkConfig {
                 else {
                     LOGGER.error("ImmPtl configuration channel is non-sendable from Fabric API in integrated server. Fabric API sendable channel sync is interfered.");
                 }
-            }
+//            }
         });
-        
-        ServerConfigurationNetworking.registerGlobalReceiver(
-            C2SConfigCompletePacket.TYPE,
-            C2SConfigCompletePacket::handle
-        );
+
+        NeoPacket.register(C2SConfigCompletePacket.class, C2SConfigCompletePacket.TYPE, C2SConfigCompletePacket::write,
+                C2SConfigCompletePacket::read, C2SConfigCompletePacket::handle, LoginNetworkDirection.LOGIN_TO_SERVER);
+
+//        ServerConfigurationNetworking.registerGlobalReceiver(
+//            C2SConfigCompletePacket.TYPE,
+//            C2SConfigCompletePacket::handle
+//        );
+
+        NeoPacket.register(S2CConfigStartPacket.class, S2CConfigStartPacket.TYPE, S2CConfigStartPacket::write,
+                S2CConfigStartPacket::read, S2CConfigStartPacket::handle, LoginNetworkDirection.LOGIN_TO_CLIENT);
     }
     
     @OnlyIn(Dist.CLIENT)
     public static void initClient() {
         // ClientConfigurationNetworking.ConfigurationPacketHandler does not provide
         // ClientConfigurationPacketListenerImpl argument
-        ClientConfigurationNetworking.registerGlobalReceiver(
-            S2CConfigStartPacket.TYPE,
-            S2CConfigStartPacket::handle
-        );
+//        ClientConfigurationNetworking.registerGlobalReceiver(
+//            S2CConfigStartPacket.TYPE,
+//            S2CConfigStartPacket::handle
+//        );
         
-        ClientLoginConnectionEvents.INIT.register(
-            (handler, client) -> {
-                LOGGER.info("Client login init");
-                // if the config packet is not received,
-                // serverProtocolInfo will always be nul
-                // it will become not null when receiving ImmPtl config packet
-                serverVersion = null;
-            }
-        );
-        
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+//        ClientLoginConnectionEvents.INIT.register(
+//            (handler, client) -> {
+//                LOGGER.info("Client login init");
+//                // if the config packet is not received,
+//                // serverProtocolInfo will always be nul
+//                // it will become not null when receiving ImmPtl config packet
+//                serverVersion = null;
+//            }
+//        );
+
+        // TODO @Nick1st check
+        NeoForge.EVENT_BUS.addListener(NetworkEvent.ClientCustomPayloadLoginEvent.class, event -> {
+            LOGGER.info("Client login init");
+            // if the config packet is not received,
+            // serverProtocolInfo will always be nul
+            // it will become not null when receiving ImmPtl config packet
+            serverVersion = null;
+        });
+
+        // TODO @Nick1st check
+        NeoForge.EVENT_BUS.addListener(NetworkEvent.ServerCustomPayloadLoginEvent.class, event -> {
             onClientJoin();
         });
+
+//        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+//            onClientJoin();
+//        });
     }
     
     private static void onClientJoin() {

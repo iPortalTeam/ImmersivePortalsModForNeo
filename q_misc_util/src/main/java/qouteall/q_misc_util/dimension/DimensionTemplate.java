@@ -27,7 +27,7 @@ public record DimensionTemplate(
     DimensionFactory dimensionFactory
 ) {
     
-    public static interface DimensionFactory {
+    public interface DimensionFactory {
         LevelStem createLevelStem(
             MinecraftServer server,
             Holder<DimensionType> dimensionTypeHolder

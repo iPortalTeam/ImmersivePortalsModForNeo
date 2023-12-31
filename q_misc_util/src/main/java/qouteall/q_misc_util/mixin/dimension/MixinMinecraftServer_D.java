@@ -76,7 +76,7 @@ public abstract class MixinMinecraftServer_D implements IEMinecraftServer_Misc {
     public void ip_addDimensionToWorldMap(ResourceKey<Level> dim, ServerLevel world) {
         // use read-copy-update to avoid concurrency issues
         LinkedHashMap<ResourceKey<Level>, ServerLevel> newMap =
-            Maps.<ResourceKey<Level>, ServerLevel>newLinkedHashMap();
+            Maps.newLinkedHashMap();
         
         Map<ResourceKey<Level>, ServerLevel> oldMap = this.levels;
         
@@ -90,7 +90,7 @@ public abstract class MixinMinecraftServer_D implements IEMinecraftServer_Misc {
     public void ip_removeDimensionFromWorldMap(ResourceKey<Level> dimension) {
         // use read-copy-update to avoid concurrency issues
         LinkedHashMap<ResourceKey<Level>, ServerLevel> newMap =
-            Maps.<ResourceKey<Level>, ServerLevel>newLinkedHashMap();
+            Maps.newLinkedHashMap();
         
         Map<ResourceKey<Level>, ServerLevel> oldMap = this.levels;
         

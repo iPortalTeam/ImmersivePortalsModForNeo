@@ -19,7 +19,7 @@ import java.util.TreeMap;
 @OnlyIn(Dist.CLIENT)
 public class CustomTextOverlay {
     
-    public static record Entry(
+    public record Entry(
         Component component,
         long clearingTime
     ) {}

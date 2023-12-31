@@ -185,7 +185,7 @@ public class PortalManipulation {
         Consumer<Portal> addingInformer, EntityType<Portal> entityType
     ) {
         removeOverlappedPortals(
-            ((ServerLevel) portal.level()),
+                portal.level(),
             portal.getOriginPos(),
             portal.getNormal().scale(-1),
             p -> Objects.equals(p.specificPlayerId, portal.specificPlayerId),

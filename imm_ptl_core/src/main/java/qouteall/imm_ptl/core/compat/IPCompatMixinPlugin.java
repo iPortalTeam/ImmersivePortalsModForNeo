@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.compat;
 
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.LoadingModList;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -21,32 +22,32 @@ public class IPCompatMixinPlugin implements IMixinConfigPlugin {
     
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        
 
-        ModList modList = ModList.get();
+
+        LoadingModList modList = LoadingModList.get();
         if (mixinClassName.contains("IrisSodium")) {
-            boolean sodiumLoaded = modList.isLoaded("sodium");
-            boolean irisLoaded = modList.isLoaded("iris");
+            boolean sodiumLoaded = modList.getModFileById("sodium") != null;
+            boolean irisLoaded = modList.getModFileById("iris") != null;
             return sodiumLoaded && irisLoaded;
         }
         
         if (mixinClassName.contains("Iris")) {
-            boolean irisLoaded = modList.isLoaded("iris");
+            boolean irisLoaded = modList.getModFileById("iris") != null;
             return irisLoaded;
         }
         
         if (mixinClassName.contains("Sodium")) {
-            boolean sodiumLoaded = modList.isLoaded("sodium");
+            boolean sodiumLoaded = modList.getModFileById("sodium") != null;
             return sodiumLoaded;
         }
         
         if (mixinClassName.contains("Flywheel")) {
-            boolean flywheelLoaded = modList.isLoaded("flywheel");
+            boolean flywheelLoaded =  modList.getModFileById("flywheel") != null;
             return flywheelLoaded;
         }
         
         if (mixinClassName.contains("CardinalComp")) {
-            boolean cardinalCompLoaded = modList.isLoaded("cardinal-components-base");
+            boolean cardinalCompLoaded = modList.getModFileById("cardinal-components-base") != null;
             return cardinalCompLoaded;
         }
         

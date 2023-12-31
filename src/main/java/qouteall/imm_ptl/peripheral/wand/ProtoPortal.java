@@ -22,7 +22,7 @@ import java.util.Objects;
 public class ProtoPortal {
     private static final Logger LOGGER = LogUtils.getLogger();
     
-    public static enum Stage {
+    public enum Stage {
         PlacingFirstSideLeftBottom,
         PlacingFirstSideRightBottom,
         PlacingFirstSideLeftTop,
@@ -96,9 +96,7 @@ public class ProtoPortal {
         
         if (secondSide != null) {
             WithDim<Plane> plane = secondSide.getCursorConstraintPlane();
-            if (plane != null) {
-                return plane;
-            }
+            return plane;
         }
         
         return null;
@@ -155,7 +153,6 @@ public class ProtoPortal {
         }
         if (firstSide != null) {
             firstSide = firstSide.undo();
-            return;
         }
     }
     

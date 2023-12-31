@@ -43,7 +43,7 @@ import java.util.UUID;
 @OnlyIn(Dist.CLIENT)
 public class ClientPortalWandPortalCopy {
     
-    private static sealed interface Status permits Status_SelectPortal, Status_PlacingPortal {}
+    private sealed interface Status permits Status_SelectPortal, Status_PlacingPortal {}
     
     private static final class Status_SelectPortal implements Status {
         public @Nullable UUID selectedPortalId;
@@ -63,7 +63,7 @@ public class ClientPortalWandPortalCopy {
     
     private static @NotNull Status status = new Status_SelectPortal();
     
-    public static record PlacementRequirement(
+    public record PlacementRequirement(
         double width, double height
     ) {}
     

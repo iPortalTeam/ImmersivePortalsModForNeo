@@ -113,7 +113,7 @@ public class VisibleSectionDiscovery {
     }
     
     private static void discoverBottomOrTopLayerVisibleChunks(int cy) {
-        BlockTraverse.<Object>searchOnPlane(
+        BlockTraverse.searchOnPlane(
             cameraSectionPos.x(),
             cameraSectionPos.z(),
             viewDistance - 1,

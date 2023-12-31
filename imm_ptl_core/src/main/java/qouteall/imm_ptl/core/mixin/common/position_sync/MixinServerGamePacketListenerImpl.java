@@ -75,7 +75,7 @@ public abstract class MixinServerGamePacketListenerImpl implements IEServerPlayN
     @Final
     private static Logger LOGGER;
     
-    private static LimitedLogger ip_limitedLogger = new LimitedLogger(20);
+    private static final LimitedLogger ip_limitedLogger = new LimitedLogger(20);
     
     private int ip_dubiousMoveCount = 0;
     
@@ -259,10 +259,7 @@ public abstract class MixinServerGamePacketListenerImpl implements IEServerPlayN
             return true;
         }
         boolean portalsNearby = IPMcHelper.getNearbyPortals(player, 16).findFirst().isPresent();
-        if (portalsNearby) {
-            return true;
-        }
-        return false;
+        return portalsNearby;
     }
     
 }

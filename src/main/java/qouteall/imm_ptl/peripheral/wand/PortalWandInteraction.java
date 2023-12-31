@@ -312,11 +312,7 @@ public class PortalWandInteraction {
                                 return true;
                             }
 
-                            if (player.getMainHandItem().getItem() != PortalWandItem.instance) {
-                                return true;
-                            }
-
-                            return false;
+                            return player.getMainHandItem().getItem() != PortalWandItem.instance;
                         }
                 );
 
@@ -364,10 +360,7 @@ public class PortalWandInteraction {
                     return false;
                 }
             }
-            if (!draggingAnchor.isValid()) {
-                return false;
-            }
-            return true;
+            return draggingAnchor.isValid();
         }
     }
     
@@ -501,12 +494,8 @@ public class PortalWandInteraction {
         if (originalState.fromWorld != newThisSideState.dimension()) {
             return false;
         }
-        
-        if (newThisSideState.position().distanceTo(player.position()) > 64) {
-            return false;
-        }
-        
-        return true;
+
+        return !(newThisSideState.position().distanceTo(player.position()) > 64);
     }
     
     private static boolean canPlayerUsePortalWand(ServerPlayer player) {
@@ -725,7 +714,7 @@ public class PortalWandInteraction {
         return newOrientation;
     }
     
-    public static record OneLockDraggingResult(
+    public record OneLockDraggingResult(
         UnilateralPortalState newState,
         Vec3 rotationAxis
     ) {

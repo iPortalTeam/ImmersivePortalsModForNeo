@@ -228,6 +228,13 @@ public class PacketRedirection {
         @SuppressWarnings("unchecked")
         @OnlyIn(Dist.CLIENT)
         public void handle(ClientGamePacketListener listener) {
+            while (DimensionIdRecord.clientRecord == null) {
+                try { // TODO @Nick1st PRIO This is a workaround, that should get a good fix
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             if (DimensionIdRecord.clientRecord == null) {
                 throw new RuntimeException(
                     "The dimension id sync packet is not received early enough"

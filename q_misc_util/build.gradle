@@ -9,6 +9,20 @@ dependencies {
 
 }
 
+java.sourceSets {
+    main {
+        java {
+            srcDirs = ["src/main/java"]
+        }
+        resources {
+            srcDirs = ["src/main/resources"]
+        }
+        runs {
+            modIdentifier = project.mod_id
+        }
+    }
+}
+
 // This block of code expands all declared replace properties in the specified resource targets.
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.
 // When "copyIdeResources" is enabled, this will also run before the game launches in IDE environments.
@@ -26,4 +40,8 @@ tasks.withType(ProcessResources).configureEach {
     filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
     }
+}
+
+mixin {
+    configs.add("q_misc_util.mixins.json")
 }

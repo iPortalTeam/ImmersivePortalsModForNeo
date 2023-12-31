@@ -77,7 +77,7 @@ public class PortalUtils {
         return raytracePortals(world, from, to, includeGlobalPortal, predicate);
     }
     
-    public static record PortalAwareRaytraceResult(
+    public record PortalAwareRaytraceResult(
         Level world,
         BlockHitResult hitResult,
         List<Portal> portalsPassingThrough

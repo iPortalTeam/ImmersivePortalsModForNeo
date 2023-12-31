@@ -222,7 +222,7 @@ public class MyNbtTextFormatter
         }
         Iterator<String> iterator = collection.iterator();
         while (iterator.hasNext()) {
-            String string = (String) iterator.next();
+            String string = iterator.next();
             MutableComponent mutableText2 = Component.literal(Strings.repeat(this.prefix, this.indentationLevel + 1))
                 .append(escapeName(string))
                 .append(KEY_VALUE_SEPARATOR).append(SPACE)

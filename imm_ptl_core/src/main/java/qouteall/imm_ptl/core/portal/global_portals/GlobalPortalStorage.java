@@ -1,6 +1,5 @@
 package qouteall.imm_ptl.core.portal.global_portals;
 
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -22,6 +21,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.network.PlayNetworkDirection;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +36,7 @@ import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.MiscHelper;
 import qouteall.q_misc_util.api.DimensionAPI;
+import qouteall.q_misc_util.de.nick1st.neo.networking.NeoPacket;
 import qouteall.q_misc_util.dimension.DimensionEvents;
 
 import java.lang.ref.WeakReference;
@@ -140,12 +141,12 @@ public class GlobalPortalStorage extends SavedData {
     
     public static Packet<ClientCommonPacketListener> createSyncPacket(
         ServerLevel world, GlobalPortalStorage storage
-    ) {
-        return ServerPlayNetworking.createS2CPacket(
+    ) { // TODO @Nick1st Check
+        return (Packet<ClientCommonPacketListener>) NeoPacket.channels.get(ImmPtlNetworking.GlobalPortalSyncPacket.TYPE.identifier).toVanillaPacket(
             new ImmPtlNetworking.GlobalPortalSyncPacket(
                 DimensionAPI.getServerDimIntId(world.getServer(), world.dimension()),
                 storage.save(new CompoundTag())
-            )
+            ), PlayNetworkDirection.PLAY_TO_CLIENT
         );
     }
     
@@ -302,7 +303,7 @@ public class GlobalPortalStorage extends SavedData {
     
     public void clearAbnormalPortals() {
         data.removeIf(e -> {
-            ResourceKey<Level> dimensionTo = ((Portal) e).dimensionTo;
+            ResourceKey<Level> dimensionTo = e.dimensionTo;
             if (MiscHelper.getServer().getLevel(dimensionTo) == null) {
                 Helper.err("Missing Dimension for global portal " + dimensionTo.location());
                 return true;

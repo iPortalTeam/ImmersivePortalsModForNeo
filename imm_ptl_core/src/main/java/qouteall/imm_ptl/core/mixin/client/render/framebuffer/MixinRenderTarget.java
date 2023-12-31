@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.mixin.client.render.framebuffer;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.ARBFramebufferObject;
 import org.lwjgl.opengl.GL30;
@@ -10,12 +11,14 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.imm_ptl.core.ducks.IEFrameBuffer;
 
+import java.nio.IntBuffer;
 import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11.GL_DEPTH_COMPONENT;
@@ -45,96 +48,96 @@ public abstract class MixinRenderTarget implements IEFrameBuffer {
         isStencilBufferEnabled = false;
     }
     
-    @ModifyArgs(
-        method = "createBuffers",
-        at = @At(
-            value = "INVOKE",
-            target = "Lcom/mojang/blaze3d/platform/GlStateManager;_texImage2D(IIIIIIIILjava/nio/IntBuffer;)V",
-            remap = false
-        )
-    )
-    private void modifyTexImage2D(Args args) {
-        if (Objects.equals(args.get(2), GL_DEPTH_COMPONENT)) {
-            if (isStencilBufferEnabled) {
-                args.set(2, IPCGlobal.useSeparatedStencilFormat ? GL_DEPTH32F_STENCIL8 : GL_DEPTH24_STENCIL8);
-                args.set(6, ARBFramebufferObject.GL_DEPTH_STENCIL);
-                args.set(7, IPCGlobal.useSeparatedStencilFormat ? GL_FLOAT_32_UNSIGNED_INT_24_8_REV : GL30.GL_UNSIGNED_INT_24_8);
-            }
-        }
-    }
-
-//    @Redirect(
-//        method = "Lcom/mojang/blaze3d/pipeline/RenderTarget;createBuffers(IIZ)V",
+//    @ModifyArgs( // TODO @Nick1st PRIO Figure out if the redirects below are feasible
+//        method = "createBuffers",
 //        at = @At(
 //            value = "INVOKE",
 //            target = "Lcom/mojang/blaze3d/platform/GlStateManager;_texImage2D(IIIIIIIILjava/nio/IntBuffer;)V",
 //            remap = false
 //        )
 //    )
-//    private void redirectTexImage2d(
-//        int target, int level, int internalFormat,
-//        int width, int height,
-//        int border, int format, int type,
-//        IntBuffer pixels
-//    ) {
-//        if (internalFormat == GL_DEPTH_COMPONENT && isStencilBufferEnabled) {
-//            GlStateManager._texImage2D(
-//                target,
-//                level,
-//                IPCGlobal.useAnotherStencilFormat ? GL_DEPTH32F_STENCIL8 : GL_DEPTH24_STENCIL8,
-//                width,
-//                height,
-//                border,
-//                ARBFramebufferObject.GL_DEPTH_STENCIL,
-//                IPCGlobal.useAnotherStencilFormat ? GL_FLOAT_32_UNSIGNED_INT_24_8_REV : GL30.GL_UNSIGNED_INT_24_8,
-//                pixels
-//            );
-//        }
-//        else {
-//            GlStateManager._texImage2D(
-//                target, level, internalFormat, width, height,
-//                border, format, type, pixels
-//            );
+//    private void modifyTexImage2D(Args args) {
+//        if (Objects.equals(args.get(2), GL_DEPTH_COMPONENT)) {
+//            if (isStencilBufferEnabled) {
+//                args.set(2, IPCGlobal.useSeparatedStencilFormat ? GL_DEPTH32F_STENCIL8 : GL_DEPTH24_STENCIL8);
+//                args.set(6, ARBFramebufferObject.GL_DEPTH_STENCIL);
+//                args.set(7, IPCGlobal.useSeparatedStencilFormat ? GL_FLOAT_32_UNSIGNED_INT_24_8_REV : GL30.GL_UNSIGNED_INT_24_8);
+//            }
 //        }
 //    }
-    
-    @ModifyArgs(
-        method = "createBuffers",
+
+    @Redirect(
+        method = "Lcom/mojang/blaze3d/pipeline/RenderTarget;createBuffers(IIZ)V",
         at = @At(
             value = "INVOKE",
-            target = "Lcom/mojang/blaze3d/platform/GlStateManager;_glFramebufferTexture2D(IIIII)V",
+            target = "Lcom/mojang/blaze3d/platform/GlStateManager;_texImage2D(IIIIIIIILjava/nio/IntBuffer;)V",
             remap = false
         )
     )
-    private void modifyFrameBufferTexture2D(Args args) {
-        if (Objects.equals(args.get(1), GL30C.GL_DEPTH_ATTACHMENT)) {
-            if (isStencilBufferEnabled) {
-                args.set(1, GL30.GL_DEPTH_STENCIL_ATTACHMENT);
-            }
+    private void redirectTexImage2d(
+        int target, int level, int internalFormat,
+        int width, int height,
+        int border, int format, int type,
+        IntBuffer pixels
+    ) {
+        if (internalFormat == GL_DEPTH_COMPONENT && isStencilBufferEnabled) {
+            GlStateManager._texImage2D(
+                target,
+                level,
+                IPCGlobal.useSeparatedStencilFormat ? GL_DEPTH32F_STENCIL8 : GL_DEPTH24_STENCIL8,
+                width,
+                height,
+                border,
+                ARBFramebufferObject.GL_DEPTH_STENCIL,
+                IPCGlobal.useSeparatedStencilFormat ? GL_FLOAT_32_UNSIGNED_INT_24_8_REV : GL30.GL_UNSIGNED_INT_24_8,
+                pixels
+            );
+        }
+        else {
+            GlStateManager._texImage2D(
+                target, level, internalFormat, width, height,
+                border, format, type, pixels
+            );
         }
     }
-
-//    @Redirect(
-//        method = "Lcom/mojang/blaze3d/pipeline/RenderTarget;createBuffers(IIZ)V",
+    
+//    @ModifyArgs( // TODO @Nick1st PRIO Figure out if the redirects below are feasible
+//        method = "createBuffers",
 //        at = @At(
 //            value = "INVOKE",
 //            target = "Lcom/mojang/blaze3d/platform/GlStateManager;_glFramebufferTexture2D(IIIII)V",
 //            remap = false
 //        )
 //    )
-//    private void redirectFrameBufferTexture2d(
-//        int target, int attachment, int textureTarget, int texture, int level
-//    ) {
-//
-//        if (attachment == GL30C.GL_DEPTH_ATTACHMENT && isStencilBufferEnabled) {
-//            GlStateManager._glFramebufferTexture2D(
-//                target, GL30.GL_DEPTH_STENCIL_ATTACHMENT, textureTarget, texture, level
-//            );
-//        }
-//        else {
-//            GlStateManager._glFramebufferTexture2D(target, attachment, textureTarget, texture, level);
+//    private void modifyFrameBufferTexture2D(Args args) {
+//        if (Objects.equals(args.get(1), GL30C.GL_DEPTH_ATTACHMENT)) {
+//            if (isStencilBufferEnabled) {
+//                args.set(1, GL30.GL_DEPTH_STENCIL_ATTACHMENT);
+//            }
 //        }
 //    }
+
+    @Redirect(
+        method = "Lcom/mojang/blaze3d/pipeline/RenderTarget;createBuffers(IIZ)V",
+        at = @At(
+            value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/platform/GlStateManager;_glFramebufferTexture2D(IIIII)V",
+            remap = false
+        )
+    )
+    private void redirectFrameBufferTexture2d(
+        int target, int attachment, int textureTarget, int texture, int level
+    ) {
+
+        if (attachment == GL30C.GL_DEPTH_ATTACHMENT && isStencilBufferEnabled) {
+            GlStateManager._glFramebufferTexture2D(
+                target, GL30.GL_DEPTH_STENCIL_ATTACHMENT, textureTarget, texture, level
+            );
+        }
+        else {
+            GlStateManager._glFramebufferTexture2D(target, attachment, textureTarget, texture, level);
+        }
+    }
     
     @Inject(
         method = "Lcom/mojang/blaze3d/pipeline/RenderTarget;copyDepthFrom(Lcom/mojang/blaze3d/pipeline/RenderTarget;)V",

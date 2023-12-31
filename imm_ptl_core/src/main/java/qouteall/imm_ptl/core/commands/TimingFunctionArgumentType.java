@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -62,7 +63,7 @@ public class TimingFunctionArgumentType implements ArgumentType<TimingFunction> 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(RegisterEvent.class, registerEvent -> {
             registerEvent.register(BuiltInRegistries.COMMAND_ARGUMENT_TYPE.key(),
                     new ResourceLocation("imm_ptl:timing_function_argument_type"),
-                    () -> SingletonArgumentInfo.contextFree(() -> instance));
+                    () -> ArgumentTypeInfos.registerByClass(TimingFunctionArgumentType.class, SingletonArgumentInfo.contextFree(() -> instance)));
         });
     }
 }

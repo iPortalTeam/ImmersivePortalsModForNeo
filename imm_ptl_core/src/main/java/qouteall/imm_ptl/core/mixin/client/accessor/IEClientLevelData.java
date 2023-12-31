@@ -7,5 +7,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(ClientLevel.ClientLevelData.class)
 public interface IEClientLevelData {
     @Accessor("isFlat")
-    public boolean ip_getIsFlat();
+    boolean ip_getIsFlat();
 }

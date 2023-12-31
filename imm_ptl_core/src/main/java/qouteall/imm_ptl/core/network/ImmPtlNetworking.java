@@ -1,12 +1,6 @@
 package qouteall.imm_ptl.core.network;
 
 import com.mojang.logging.LogUtils;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -15,11 +9,14 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.PlayNetworkDirection;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.ClientWorldLoader;
@@ -27,18 +24,21 @@ import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.global_portals.GlobalPortalStorage;
 import qouteall.q_misc_util.api.DimensionAPI;
+import qouteall.q_misc_util.de.nick1st.neo.networking.NeoPacket;
+import qouteall.q_misc_util.de.nick1st.neo.networking.PacketType;
 
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 public class ImmPtlNetworking {
     
     private static final Logger LOGGER = LogUtils.getLogger();
     
     // client to server
-    public static record TeleportPacket(
+    public record TeleportPacket(
         int dimensionId, Vec3 posBefore, UUID portalId
-    ) implements FabricPacket {
+    ) implements NeoPacket {
         public static final PacketType<TeleportPacket> TYPE = PacketType.create(
             new ResourceLocation("imm_ptl:teleport"),
             TeleportPacket::read
@@ -69,21 +69,21 @@ public class ImmPtlNetworking {
             return TYPE;
         }
         
-        public void handle(ServerPlayer player) {
+        public void handle(Supplier<NetworkEvent.Context> ctx) {
             ResourceKey<Level> dim = DimensionAPI.getServerDimKeyFromIntId(
-                player.server, dimensionId
+                ctx.get().getSender().getServer(), dimensionId
             );
             
             IPGlobal.serverTeleportationManager.onPlayerTeleportedInClient(
-                player, dim, posBefore, portalId
+                ctx.get().getSender(), dim, posBefore, portalId
             );
         }
     }
     
     // server to client
-    public static record GlobalPortalSyncPacket(
+    public record GlobalPortalSyncPacket(
         int dimensionId, CompoundTag data
-    ) implements FabricPacket {
+    ) implements NeoPacket {
         public static final PacketType<GlobalPortalSyncPacket> TYPE = PacketType.create(
             new ResourceLocation("imm_ptl:upd_glb_ptl"),
             GlobalPortalSyncPacket::read
@@ -107,7 +107,7 @@ public class ImmPtlNetworking {
         }
         
         @OnlyIn(Dist.CLIENT)
-        public void handle() {
+        public void handle(Supplier<NetworkEvent.Context> ctx) {
             ResourceKey<Level> dim = DimensionAPI.getClientDimKeyFromIntId(dimensionId);
             
             GlobalPortalStorage.receiveGlobalPortalSync(dim, data);
@@ -119,7 +119,7 @@ public class ImmPtlNetworking {
      * {@link ClientboundAddEntityPacket}
      * This packet is redirected, so there is no need to contain dimension id
      */
-    public static record PortalSyncPacket(
+    public record PortalSyncPacket(
         int id,
         UUID uuid,
         EntityType<?> type,
@@ -128,8 +128,8 @@ public class ImmPtlNetworking {
         double y,
         double z,
         CompoundTag extraData
-    ) implements FabricPacket {
-        
+    ) implements NeoPacket {
+
         public static final PacketType<PortalSyncPacket> TYPE = PacketType.create(
             new ResourceLocation("imm_ptl:spawn_portal"),
             PortalSyncPacket::read
@@ -168,7 +168,7 @@ public class ImmPtlNetworking {
          * {@link ClientPacketListener#handleAddEntity(ClientboundAddEntityPacket)}
          */
         @OnlyIn(Dist.CLIENT)
-        public void handle() {
+        public void handle(Supplier<NetworkEvent.Context> ctx) {
             ResourceKey<Level> dimension = DimensionAPI.getClientDimKeyFromIntId(dimensionId);
             ClientLevel world = ClientWorldLoader.getWorld(dimension);
             
@@ -218,22 +218,30 @@ public class ImmPtlNetworking {
     }
     
     public static void init() {
-        ServerPlayNetworking.registerGlobalReceiver(
-            TeleportPacket.TYPE,
-            (packet, player, responseSender) -> packet.handle(player)
-        );
+//        ServerPlayNetworking.registerGlobalReceiver(
+//            TeleportPacket.TYPE,
+//            (packet, player, responseSender) -> packet.handle(player)
+//        );
+        NeoPacket.register(TeleportPacket.class, TeleportPacket.TYPE, TeleportPacket::write,
+                TeleportPacket::read, TeleportPacket::handle, PlayNetworkDirection.PLAY_TO_SERVER);
+
+        NeoPacket.register(GlobalPortalSyncPacket.class, GlobalPortalSyncPacket.TYPE, GlobalPortalSyncPacket::write,
+                GlobalPortalSyncPacket::read, GlobalPortalSyncPacket::handle, PlayNetworkDirection.PLAY_TO_CLIENT);
+
+        NeoPacket.register(PortalSyncPacket.class, PortalSyncPacket.TYPE, PortalSyncPacket::write,
+                PortalSyncPacket::read, PortalSyncPacket::handle, PlayNetworkDirection.PLAY_TO_CLIENT);
     }
     
     public static void initClient() {
-        ClientPlayNetworking.registerGlobalReceiver(
-            GlobalPortalSyncPacket.TYPE,
-            (packet, player, responseSender) -> packet.handle()
-        );
+//        ClientPlayNetworking.registerGlobalReceiver(
+//            GlobalPortalSyncPacket.TYPE,
+//            (packet, player, responseSender) -> packet.handle()
+//        );
         
-        ClientPlayNetworking.registerGlobalReceiver(
-            PortalSyncPacket.TYPE,
-            (packet, player, responseSender) -> packet.handle()
-        );
+//        ClientPlayNetworking.registerGlobalReceiver(
+//            PortalSyncPacket.TYPE,
+//            (packet, player, responseSender) -> packet.handle()
+//        );
     }
     
 }

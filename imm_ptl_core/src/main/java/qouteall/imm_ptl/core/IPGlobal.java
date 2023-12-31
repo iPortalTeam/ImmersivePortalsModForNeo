@@ -148,7 +148,7 @@ public class IPGlobal {
     
     public static boolean debugRenderPortalShapeMesh = false;
     
-    public static enum RenderMode {
+    public enum RenderMode {
         normal,
         compatibility,
         debug,
@@ -156,14 +156,14 @@ public class IPGlobal {
     }
     
     // this should not be in core but the config is in core
-    public static enum NetherPortalMode {
+    public enum NetherPortalMode {
         normal,
         vanilla,
         adaptive,
         disabled
     }
     
-    public static enum EndPortalMode {
+    public enum EndPortalMode {
         normal,
         toObsidianPlatform,
         scaledView,

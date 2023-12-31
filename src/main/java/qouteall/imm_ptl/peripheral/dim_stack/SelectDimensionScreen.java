@@ -49,7 +49,7 @@ public class SelectDimensionScreen extends Screen {
             dimListWidget.children().add(new DimEntryWidget(dim, dimListWidget, callback, new DimStackEntry(dim)));
         }
     
-        confirmButton = (Button) addRenderableWidget(Button
+        confirmButton = addRenderableWidget(Button
             .builder(
                 Component.translatable("imm_ptl.confirm_select_dimension"),
                 (buttonWidget) -> {

@@ -36,7 +36,7 @@ public class IPModInfoChecking {
     
     private static final Logger LOGGER = LogUtils.getLogger();
     
-    public static record ModIncompatInfo(
+    public record ModIncompatInfo(
         String modId,
         String modName,
         @Nullable String startVersion,

@@ -6,9 +6,11 @@ import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer;
 import qouteall.imm_ptl.core.chunk_loading.*;
@@ -106,9 +108,11 @@ public class IPModMain {
         NeoForge.EVENT_BUS.addListener(RegisterCommandsEvent.class, event -> {
             PortalCommand.register(event.getDispatcher());
         });
-        SubCommandArgumentType.init();
-        TimingFunctionArgumentType.init();
-        AxisArgumentType.init();
+
+        // @Nick1st moved to IPModEntry (those are registry functions)
+//        SubCommandArgumentType.init();
+//        TimingFunctionArgumentType.init();
+//        AxisArgumentType.init();
     
         DebugUtil.init();
         
@@ -142,12 +146,20 @@ public class IPModMain {
         IPConfig ipConfig = IPConfig.getConfig();
         ipConfig.onConfigChanged();
     }
+
+    public static void registerBlocksForge(RegisterEvent.RegisterHelper<Block> registerHelper) {
+        registerBlocks(registerHelper::register);
+    }
     
     public static void registerBlocks(BiConsumer<ResourceLocation, PortalPlaceholderBlock> regFunc) {
         regFunc.accept(
             new ResourceLocation("immersive_portals", "nether_portal_block"),
             PortalPlaceholderBlock.instance
         );
+    }
+
+    public static void registerEntityTypesForge(RegisterEvent.RegisterHelper<EntityType<?>> registerHelper) {
+        registerEntityTypes(registerHelper::register);
     }
     
     public static void registerEntityTypes(BiConsumer<ResourceLocation, EntityType<?>> regFunc) {

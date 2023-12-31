@@ -109,12 +109,12 @@ public abstract class MixinLevelRenderer_Clouds {
         float g = 12.0F;
         float h = 4.0F;
         double d = 2.0E-4D;
-        double e = (double) (((float) this.ticks + tickDelta) * 0.03F);
+        double e = ((float) this.ticks + tickDelta) * 0.03F;
         double i = (cameraX + e) / 12.0D;
-        double j = (double) (f - (float) cameraY + 0.33F);
+        double j = f - (float) cameraY + 0.33F;
         double k = cameraZ / 12.0D + 0.33000001311302185D;
-        i -= (double) (Mth.floor(i / 2048.0D) * 2048);
-        k -= (double) (Mth.floor(k / 2048.0D) * 2048);
+        i -= Mth.floor(i / 2048.0D) * 2048;
+        k -= Mth.floor(k / 2048.0D) * 2048;
         float l = (float) (i - (double) Mth.floor(i));
         float m = (float) (j / 4.0D - (double) Mth.floor(j / 4.0D)) * 4.0F;
         float n = (float) (k - (double) Mth.floor(k));

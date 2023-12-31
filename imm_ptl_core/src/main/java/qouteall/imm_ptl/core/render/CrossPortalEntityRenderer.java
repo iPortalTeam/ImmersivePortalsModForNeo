@@ -356,12 +356,8 @@ public class CrossPortalEntityRenderer {
                 }
             }
         }
-        
-        if (client.level == player.level()) {
-            return true;
-        }
-        
-        return false;
+
+        return client.level == player.level();
     }
     
     public static boolean shouldRenderEntityNow(Entity entity) {

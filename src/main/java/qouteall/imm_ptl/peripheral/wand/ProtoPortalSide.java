@@ -133,17 +133,13 @@ public class ProtoPortalSide {
             
             if (leftTop != null) {
                 double height = getVerticalAxis().length();
-                
-                if (height < 0.001 || height > 64.001) {
-                    return false;
-                }
+
+                return !(height < 0.001) && !(height > 64.001);
             }
             else if (heightDivWidth != null) {
                 double height = width * heightDivWidth;
-                
-                if (height < 0.001 || height > 64.001) {
-                    return false;
-                }
+
+                return !(height < 0.001) && !(height > 64.001);
             }
         }
         

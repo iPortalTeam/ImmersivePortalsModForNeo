@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -65,7 +66,7 @@ public class AxisArgumentType implements ArgumentType<Direction.Axis> {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(RegisterEvent.class, registerEvent -> {
             registerEvent.register(BuiltInRegistries.COMMAND_ARGUMENT_TYPE.key(),
                     new ResourceLocation("imm_ptl:axis"),
-                    () -> SingletonArgumentInfo.contextFree(() -> AxisArgumentType.instance));
+                    () -> ArgumentTypeInfos.registerByClass(AxisArgumentType.class, SingletonArgumentInfo.contextFree(() -> instance)));
         });
     }
 }

@@ -208,7 +208,7 @@ public class PlayerChunkLoading {
     @IPVanillaCopy
     public void onChunkBatchReceivedByClient(float clientDesiredChunkPerTick) {
         --this.unacknowledgedBatches;
-        this.desiredChunksPerTick = Double.isNaN((double) clientDesiredChunkPerTick) ?
+        this.desiredChunksPerTick = Double.isNaN(clientDesiredChunkPerTick) ?
             0.01F : Mth.clamp(clientDesiredChunkPerTick, 0.01F, 64.0F);
         if (this.unacknowledgedBatches == 0) {
             this.batchQuota = 1.0F;

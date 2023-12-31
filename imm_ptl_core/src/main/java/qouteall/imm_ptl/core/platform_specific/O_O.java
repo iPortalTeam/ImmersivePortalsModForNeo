@@ -1,13 +1,5 @@
 package qouteall.imm_ptl.core.platform_specific;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.Version;
-import net.fabricmc.loader.api.VersionParsingException;
-import net.fabricmc.loader.impl.util.version.SemanticVersionImpl;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.multiplayer.ClientChunkCache;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -18,18 +10,21 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.ChunkEvent;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.chunk_loading.ImmPtlClientChunkMap;
 import qouteall.imm_ptl.core.network.ImmPtlNetworkConfig;
 import qouteall.imm_ptl.core.portal.custom_portal_gen.PortalGenInfo;
-import qouteall.q_misc_util.Helper;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -68,19 +63,21 @@ public class O_O {
     }
     
     public static void postClientChunkLoadEvent(LevelChunk chunk) {
-        ClientChunkEvents.CHUNK_LOAD.invoker().onChunkLoad(
-            ((ClientLevel) chunk.getLevel()), chunk
-        );
+        NeoForge.EVENT_BUS.post(new ChunkEvent.Load(chunk, true));
+//        ClientChunkEvents.CHUNK_LOAD.invoker().onChunkLoad(
+//            ((ClientLevel) chunk.getLevel()), chunk
+//        );
     }
     
     public static void postClientChunkUnloadEvent(LevelChunk chunk) {
-        ClientChunkEvents.CHUNK_UNLOAD.invoker().onChunkUnload(
-            ((ClientLevel) chunk.getLevel()), chunk
-        );
+        NeoForge.EVENT_BUS.post(new ChunkEvent.Unload(chunk));
+//        ClientChunkEvents.CHUNK_UNLOAD.invoker().onChunkUnload(
+//            ((ClientLevel) chunk.getLevel()), chunk
+//        );
     }
     
     public static boolean isDedicatedServer() {
-        return FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER;
+        return FMLEnvironment.dist == Dist.DEDICATED_SERVER;
     }
     
     public static void postPortalSpawnEventForge(PortalGenInfo info) {
@@ -111,26 +108,26 @@ public class O_O {
     }
     
     public static boolean isModLoadedWithinVersion(String modId, @Nullable String startVersion, @Nullable String endVersion) {
-        Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer(modId);
+        Optional<? extends ModContainer> modContainer = ModList.get().getModContainerById(modId);
         if (modContainer.isPresent()) {
-            Version version = modContainer.get().getMetadata().getVersion();
+            ArtifactVersion version = modContainer.get().getModInfo().getVersion();
             
             try {
                 if (startVersion != null) {
-                    int i = Version.parse(startVersion).compareTo(version);
+                    int i = new DefaultArtifactVersion(startVersion).compareTo(version);
                     if (i > 0) {
                         return false;
                     }
                 }
                 
                 if (endVersion != null) {
-                    int i = Version.parse(endVersion).compareTo(version);
+                    int i = new DefaultArtifactVersion(endVersion).compareTo(version);
                     if (i < 0) {
                         return false;
                     }
                 }
             }
-            catch (VersionParsingException e) {
+            catch (Exception e) {
                 e.printStackTrace();
             }
             
@@ -143,52 +140,59 @@ public class O_O {
     }
     
     public static @NotNull ImmPtlNetworkConfig.ModVersion getImmPtlVersion() {
-        Version version = FabricLoader.getInstance()
-            .getModContainer("imm_ptl_core").orElseThrow()
-            .getMetadata().getVersion();
-        
-        if (!(version instanceof SemanticVersionImpl semanticVersion)) {
-            // in dev env, its ${version}
-            return ImmPtlNetworkConfig.ModVersion.OTHER;
-        }
-        
-        if (semanticVersion.getVersionComponentCount() != 3) {
-            Helper.LOGGER.error(
-                "immersive portals version {} is not in regular form", semanticVersion
-            );
-            return ImmPtlNetworkConfig.ModVersion.OTHER;
-        }
-        
+        // TODO @Nick1st
+//        Version version = FabricLoader.getInstance()
+//            .getModContainer("imm_ptl_core").orElseThrow()
+//            .getMetadata().getVersion();
+//
+//        if (!(version instanceof SemanticVersionImpl semanticVersion)) {
+//            // in dev env, its ${version}
+//            return ImmPtlNetworkConfig.ModVersion.OTHER;
+//        }
+//
+//        if (semanticVersion.getVersionComponentCount() != 3) {
+//            Helper.LOGGER.error(
+//                "immersive portals version {} is not in regular form", semanticVersion
+//            );
+//            return ImmPtlNetworkConfig.ModVersion.OTHER;
+//        }
+//
+//        return new ImmPtlNetworkConfig.ModVersion(
+//            semanticVersion.getVersionComponent(0),
+//            semanticVersion.getVersionComponent(1),
+//            semanticVersion.getVersionComponent(2)
+//        );
         return new ImmPtlNetworkConfig.ModVersion(
-            semanticVersion.getVersionComponent(0),
-            semanticVersion.getVersionComponent(1),
-            semanticVersion.getVersionComponent(2)
+                1, 0, 0
         );
     }
     
     public static String getImmPtlVersionStr() {
-        return FabricLoader.getInstance()
-            .getModContainer("imm_ptl_core").orElseThrow()
-            .getMetadata().getVersion().toString();
+        // TODO @Nick1st
+//        return FabricLoader.getInstance()
+//            .getModContainer("imm_ptl_core").orElseThrow()
+//            .getMetadata().getVersion().toString();
+        return "";
     }
     
     public static boolean shouldUpdateImmPtl(String latestReleaseVersion) {
-        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            return false;
-        }
-        
-        Version currentVersion = FabricLoader.getInstance()
-            .getModContainer("imm_ptl_core").get().getMetadata().getVersion();
-        try {
-            Version latestVersion = Version.parse(latestReleaseVersion);
-            
-            if (latestVersion.compareTo(currentVersion) > 0) {
-                return true;
-            }
-        }
-        catch (VersionParsingException e) {
-            e.printStackTrace();
-        }
+        // TODO @Nick1st
+//        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+//            return false;
+//        }
+//
+//        Version currentVersion = FabricLoader.getInstance()
+//            .getModContainer("imm_ptl_core").get().getMetadata().getVersion();
+//        try {
+//            Version latestVersion = Version.parse(latestReleaseVersion);
+//
+//            if (latestVersion.compareTo(currentVersion) > 0) {
+//                return true;
+//            }
+//        }
+//        catch (VersionParsingException e) {
+//            e.printStackTrace();
+//        }
         
         return false;
     }
@@ -203,46 +207,50 @@ public class O_O {
     
     @Nullable
     public static ResourceLocation getModIconLocation(String modid) {
-        String path = FabricLoader.getInstance().getModContainer(modid)
-            .flatMap(c -> c.getMetadata().getIconPath(512))
-            .orElse(null);
-        if (path == null) {
-            return null;
-        }
-        
-        // for example, if the icon path is "assets/modid/icon.png"
-        // then the result should be modid:icon.png
-        
-        if (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-        if (path.startsWith("assets")) {
-            path = path.substring("assets".length());
-        }
-        if (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-        String[] parts = path.split("/");
-        if (parts.length != 2) {
-            return null;
-        }
-        return new ResourceLocation(parts[0], parts[1]);
+        // TODO @Nick1st
+//        String path = FabricLoader.getInstance().getModContainer(modid)
+//            .flatMap(c -> c.getMetadata().getIconPath(512))
+//            .orElse(null);
+//        if (path == null) {
+//            return null;
+//        }
+//
+//        // for example, if the icon path is "assets/modid/icon.png"
+//        // then the result should be modid:icon.png
+//
+//        if (path.startsWith("/")) {
+//            path = path.substring(1);
+//        }
+//        if (path.startsWith("assets")) {
+//            path = path.substring("assets".length());
+//        }
+//        if (path.startsWith("/")) {
+//            path = path.substring(1);
+//        }
+//        String[] parts = path.split("/");
+//        if (parts.length != 2) {
+//            return null;
+//        }
+//        return new ResourceLocation(parts[0], parts[1]);
+        return null;
     }
     
     @Nullable
     public static String getModName(String modid) {
-        return FabricLoader.getInstance().getModContainer(modid)
-            .map(c -> c.getMetadata().getName())
-            .orElse(null);
+        // TODO @Nick1st
+//        return FabricLoader.getInstance().getModContainer(modid)
+//            .map(c -> c.getMetadata().getName())
+//            .orElse(null);
+        return null;
     }
     
     // most quilt installations use quilted fabric api
     public static boolean isQuilt() {
-        return FabricLoader.getInstance().isModLoaded("quilted_fabric_api");
+//        return FabricLoader.getInstance().isModLoaded("quilted_fabric_api");
+        return false;
     }
     
     public static List<String> getLoadedModIds() {
-        return FabricLoader.getInstance().getAllMods().stream()
-            .map(c -> c.getMetadata().getId()).sorted().toList();
+        return ModList.get().getSortedMods().stream().map(ModContainer::getModId).sorted().toList();
     }
 }

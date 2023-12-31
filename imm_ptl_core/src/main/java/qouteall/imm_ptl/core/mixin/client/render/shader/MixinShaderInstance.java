@@ -36,7 +36,7 @@ public abstract class MixinShaderInstance implements IEShader {
         at = @At("HEAD")
     )
     private void onLoadReferences(CallbackInfo ci) {
-        Shader this_ = (Shader) (Object) this;
+        Shader this_ = (Shader) this;
         
         if (ShaderCodeTransformation.shouldAddUniform(name)) {
             ip_clippingEquation = new Uniform(

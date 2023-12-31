@@ -89,9 +89,7 @@ public class McHelper {
     
     @Deprecated
     public static IEChunkMap getIEChunkMap(ResourceKey<Level> dimension) {
-        return (IEChunkMap) (
-            (ServerChunkCache) getServerWorld(dimension).getChunkSource()
-        ).chunkMap;
+        return (IEChunkMap) getServerWorld(dimension).getChunkSource().chunkMap;
     }
     
     public static List<ServerPlayer> getRawPlayerList() {
@@ -335,9 +333,7 @@ public class McHelper {
     public static LevelChunk getServerChunkIfPresent(
         ServerLevel world, int x, int z
     ) {
-        ChunkHolder chunkHolder_ = ((IEChunkMap) (
-            (ServerChunkCache) world.getChunkSource()
-        ).chunkMap).ip_getChunkHolder(ChunkPos.asLong(x, z));
+        ChunkHolder chunkHolder_ = ((IEChunkMap) world.getChunkSource().chunkMap).ip_getChunkHolder(ChunkPos.asLong(x, z));
         if (chunkHolder_ == null) {
             return null;
         }
@@ -481,7 +477,7 @@ public class McHelper {
         return entitiesLoaded;
     }
     
-    public static interface ChunkAccessor {
+    public interface ChunkAccessor {
         LevelChunk getChunk(int x, int z);
     }
     
@@ -820,7 +816,7 @@ public class McHelper {
                 return ((ServerLevel) world).getAllEntities();
             }
             else {
-                return ((Iterable<Entity>) Collections.emptyList().iterator());
+                return ((Iterable<Entity>) Collections.emptyIterator());
             }
         }
     }

@@ -115,7 +115,7 @@ public enum PortalCorner {
             .build();
     }
     
-    public static record DraggingConstraint(
+    public record DraggingConstraint(
         @Nullable Plane plane,
         @Nullable Sphere sphere
     ) {

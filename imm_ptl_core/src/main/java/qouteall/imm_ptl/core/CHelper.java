@@ -120,11 +120,10 @@ public class CHelper {
     }
     
     public static Iterable<Entity> getWorldEntityList(Level world) {
-        if (!(world instanceof ClientLevel)) {
-            return (Iterable<Entity>) Collections.emptyList().iterator();
+        if (!(world instanceof ClientLevel clientWorld)) {
+            return (Iterable<Entity>) Collections.emptyIterator();
         }
-        
-        ClientLevel clientWorld = (ClientLevel) world;
+
         return clientWorld.entitiesForRendering();
     }
     

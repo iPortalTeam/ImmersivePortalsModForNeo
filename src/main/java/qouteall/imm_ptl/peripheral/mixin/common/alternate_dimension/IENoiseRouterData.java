@@ -13,27 +13,27 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(NoiseRouterData.class)
 public interface IENoiseRouterData {
     @Invoker("end")
-    public static NoiseRouter ip_end(HolderGetter<DensityFunction> holderGetter){
+    static NoiseRouter ip_end(HolderGetter<DensityFunction> holderGetter){
         throw new RuntimeException();
     }
     
     @Invoker("noNewCaves")
-    public static NoiseRouter ip_noNewCaves(HolderGetter<DensityFunction> holderGetter, HolderGetter<NormalNoise.NoiseParameters> holderGetter2, DensityFunction densityFunction){
+    static NoiseRouter ip_noNewCaves(HolderGetter<DensityFunction> holderGetter, HolderGetter<NormalNoise.NoiseParameters> holderGetter2, DensityFunction densityFunction){
         throw new RuntimeException();
     }
     
     @Invoker("slideEndLike")
-    public static DensityFunction ip_slideEndLike(DensityFunction densityFunction, int i, int j) {
+    static DensityFunction ip_slideEndLike(DensityFunction densityFunction, int i, int j) {
         throw new RuntimeException();
     }
     
     @Invoker("getFunction")
-    public static DensityFunction ip_getFunction(HolderGetter<DensityFunction> holderGetter, ResourceKey<DensityFunction> resourceKey) {
+    static DensityFunction ip_getFunction(HolderGetter<DensityFunction> holderGetter, ResourceKey<DensityFunction> resourceKey) {
         throw new RuntimeException();
     }
     
     @Accessor("BASE_3D_NOISE_END")
-    public static ResourceKey<DensityFunction> get_BASE_3D_NOISE_END(){throw new RuntimeException();}
+    static ResourceKey<DensityFunction> get_BASE_3D_NOISE_END(){throw new RuntimeException();}
     
     
     

@@ -27,7 +27,7 @@ public abstract class MixinFrustum_FixDeadLoop {
     private Vector4f viewVector;
     
     @Shadow @Final private FrustumIntersection intersection;
-    private static LimitedLogger limitedLogger = new LimitedLogger(10);
+    private static final LimitedLogger limitedLogger = new LimitedLogger(10);
     
     /**
      * Make it to not deadloop when using isometric view.
@@ -53,9 +53,9 @@ public abstract class MixinFrustum_FixDeadLoop {
         int countLimit = 10; // limit the loop count
         
         while (this.intersection.intersectAab((float) (minX - this.camX), (float) (minY - this.camY), (float) (minZ - this.camZ), (float) (maxX - this.camX), (float) (maxY - this.camY), (float) (maxZ - this.camZ))!= -2) {
-            this.camX -= (double) (this.viewVector.x() * 4.0F);
-            this.camY -= (double) (this.viewVector.y() * 4.0F);
-            this.camZ -= (double) (this.viewVector.z() * 4.0F);
+            this.camX -= this.viewVector.x() * 4.0F;
+            this.camY -= this.viewVector.y() * 4.0F;
+            this.camZ -= this.viewVector.z() * 4.0F;
             countLimit--;
             if (countLimit <= 0) {
                 limitedLogger.invoke(() -> {

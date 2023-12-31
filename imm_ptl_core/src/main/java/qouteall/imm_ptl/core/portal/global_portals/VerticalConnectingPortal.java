@@ -18,7 +18,7 @@ public class VerticalConnectingPortal extends GlobalTrackedPortal {
     public static final EntityType<VerticalConnectingPortal> entityType =
         Portal.createPortalEntityType(VerticalConnectingPortal::new);
     
-    public static enum ConnectorType {
+    public enum ConnectorType {
         ceil, floor
     }
     

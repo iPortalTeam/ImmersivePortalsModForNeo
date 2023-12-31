@@ -159,7 +159,7 @@ public class PortalRenderInfo {
     
     // disposing twice is fine
     public void dispose() {
-        disposeInfoMap((Map<List<UUID>, Visibility>) this.infoMap);
+        disposeInfoMap(this.infoMap);
     }
     
     private static void disposeInfoMap(Map<List<UUID>, Visibility> infoMap) {

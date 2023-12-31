@@ -53,8 +53,8 @@ import java.util.stream.Stream;
 public class ServerTeleportationManager {
     private static final Logger LOGGER = LogUtils.getLogger();
     
-    private Set<Entity> teleportingEntities = new HashSet<>();
-    private WeakHashMap<Entity, Long> lastTeleportGameTime = new WeakHashMap<>();
+    private final Set<Entity> teleportingEntities = new HashSet<>();
+    private final WeakHashMap<Entity, Long> lastTeleportGameTime = new WeakHashMap<>();
     public boolean isFiringMyChangeDimensionEvent = false;
     public final WeakHashMap<ServerPlayer, WithDim<Vec3>> lastPosition = new WeakHashMap<>();
     
@@ -170,7 +170,7 @@ public class ServerTeleportationManager {
         // Well I guess no one will make the hacked ImmPtl client.
         if (canPlayerTeleport(player, dimensionBefore, oldFeetPos, portal)) {
             if (isTeleporting(player)) {
-                Helper.log(player.toString() + "is teleporting frequently");
+                Helper.log(player + "is teleporting frequently");
             }
             
             notifyChasersForPlayer(player, portal);

@@ -57,7 +57,7 @@ public class TeleportationUtil {
         McHelper.setWorldVelocity(entity, newVelocity);
     }
     
-    public static record Teleportation(
+    public record Teleportation(
         boolean isDynamic,
         Portal portal,
         Vec3 lastWorldEyePos, Vec3 currentWorldEyePos,
@@ -74,19 +74,19 @@ public class TeleportationUtil {
         Vec3 newLastTickEyePos, Vec3 newThisTickEyePos
     ) {}
     
-    public static record PortalPointVelocity(
+    public record PortalPointVelocity(
         Vec3 thisSidePointVelocity,
         Vec3 otherSidePointVelocity
     ) {
         public static final PortalPointVelocity zero = new PortalPointVelocity(Vec3.ZERO, Vec3.ZERO);
     }
     
-    public static record PortalPointOffset(
+    public record PortalPointOffset(
         Vec3 thisSideOffset,
         Vec3 otherSideOffse
     ) {}
     
-    private static record CollisionInfo(
+    private record CollisionInfo(
         double portalLocalX, double portalLocalY,
         double tOfCollision, Vec3 collisionPos
     ) {}

@@ -65,7 +65,7 @@ public class ClientPortalWandPortalDrag {
     private static boolean lockWidth = false;
     private static boolean lockHeight = false;
     
-    private static record SelectionStatus(
+    private record SelectionStatus(
         PortalLocalXYNormalized selectedAnchor,
         boolean selectsHorizontalEdge,
         boolean selectsVerticalEdge
@@ -104,7 +104,7 @@ public class ClientPortalWandPortalDrag {
         RenderedPlane.NONE
     );
     
-    private static Animated<RenderedPoint> renderedLockedAnchor = new Animated<>(
+    private static final Animated<RenderedPoint> renderedLockedAnchor = new Animated<>(
         Animated.RENDERED_POINT_TYPE_INFO,
         () -> RenderStates.renderStartNanoTime,
         TimingFunction.circle::mapProgress,
@@ -125,14 +125,14 @@ public class ClientPortalWandPortalDrag {
         0.0
     );
     
-    private static Animated<Double> renderedWidthLock = new Animated<>(
+    private static final Animated<Double> renderedWidthLock = new Animated<>(
         Animated.DOUBLE_DEFAULT_ZERO_TYPE_INFO,
         () -> RenderStates.renderStartNanoTime,
         TimingFunction.sine::mapProgress,
         0.0
     );
     
-    private static Animated<Double> renderedHeightLock = new Animated<>(
+    private static final Animated<Double> renderedHeightLock = new Animated<>(
         Animated.DOUBLE_DEFAULT_ZERO_TYPE_INFO,
         () -> RenderStates.renderStartNanoTime,
         TimingFunction.sine::mapProgress,
@@ -154,7 +154,7 @@ public class ClientPortalWandPortalDrag {
     // don't restart dragging in the process
     private static boolean isUndoing = false;
     
-    private static record DraggingContext(
+    private record DraggingContext(
         ResourceKey<Level> dimension,
         @NotNull
         UUID portalId,

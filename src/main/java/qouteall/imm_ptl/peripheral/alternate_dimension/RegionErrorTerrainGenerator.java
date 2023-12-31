@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class RegionErrorTerrainGenerator {
-    public static interface Composition {
+    public interface Composition {
         BlockState generate(
             int worldY,
             double funcValue,
@@ -19,12 +19,12 @@ public class RegionErrorTerrainGenerator {
         );
     }
     
-    private int regionX;
-    private int regionZ;
+    private final int regionX;
+    private final int regionZ;
     private FormulaGenerator.TriNumFunction expression;
-    private double middle;
-    private double upMiddle;
-    private double downMiddle;
+    private final double middle;
+    private final double upMiddle;
+    private final double downMiddle;
     Composition composition;
     
     public RegionErrorTerrainGenerator(

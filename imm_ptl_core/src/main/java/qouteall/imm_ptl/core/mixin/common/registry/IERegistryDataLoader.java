@@ -18,12 +18,12 @@ import java.util.Map;
 @Mixin(RegistryDataLoader.class)
 public interface IERegistryDataLoader {
     @Invoker("createContext")
-    public static RegistryOps.RegistryInfoLookup ip_createContext(RegistryAccess registryAccess, List<Pair<WritableRegistry<?>, RegistryDataLoader.Loader>> list) {
+    static RegistryOps.RegistryInfoLookup ip_createContext(RegistryAccess registryAccess, List<Pair<WritableRegistry<?>, RegistryDataLoader.Loader>> list) {
         throw new RuntimeException();
     }
     
     @Invoker("loadRegistryContents")
-    public static <E> void ip_loadRegistryContents(RegistryOps.RegistryInfoLookup registryInfoLookup, ResourceManager resourceManager, ResourceKey<? extends Registry<E>> resourceKey, WritableRegistry<E> writableRegistry, Decoder<E> decoder, Map<ResourceKey<?>, Exception> map) {
+    static <E> void ip_loadRegistryContents(RegistryOps.RegistryInfoLookup registryInfoLookup, ResourceManager resourceManager, ResourceKey<? extends Registry<E>> resourceKey, WritableRegistry<E> writableRegistry, Decoder<E> decoder, Map<ResourceKey<?>, Exception> map) {
         throw new RuntimeException();
     }
 }

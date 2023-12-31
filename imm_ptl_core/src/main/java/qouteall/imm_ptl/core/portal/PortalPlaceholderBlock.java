@@ -62,9 +62,9 @@ public class PortalPlaceholderBlock extends Block {
     public PortalPlaceholderBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(
-            (BlockState) ((BlockState) this.getStateDefinition().any()).setValue(
-                AXIS, Direction.Axis.X
-            )
+                this.getStateDefinition().any().setValue(
+                    AXIS, Direction.Axis.X
+                )
         );
     }
     
@@ -72,7 +72,7 @@ public class PortalPlaceholderBlock extends Block {
     public VoxelShape getShape(
         BlockState state, BlockGetter world, BlockPos blockPos, CollisionContext shapeContext
     ) {
-        switch ((Direction.Axis) state.getValue(AXIS)) {
+        switch (state.getValue(AXIS)) {
             case Z:
                 return Z_AABB;
             case Y:
@@ -98,9 +98,8 @@ public class PortalPlaceholderBlock extends Block {
         BlockPos neighborPos
     ) {
         if (!worldAccess.isClientSide()) {
-            if (worldAccess instanceof Level) {
-                Level world = (Level) worldAccess;
-                
+            if (worldAccess instanceof Level world) {
+
                 world.getProfiler().push("portal_placeholder");
                 
                 Direction.Axis axis = thisState.getValue(AXIS);
@@ -113,7 +112,7 @@ public class PortalPlaceholderBlock extends Block {
                         e -> true
                     ).forEach(
                         portal -> {
-                            ((BreakablePortalEntity) portal).notifyPlaceholderUpdate();
+                            portal.notifyPlaceholderUpdate();
                         }
                     );
                 }

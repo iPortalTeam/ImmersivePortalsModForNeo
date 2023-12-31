@@ -1,10 +1,6 @@
 package qouteall.imm_ptl.peripheral.wand;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -22,8 +18,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.IPMcHelper;
@@ -36,12 +37,11 @@ public class PortalWandItem extends Item {
     public static final PortalWandItem instance = new PortalWandItem(new Properties());
     
     public static void init() {
-        AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
-            if (player.getMainHandItem().getItem() == instance) {
+        NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.LeftClickBlock.class, event -> {
+            if (event.getEntity().getMainHandItem().getItem() == instance) {
                 // cannot break block using the wand
-                return InteractionResult.FAIL;
+                event.setCanceled(true);
             }
-            return InteractionResult.PASS;
         });
 
         NeoForge.EVENT_BUS.addListener(BlockManipulationServer.CrossPortalInteractionEvent.class, crossPortalInteractionEvent ->
@@ -49,17 +49,19 @@ public class PortalWandItem extends Item {
     }
     
     public static void initClient() {
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.player != null) {
-                ItemStack itemStack = client.player.getMainHandItem();
-                if (itemStack.getItem() == instance) {
-                    updateDisplay(itemStack);
+        NeoForge.EVENT_BUS.addListener(TickEvent.PlayerTickEvent.class, event -> {
+            if (event.side == LogicalSide.CLIENT) {
+                if (event.player != null) {
+                    ItemStack itemStack = event.player.getMainHandItem();
+                    if (itemStack.getItem() == instance) {
+                        updateDisplay(itemStack);
+                    }
+                    else {
+                        ClientPortalWandPortalCreation.clearCursorPointing();
+                    }
                 }
-                else {
-                    ClientPortalWandPortalCreation.clearCursorPointing();
-                }
+                ClientPortalWandPortalDrag.tick();
             }
-            ClientPortalWandPortalDrag.tick();
         });
         
         
@@ -82,7 +84,7 @@ public class PortalWandItem extends Item {
         entries.accept(w3);
     }
     
-    public static enum Mode {
+    public enum Mode {
         CREATE_PORTAL,
         DRAG_PORTAL,
         COPY_PORTAL;

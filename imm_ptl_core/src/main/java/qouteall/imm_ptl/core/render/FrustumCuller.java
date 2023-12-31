@@ -327,7 +327,7 @@ public class FrustumCuller {
     
     
     @Deprecated
-    public static enum BatchTestResult {
+    public enum BatchTestResult {
         all_true,
         all_false,
         both

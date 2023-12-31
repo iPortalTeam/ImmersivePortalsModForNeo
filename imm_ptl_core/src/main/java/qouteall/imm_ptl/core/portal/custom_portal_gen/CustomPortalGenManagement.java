@@ -64,7 +64,7 @@ public class CustomPortalGenManagement {
             gen.identifier = entry.getKey().location();
             
             if (!gen.initAndCheck()) {
-                Helper.log("Custom Portal Gen Is Not Activated " + gen.toString());
+                Helper.log("Custom Portal Gen Is Not Activated " + gen);
                 return;
             }
             
@@ -161,9 +161,7 @@ public class CustomPortalGenManagement {
                         context.getPlayer()
                     );
                     if (result) {
-                        if (gen.trigger instanceof PortalGenTrigger.UseItemTrigger) {
-                            PortalGenTrigger.UseItemTrigger trigger =
-                                (PortalGenTrigger.UseItemTrigger) gen.trigger;
+                        if (gen.trigger instanceof PortalGenTrigger.UseItemTrigger trigger) {
                             if (trigger.shouldConsume(context)) {
                                 context.getItemInHand().shrink(1);
                             }

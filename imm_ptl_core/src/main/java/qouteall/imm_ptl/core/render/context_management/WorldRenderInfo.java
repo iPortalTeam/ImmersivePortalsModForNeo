@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  */
 public class WorldRenderInfo {
     
-    public static record IsometricParameters(
+    public record IsometricParameters(
     // TODO
     ) {}
     

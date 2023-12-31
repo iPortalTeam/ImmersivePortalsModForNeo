@@ -29,7 +29,7 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
     public static final IrisCompatibilityPortalRenderer debugModeInstance =
         new IrisCompatibilityPortalRenderer(true);
     
-    private SecondaryFrameBuffer deferredBuffer = new SecondaryFrameBuffer();
+    private final SecondaryFrameBuffer deferredBuffer = new SecondaryFrameBuffer();
     private PoseStack modelView = new PoseStack();
     
     public boolean isDebugMode;

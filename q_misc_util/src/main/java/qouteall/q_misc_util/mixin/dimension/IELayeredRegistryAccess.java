@@ -10,7 +10,7 @@ import java.util.List;
 @Mixin(LayeredRegistryAccess.class)
 public interface IELayeredRegistryAccess {
     @Invoker("<init>")
-    public static <T> LayeredRegistryAccess<T> ip_init(List<T> list, List<RegistryAccess.Frozen> list2){
+    static <T> LayeredRegistryAccess<T> ip_init(List<T> list, List<RegistryAccess.Frozen> list2){
         throw new RuntimeException();
     }
 }

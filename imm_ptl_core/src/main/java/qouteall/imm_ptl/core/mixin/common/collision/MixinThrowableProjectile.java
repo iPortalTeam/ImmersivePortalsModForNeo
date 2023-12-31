@@ -28,13 +28,8 @@ public class MixinThrowableProjectile {
         @Share("immptl_shouldCancelHit") LocalBooleanRef shouldCancelHit
     ) {
         BlockState blockState = original.call(level, blockPos);
-        
-        if (blockState.getBlock() == PortalPlaceholderBlock.instance) {
-            shouldCancelHit.set(true);
-        }
-        else {
-            shouldCancelHit.set(false);
-        }
+
+        shouldCancelHit.set(blockState.getBlock() == PortalPlaceholderBlock.instance);
         
         return blockState;
     }

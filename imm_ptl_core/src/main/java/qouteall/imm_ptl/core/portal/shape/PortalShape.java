@@ -18,31 +18,31 @@ import qouteall.q_misc_util.my_util.TriangleConsumer;
 import java.util.List;
 
 public interface PortalShape {
-    public boolean isPlanar();
+    boolean isPlanar();
     
     /**
      * @param limitSize true when it's not a global portal.
      *                  having too big bounding box cause lag
      * @param boxExpand
      */
-    public AABB getBoundingBox(
-        UnilateralPortalState portalState, boolean limitSize,
-        double boxExpand
+    AABB getBoundingBox(
+            UnilateralPortalState portalState, boolean limitSize,
+            double boxExpand
     );
     
-    public double roughDistanceToPortalShape(
-        UnilateralPortalState portalState, Vec3 pos
+    double roughDistanceToPortalShape(
+            UnilateralPortalState portalState, Vec3 pos
     );
     
-    public @Nullable RayTraceResult raytracePortalShapeByLocalPos(
-        UnilateralPortalState portalState,
-        Vec3 localFrom, Vec3 localTo, double leniency
+    @Nullable RayTraceResult raytracePortalShapeByLocalPos(
+            UnilateralPortalState portalState,
+            Vec3 localFrom, Vec3 localTo, double leniency
     );
     
-    public default @Nullable RayTraceResult raytracePortalShape(
-        UnilateralPortalState portalState,
-        Vec3 from, Vec3 to,
-        double leniency
+    default @Nullable RayTraceResult raytracePortalShape(
+            UnilateralPortalState portalState,
+            Vec3 from, Vec3 to,
+            double leniency
     ) {
         Vec3 localFrom = portalState.transformGlobalToLocal(from);
         Vec3 localTo = portalState.transformGlobalToLocal(to);
@@ -62,18 +62,18 @@ public interface PortalShape {
         return null;
     }
     
-    public @Nullable Plane getOuterClipping(
-        UnilateralPortalState portalState
+    @Nullable Plane getOuterClipping(
+            UnilateralPortalState portalState
     );
     
-    public @Nullable Plane getInnerClipping(
-        UnilateralPortalState thisSideState,
-        UnilateralPortalState otherSideState
+    @Nullable Plane getInnerClipping(
+            UnilateralPortalState thisSideState,
+            UnilateralPortalState otherSideState
     );
     
-    public default @Nullable List<Plane> getNearbyPortalPlanes(
-        UnilateralPortalState portalState,
-        AABB box
+    default @Nullable List<Plane> getNearbyPortalPlanes(
+            UnilateralPortalState portalState,
+            AABB box
     ) {
         Plane outerClipping = getOuterClipping(portalState);
         if (outerClipping != null) {
@@ -84,31 +84,31 @@ public interface PortalShape {
         }
     }
     
-    public PortalShape getFlipped();
+    PortalShape getFlipped();
     
-    public PortalShape getReverse();
+    PortalShape getReverse();
     
-    public boolean roughTestVisibility(
-        UnilateralPortalState portalState,
-        Vec3 cameraPos
+    boolean roughTestVisibility(
+            UnilateralPortalState portalState,
+            Vec3 cameraPos
     );
     
     @OnlyIn(Dist.CLIENT)
-    public void renderViewAreaMesh(
-        Vec3 portalOriginRelativeToCamera,
-        UnilateralPortalState portalState,
-        TriangleConsumer vertexOutput,
-        boolean isGlobalPortal
+    void renderViewAreaMesh(
+            Vec3 portalOriginRelativeToCamera,
+            UnilateralPortalState portalState,
+            TriangleConsumer vertexOutput,
+            boolean isGlobalPortal
     );
     
-    public boolean canCollideWith(
-        Portal portal,
-        UnilateralPortalState portalState,
-        Vec3 entityEyePos, AABB entityBoundingBox
+    boolean canCollideWith(
+            Portal portal,
+            UnilateralPortalState portalState,
+            Vec3 entityEyePos, AABB entityBoundingBox
     );
     
-    public default boolean isBoxInPortalProjection(
-        UnilateralPortalState portalState, AABB box
+    default boolean isBoxInPortalProjection(
+            UnilateralPortalState portalState, AABB box
     ) {
         Vec3[] vertexes = Helper.eightVerticesOf(box);
         
@@ -142,14 +142,14 @@ public interface PortalShape {
         );
     }
     
-    public boolean isLocalBoxInPortalProjection(
-        UnilateralPortalState portalState,
-        double minX, double minY, double minZ,
-        double maxX, double maxY, double maxZ
+    boolean isLocalBoxInPortalProjection(
+            UnilateralPortalState portalState,
+            double minX, double minY, double minZ,
+            double maxX, double maxY, double maxZ
     );
     
-    public default @Nullable VoxelShape getThisSideCollisionExclusion(
-        UnilateralPortalState portalState
+    default @Nullable VoxelShape getThisSideCollisionExclusion(
+            UnilateralPortalState portalState
     ) {
         return null;
     }
@@ -157,29 +157,29 @@ public interface PortalShape {
     /**
      * Entities are pushed out when the other side of the portal is not yet loaded.
      */
-    public Vec3 getMovementForPushingEntityOutOfPortal(
-        Portal portal, UnilateralPortalState portalState,
-        Entity entity, Vec3 attemptedMove
+    Vec3 getMovementForPushingEntityOutOfPortal(
+            Portal portal, UnilateralPortalState portalState,
+            Entity entity, Vec3 attemptedMove
     );
     
-    public PortalShape cloneIfNecessary();
+    PortalShape cloneIfNecessary();
     
     @OnlyIn(Dist.CLIENT)
-    public default boolean canDoOuterFrustumCulling() {
+    default boolean canDoOuterFrustumCulling() {
         return false;
     }
     
     // the func returning true for culled
     @OnlyIn(Dist.CLIENT)
-    public default @Nullable BoxPredicateF getInnerFrustumCullingFunc(
-        Portal portal, Vec3 cameraPos
+    default @Nullable BoxPredicateF getInnerFrustumCullingFunc(
+            Portal portal, Vec3 cameraPos
     ) {
         return null;
     }
     
     @OnlyIn(Dist.CLIENT)
-    public default @Nullable BoxPredicateF getOuterFrustumCullingFunc(
-        Portal portal, Vec3 cameraPos
+    default @Nullable BoxPredicateF getOuterFrustumCullingFunc(
+            Portal portal, Vec3 cameraPos
     ) {
         return null;
     }

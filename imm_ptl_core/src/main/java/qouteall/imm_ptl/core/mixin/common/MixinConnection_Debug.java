@@ -20,7 +20,7 @@ public class MixinConnection_Debug {
     @Unique
     private static int immPtlExceptionLogNum = 0;
     @Unique
-    private static int immPtlExceptionLogLimit = 5;
+    private static final int immPtlExceptionLogLimit = 5;
     
     // avoid swallowing the exception stacktrace
     // the exception is logged in debug level, but debug level is not enabled by default

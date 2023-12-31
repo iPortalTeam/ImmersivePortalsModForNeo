@@ -11,7 +11,7 @@ public class DimListWidget extends AbstractSelectionList<DimEntryWidget> {
     
     public static final int ROW_WIDTH = 300;
     
-    public static interface DraggingCallback {
+    public interface DraggingCallback {
         void run(int selectedIndex, int mouseOnIndex);
     }
     
@@ -25,7 +25,7 @@ public class DimListWidget extends AbstractSelectionList<DimEntryWidget> {
     
     }
     
-    public static enum Type {
+    public enum Type {
         mainDimensionList, addDimensionList
     }
     

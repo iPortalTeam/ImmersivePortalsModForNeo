@@ -256,14 +256,11 @@ public class EndPortalEntity extends Portal {
     
     private boolean shouldAddSlowFalling(Entity entity) {
         if (entity instanceof LivingEntity) {
-            if (entity instanceof ServerPlayer) {
-                ServerPlayer player = (ServerPlayer) entity;
+            if (entity instanceof ServerPlayer player) {
                 if (player.gameMode.getGameModeForPlayer() == GameType.CREATIVE) {
                     return false;
                 }
-                if (player.getItemBySlot(EquipmentSlot.CHEST).getItem() == Items.ELYTRA) {
-                    return false;
-                }
+                return player.getItemBySlot(EquipmentSlot.CHEST).getItem() != Items.ELYTRA;
             }
             return true;
         }

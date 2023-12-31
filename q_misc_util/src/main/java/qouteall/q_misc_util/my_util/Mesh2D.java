@@ -1479,7 +1479,7 @@ public class Mesh2D {
         return new Vec2d((sumX / sumWeight) / 3, (sumY / sumWeight) / 3);
     }
     
-    public static record Rect(double minX, double minY, double maxX, double maxY) {
+    public record Rect(double minX, double minY, double maxX, double maxY) {
     }
     
     public Rect getBoundingBox() {

@@ -55,7 +55,7 @@ public class MyGameRenderer {
     private static final LimitedLogger limitedLogger = new LimitedLogger(10);
     
     // portal rendering and outer world rendering uses different buffer builder storages
-    private static Stack<RenderBuffers> secondaryRenderBuffers = new Stack<>();
+    private static final Stack<RenderBuffers> secondaryRenderBuffers = new Stack<>();
     private static int usingRenderBuffersObjectNum = 0;
     
     // the vanilla visibility sections discovery code is multi-threaded

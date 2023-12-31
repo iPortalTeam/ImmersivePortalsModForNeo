@@ -1,11 +1,10 @@
 package qouteall.imm_ptl.core.portal;
 
 import com.mojang.logging.LogUtils;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -27,6 +26,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.PlayNetworkDirection;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,6 +54,7 @@ import qouteall.imm_ptl.core.render.PortalRenderer;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.MiscHelper;
 import qouteall.q_misc_util.api.DimensionAPI;
+import qouteall.q_misc_util.de.nick1st.neo.networking.NeoPacket;
 import qouteall.q_misc_util.dimension.DimId;
 import qouteall.q_misc_util.my_util.*;
 
@@ -68,7 +69,7 @@ public class Portal extends Entity implements
     PortalLike, IPEntityEventListenableEntity, PortalRenderable {
     private static final Logger LOGGER = LogUtils.getLogger();
     
-    public static final EntityType<Portal> entityType = createPortalEntityType(Portal::new);
+    public static final EntityType<Portal> entityType = createPortalEntityType(Portal::new);  // TODO @Nick1st PRIO Correctly register this
 
     public static class ClientPortalAcceptSyncEvent extends Event {
         public final Portal portal;
@@ -85,16 +86,16 @@ public class Portal extends Entity implements
     public static <T extends Portal> EntityType<T> createPortalEntityType(
         EntityType.EntityFactory<T> constructor
     ) {
-        return FabricEntityTypeBuilder.create(
-                MobCategory.MISC,
-                constructor
-            ).dimensions(
-                new EntityDimensions(1, 1, true)
+        EntityType.Builder<T> builder = EntityType.Builder.of(
+                constructor,
+                MobCategory.MISC
             ).fireImmune()
-            .trackRangeBlocks(96)
-            .trackedUpdateRate(20)
-            .forceTrackedVelocityUpdates(true)
-            .build();
+            .clientTrackingRange(96)
+            .updateInterval(20);
+
+        builder.dimensions = new EntityDimensions(1, 1, true);
+
+        return builder.build("");
     }
     
     public static final UUID nullUUID = Util.NIL_UUID;
@@ -389,7 +390,7 @@ public class Portal extends Entity implements
         if (compoundTag.contains("commandsOnTeleported")) {
             ListTag list = compoundTag.getList("commandsOnTeleported", 8);
             commandsOnTeleported = list.stream()
-                .map(t -> ((StringTag) t).getAsString()).collect(Collectors.toList());
+                .map(t -> t.getAsString()).collect(Collectors.toList());
         }
         else {
             commandsOnTeleported = null;
@@ -709,7 +710,7 @@ public class Portal extends Entity implements
                 || IPGlobal.pureMirror;
             double mirrorOffset = offsetFront ? 0.01 : -0.01;
             portalPosRelativeToCamera = portalPosRelativeToCamera.add(
-                ((Mirror) this).getNormal().scale(mirrorOffset));
+                this.getNormal().scale(mirrorOffset));
         }
         
         getPortalShape().renderViewAreaMesh(
@@ -966,13 +967,13 @@ public class Portal extends Entity implements
         addAdditionalSaveData(compoundTag);
         
         // the listener generic parameter is contravariant. this is fine
-        return (Packet<ClientGamePacketListener>) (Packet)
-            ServerPlayNetworking.createS2CPacket(new ImmPtlNetworking.PortalSyncPacket(
-                getId(), getUUID(), getType(),
-                DimensionAPI.getServerDimIntId(getServer(), getOriginDim()),
-                getX(), getY(), getZ(),
-                compoundTag
-            ));
+        return (Packet<ClientGamePacketListener>) NeoPacket.channels.get(ImmPtlNetworking.PortalSyncPacket.TYPE.identifier).toVanillaPacket(
+        new ImmPtlNetworking.PortalSyncPacket(
+        getId(), getUUID(), getType(),
+        DimensionAPI.getServerDimIntId(getServer(), getOriginDim()),
+        getX(), getY(), getZ(),
+        compoundTag
+    ), PlayNetworkDirection.PLAY_TO_CLIENT);
     }
     
     @Override
@@ -1113,7 +1114,7 @@ public class Portal extends Entity implements
             getApproximateFacingDirection(),
             level().dimension().location(), getX(), getY(), getZ(),
             dimensionTo.location(), getDestPos().x, getDestPos().y, getDestPos().z,
-            specificPlayerId != null ? (",specificAccessor:" + specificPlayerId.toString()) : "",
+            specificPlayerId != null ? (",specificAccessor:" + specificPlayerId) : "",
             hasScaling() ? (",scale:" + scaling) : "",
             portalTag != null ? "," + portalTag : ""
         );

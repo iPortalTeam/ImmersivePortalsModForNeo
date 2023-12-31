@@ -36,7 +36,7 @@ public class GeometryPortalShape {
         
         for (int i = 0; i < triangleNum; i++) {
             mesh.addTriangle(
-                tag.getDouble(i * 6 + 0),
+                tag.getDouble(i * 6),
                 tag.getDouble(i * 6 + 1),
                 tag.getDouble(i * 6 + 2),
                 tag.getDouble(i * 6 + 3),
@@ -70,7 +70,7 @@ public class GeometryPortalShape {
         
         for (int i = 0; i < triangleNum; i++) {
             mesh.addTriangle(
-                tag.getDouble(i * 6 + 0) / halfWidth,
+                tag.getDouble(i * 6) / halfWidth,
                 tag.getDouble(i * 6 + 1) / halfHeight,
                 tag.getDouble(i * 6 + 2) / halfWidth,
                 tag.getDouble(i * 6 + 3) / halfHeight,
