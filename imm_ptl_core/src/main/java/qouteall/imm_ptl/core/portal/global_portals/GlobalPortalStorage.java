@@ -17,8 +17,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.network.PlayNetworkDirection;
@@ -105,12 +103,12 @@ public class GlobalPortalStorage extends SavedData {
         );
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     private static void initClient() {
         IPGlobal.clientCleanupSignal.connect(GlobalPortalStorage::onClientCleanup);
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     private static void onClientCleanup() {
         if (ClientWorldLoader.getIsInitialized()) {
             for (ClientLevel clientWorld : ClientWorldLoader.getClientWorlds()) {
@@ -316,7 +314,7 @@ public class GlobalPortalStorage extends SavedData {
         //removed
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static void receiveGlobalPortalSync(ResourceKey<Level> dimension, CompoundTag compoundTag) {
         ClientLevel world = ClientWorldLoader.getWorld(dimension);
         

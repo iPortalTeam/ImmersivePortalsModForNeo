@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core.portal.shape;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
@@ -15,11 +13,7 @@ import qouteall.imm_ptl.core.portal.animation.UnilateralPortalState;
 import qouteall.imm_ptl.core.render.FrustumCuller;
 import qouteall.imm_ptl.core.render.ViewAreaRenderer;
 import qouteall.q_misc_util.Helper;
-import qouteall.q_misc_util.my_util.BoxPredicateF;
-import qouteall.q_misc_util.my_util.Plane;
-import qouteall.q_misc_util.my_util.Range;
-import qouteall.q_misc_util.my_util.RayTraceResult;
-import qouteall.q_misc_util.my_util.TriangleConsumer;
+import qouteall.q_misc_util.my_util.*;
 
 public final class RectangularPortalShape implements PortalShape {
     public static final RectangularPortalShape INSTANCE = new RectangularPortalShape();
@@ -136,7 +130,7 @@ public final class RectangularPortalShape implements PortalShape {
         return this;
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     @Override
     public void renderViewAreaMesh(
         Vec3 portalOriginRelativeToCamera,
@@ -210,13 +204,13 @@ public final class RectangularPortalShape implements PortalShape {
         return this;
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     @Override
     public boolean canDoOuterFrustumCulling() {
         return true;
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     @Override
     public BoxPredicateF getInnerFrustumCullingFunc(
         Portal portal,

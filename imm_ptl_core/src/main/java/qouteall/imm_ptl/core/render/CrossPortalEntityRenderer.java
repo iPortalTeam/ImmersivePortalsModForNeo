@@ -1,8 +1,6 @@
 package qouteall.imm_ptl.core.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -35,7 +33,7 @@ import qouteall.q_misc_util.Helper;
 
 import java.util.WeakHashMap;
 
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class CrossPortalEntityRenderer {
     private static final Minecraft client = Minecraft.getInstance();
     

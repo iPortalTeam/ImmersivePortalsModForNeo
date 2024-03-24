@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core.network;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.BundleDelimiterPacket;
@@ -226,7 +224,7 @@ public class PacketRedirection {
         }
         
         @SuppressWarnings("unchecked")
-        @OnlyIn(Dist.CLIENT)
+        //@OnlyIn(Dist.CLIENT)
         public void handle(ClientGamePacketListener listener) {
             while (DimensionIdRecord.clientRecord == null) {
                 try { // TODO @Nick1st PRIO This is a workaround, that should get a good fix

@@ -11,8 +11,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -53,12 +51,7 @@ import org.slf4j.Logger;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.api.PortalAPI;
-import qouteall.imm_ptl.core.portal.Mirror;
-import qouteall.imm_ptl.core.portal.Portal;
-import qouteall.imm_ptl.core.portal.PortalExtension;
-import qouteall.imm_ptl.core.portal.PortalManipulation;
-import qouteall.imm_ptl.core.portal.PortalState;
-import qouteall.imm_ptl.core.portal.PortalUtils;
+import qouteall.imm_ptl.core.portal.*;
 import qouteall.imm_ptl.core.portal.animation.UnilateralPortalState;
 import qouteall.imm_ptl.core.portal.global_portals.BorderBarrierFiller;
 import qouteall.imm_ptl.core.portal.global_portals.GlobalPortalStorage;
@@ -72,23 +65,9 @@ import qouteall.imm_ptl.core.portal.shape.SpecialFlatPortalShape;
 import qouteall.imm_ptl.core.teleportation.ServerTeleportationManager;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.MiscHelper;
-import qouteall.q_misc_util.my_util.DQuaternion;
-import qouteall.q_misc_util.my_util.GeometryUtil;
-import qouteall.q_misc_util.my_util.IntBox;
-import qouteall.q_misc_util.my_util.Mesh2D;
-import qouteall.q_misc_util.my_util.MyTaskList;
-import qouteall.q_misc_util.my_util.Plane;
-import qouteall.q_misc_util.my_util.SignalBiArged;
-import qouteall.q_misc_util.my_util.Vec2d;
-import qouteall.q_misc_util.my_util.WithDim;
+import qouteall.q_misc_util.my_util.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -2775,7 +2754,7 @@ public class PortalCommand {
     }
     
     public static class RemoteCallables {
-        @OnlyIn(Dist.CLIENT)
+        //@OnlyIn(Dist.CLIENT)
         public static void clientAccelerate(Vec3 vec) {
             Minecraft client = Minecraft.getInstance();
             

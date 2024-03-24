@@ -3,8 +3,6 @@ package qouteall.imm_ptl.core.render;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.logging.LogUtils;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +19,7 @@ import qouteall.q_misc_util.Helper;
 
 import java.util.HashMap;
 
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class GuiPortalRendering {
     private static final Logger LOGGER = LogUtils.getLogger();
     

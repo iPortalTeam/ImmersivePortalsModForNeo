@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core.portal.animation;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
 import qouteall.imm_ptl.core.ClientWorldLoader;
@@ -17,7 +15,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Consumer;
 
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class ClientPortalAnimationManagement {
     public static class ClientPortalDefaultAnimationFinishEvent extends Event {
         public final Portal portal;

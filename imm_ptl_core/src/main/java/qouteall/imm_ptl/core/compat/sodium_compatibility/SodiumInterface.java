@@ -6,8 +6,6 @@ import me.jellysquid.mods.sodium.client.render.chunk.map.ChunkStatus;
 import me.jellysquid.mods.sodium.client.render.chunk.map.ChunkTrackerHolder;
 import me.jellysquid.mods.sodium.client.render.texture.SpriteUtil;
 import me.jellysquid.mods.sodium.client.world.WorldRendererExtended;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -15,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.compat.mixin.sodium.IESodiumWorldRenderer;
 import qouteall.imm_ptl.core.render.FrustumCuller;
 
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class SodiumInterface {
     
     @Nullable

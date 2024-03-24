@@ -27,11 +27,7 @@ import qouteall.q_misc_util.my_util.LimitedLogger;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 public class NetherPortalGeneration {
     

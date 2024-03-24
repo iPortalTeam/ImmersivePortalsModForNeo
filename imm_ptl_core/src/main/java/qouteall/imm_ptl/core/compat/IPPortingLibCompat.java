@@ -3,7 +3,6 @@ package qouteall.imm_ptl.core.compat;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import qouteall.imm_ptl.core.ducks.IEFrameBuffer;
@@ -31,7 +30,7 @@ public class IPPortingLibCompat {
         }
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static boolean getIsStencilEnabled(RenderTarget renderTarget) {
         if (isPortingLibPresent) {
             return Helper.noError(
@@ -43,7 +42,7 @@ public class IPPortingLibCompat {
         }
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static void setIsStencilEnabled(RenderTarget renderTarget, boolean cond) {
         if (isPortingLibPresent) {
             

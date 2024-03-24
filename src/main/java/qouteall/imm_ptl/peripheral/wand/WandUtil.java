@@ -2,8 +2,6 @@ package qouteall.imm_ptl.peripheral.wand;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -30,7 +28,7 @@ import java.util.UUID;
 public class WandUtil {
     
     @Nullable
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static Portal getClientPortalByUUID(UUID portalId) {
         LocalPlayer player = Minecraft.getInstance().player;
         
@@ -92,7 +90,7 @@ public class WandUtil {
             ).orElse(null);
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static void renderPortalAreaGridNew(
         VertexConsumer vertexConsumer, Vec3 cameraPos,
         ProtoPortalSide protoPortalSide,
@@ -194,7 +192,7 @@ public class WandUtil {
         matrixStack.popPose();
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static void renderPortalAreaGrid(
         VertexConsumer vertexConsumer, Vec3 cameraPos,
         ProtoPortalSide protoPortalSide,

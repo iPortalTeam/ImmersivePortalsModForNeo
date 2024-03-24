@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core.render;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
@@ -25,7 +23,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 // currently only exists on client side
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class PortalGroup implements PortalLike {
     
     private static final LimitedLogger limitedLogger = new LimitedLogger(20);
@@ -248,7 +246,7 @@ public class PortalGroup implements PortalLike {
         return portals.stream().anyMatch(p -> p.cannotRenderInMe(portal));
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     @Override
     public BoxPredicate getInnerFrustumCullingFunc(
         double innerCameraX, double innerCameraY, double innerCameraZ

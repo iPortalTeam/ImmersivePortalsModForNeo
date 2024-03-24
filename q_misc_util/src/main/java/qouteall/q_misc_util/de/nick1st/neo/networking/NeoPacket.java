@@ -2,9 +2,11 @@ package qouteall.q_misc_util.de.nick1st.neo.networking;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.*;
+import net.neoforged.neoforge.network.LoginNetworkDirection;
+import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.PlayNetworkDirection;
 import net.neoforged.neoforge.network.event.EventNetworkChannel;
-import net.neoforged.neoforge.network.simple.MessageFunctions;
 import net.neoforged.neoforge.network.simple.SimpleChannel;
 
 import java.util.HashMap;

@@ -2,8 +2,6 @@ package qouteall.imm_ptl.core.mc_utils;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -27,7 +25,7 @@ import qouteall.q_misc_util.my_util.Sphere;
 import java.util.Random;
 import java.util.function.IntSupplier;
 
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class WireRenderingHelper {
     
     public static void renderSmallCubeFrame(

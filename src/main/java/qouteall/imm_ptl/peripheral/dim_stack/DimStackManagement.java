@@ -2,8 +2,6 @@ package qouteall.imm_ptl.peripheral.dim_stack;
 
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -26,16 +24,11 @@ import qouteall.imm_ptl.core.platform_specific.O_O;
 import qouteall.imm_ptl.core.portal.global_portals.GlobalPortalStorage;
 import qouteall.imm_ptl.core.portal.global_portals.VerticalConnectingPortal;
 import qouteall.q_misc_util.Helper;
-import qouteall.q_misc_util.api.DimensionAPI;
 import qouteall.q_misc_util.api.McRemoteProcedureCall;
 import qouteall.q_misc_util.dimension.DimId;
 import qouteall.q_misc_util.dimension.DimensionEvents;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DimStackManagement {
@@ -188,7 +181,7 @@ public class DimStackManagement {
     }
     
     public static class RemoteCallables {
-        @OnlyIn(Dist.CLIENT)
+        //@OnlyIn(Dist.CLIENT)
         public static void clientOpenScreen(List<String> dimensions) {
             List<ResourceKey<Level>> dimensionList =
                 dimensions.stream().map(DimId::idToKey).collect(Collectors.toList());

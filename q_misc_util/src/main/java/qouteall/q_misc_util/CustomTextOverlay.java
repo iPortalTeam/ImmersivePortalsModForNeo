@@ -1,7 +1,5 @@
 package qouteall.q_misc_util;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
@@ -16,7 +14,7 @@ import java.util.TreeMap;
 /**
  * Make this because {@link Gui#setOverlayMessage(Component, boolean)} does not support multi-line
  */
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class CustomTextOverlay {
     
     public record Entry(

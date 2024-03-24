@@ -5,8 +5,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.McHelper;
@@ -72,7 +70,7 @@ public class GravityChangerInterface {
     
     private static boolean warned = false;
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     private static void warnGravityChangerNotPresent() {
         if (!warned) {
             warned = true;
@@ -117,7 +115,7 @@ public class GravityChangerInterface {
             setClientPlayerGravityDirectionClientOnly(player, direction);
         }
         
-        @OnlyIn(Dist.CLIENT)
+        //@OnlyIn(Dist.CLIENT)
         private void setClientPlayerGravityDirectionClientOnly(
             Player player, Direction direction
         ) {

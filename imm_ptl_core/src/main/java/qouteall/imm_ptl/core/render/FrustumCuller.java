@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core.render;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +16,7 @@ import qouteall.q_misc_util.my_util.Plane;
 
 import java.util.Comparator;
 
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class FrustumCuller {
     private @Nullable BoxPredicateF canDetermineInvisibleFunc;
     private double camX;

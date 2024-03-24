@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core.portal.shape;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
@@ -12,11 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.animation.UnilateralPortalState;
 import qouteall.imm_ptl.core.render.ViewAreaRenderer;
-import qouteall.q_misc_util.my_util.BoxPredicateF;
-import qouteall.q_misc_util.my_util.Mesh2D;
-import qouteall.q_misc_util.my_util.Plane;
-import qouteall.q_misc_util.my_util.RayTraceResult;
-import qouteall.q_misc_util.my_util.TriangleConsumer;
+import qouteall.q_misc_util.my_util.*;
 
 public final class SpecialFlatPortalShape implements PortalShape {
     public final @NotNull Mesh2D mesh;
@@ -148,7 +142,7 @@ public final class SpecialFlatPortalShape implements PortalShape {
         return getFlipped();
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     @Override
     public void renderViewAreaMesh(
         Vec3 portalOriginRelativeToCamera,
@@ -242,7 +236,7 @@ public final class SpecialFlatPortalShape implements PortalShape {
         return new SpecialFlatPortalShape(Mesh2D.createNewFullQuadMesh());
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     @Override
     public BoxPredicateF getInnerFrustumCullingFunc(
         Portal portal,
@@ -253,7 +247,7 @@ public final class SpecialFlatPortalShape implements PortalShape {
         );
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     @Override
     public BoxPredicateF getOuterFrustumCullingFunc(
         Portal portal,

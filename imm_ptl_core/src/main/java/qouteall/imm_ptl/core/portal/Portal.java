@@ -4,7 +4,6 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -22,8 +21,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PlayNetworkDirection;
@@ -247,7 +244,7 @@ public class Portal extends Entity implements
     @Nullable
     public List<String> commandsOnTeleported;
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     PortalRenderInfo portalRenderInfo;
     
     public final PortalAnimation animation = new PortalAnimation();
@@ -700,7 +697,7 @@ public class Portal extends Entity implements
      *                                  Every 3 vertices correspond to a triangle.
      *                                  In camera-centered coordinate.
      */
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public void renderViewAreaMesh(
         Vec3 portalPosRelativeToCamera, TriangleConsumer vertexOutput
     ) {
@@ -1087,7 +1084,7 @@ public class Portal extends Entity implements
         return false;
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     private boolean isPortalValidClient() {
         boolean contains = ClientWorldLoader.getServerDimensions().contains(dimensionTo);
         if (!contains) {
@@ -1512,7 +1509,7 @@ public class Portal extends Entity implements
     }
     
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     @Deprecated
     @Override
     public BoxPredicate getInnerFrustumCullingFunc(
@@ -1587,7 +1584,7 @@ public class Portal extends Entity implements
         unsetRemoved();
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public PortalLike getRenderingDelegate() {
         if (IPGlobal.enablePortalRenderingMerge) {
             PortalGroup group = PortalRenderInfo.getGroupOf(this);
@@ -1807,7 +1804,7 @@ public class Portal extends Entity implements
         setPortalState(newPortalState);
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public void acceptDataSync(Vec3 pos, CompoundTag customData) {
         PortalState oldState = getPortalState();
         

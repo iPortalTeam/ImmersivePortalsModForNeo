@@ -4,8 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -35,24 +33,16 @@ import qouteall.imm_ptl.core.render.context_management.RenderStates;
 import qouteall.q_misc_util.CustomTextOverlay;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.api.McRemoteProcedureCall;
-import qouteall.q_misc_util.my_util.Circle;
-import qouteall.q_misc_util.my_util.DQuaternion;
-import qouteall.q_misc_util.my_util.Plane;
-import qouteall.q_misc_util.my_util.Sphere;
-import qouteall.q_misc_util.my_util.WithDim;
+import qouteall.q_misc_util.my_util.*;
 import qouteall.q_misc_util.my_util.animation.Animated;
 import qouteall.q_misc_util.my_util.animation.RenderedPlane;
 import qouteall.q_misc_util.my_util.animation.RenderedPoint;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class ClientPortalWandPortalDrag {
     private static final Logger LOGGER = LogUtils.getLogger();
     

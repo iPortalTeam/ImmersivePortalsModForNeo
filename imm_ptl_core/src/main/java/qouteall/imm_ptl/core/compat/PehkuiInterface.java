@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core.compat;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -60,7 +58,7 @@ public class PehkuiInterface {
     
     private static boolean messageShown = false;
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     private static void showMissingPehkui(Portal portal) {
         if (portal.hasScaling() && portal.teleportChangesScale) {
             if (!messageShown) {

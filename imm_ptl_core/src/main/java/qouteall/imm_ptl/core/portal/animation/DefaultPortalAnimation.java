@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core.portal.animation;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.nbt.CompoundTag;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.PortalState;
@@ -46,7 +44,7 @@ public class DefaultPortalAnimation {
         this.disableUntil = disableUntil;
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public void startClientDefaultAnimation(Portal portal, PortalState animationStartState) {
         PortalState newState = portal.getPortalState();
         

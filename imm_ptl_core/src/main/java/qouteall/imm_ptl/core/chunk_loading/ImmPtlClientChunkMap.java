@@ -1,8 +1,6 @@
 package qouteall.imm_ptl.core.chunk_loading;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientChunkCache;
@@ -38,7 +36,7 @@ import java.util.function.Function;
  * This use map to store the chunk references, to eliminate such limitation.
  * (Two maps, one for main thread and one for other threads)
  */
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 @IPVanillaCopy
 public class ImmPtlClientChunkMap extends ClientChunkCache {
     private static final Logger LOGGER = LogManager.getLogger();

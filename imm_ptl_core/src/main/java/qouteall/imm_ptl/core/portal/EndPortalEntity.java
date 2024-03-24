@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core.portal;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -179,7 +177,7 @@ public class EndPortalEntity extends Portal {
         }
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     private void tickClient() {
         if (isViewBoxPortal()) {
             LocalPlayer player = Minecraft.getInstance().player;

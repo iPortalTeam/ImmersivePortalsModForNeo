@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core.portal.animation;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -56,15 +54,15 @@ public class PortalAnimation {
     public long updateCounter;
     
     // for client player teleportation
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     @Nullable
     public PortalState clientLastFramePortalState;
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public long clientLastFramePortalStateCounter = -1;
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     @Nullable
     public PortalState clientCurrentFramePortalState;
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public long clientCurrentFramePortalStateCounter = -1;
     
     public void readFromTag(CompoundTag tag) {
@@ -306,7 +304,7 @@ public class PortalAnimation {
         thisTickAnimatedState = portalState;
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     private static void markRequiresClientAnimationUpdate(Portal portal) {
         ClientPortalAnimationManagement.markRequiresCustomAnimationUpdate(portal);
     }
@@ -530,7 +528,7 @@ public class PortalAnimation {
         return UnilateralPortalState.combine(from.build(), to.build());
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public void updateClientState(Portal portal, long currentTeleportationCounter) {
         if (currentTeleportationCounter == clientCurrentFramePortalStateCounter) {
             return;

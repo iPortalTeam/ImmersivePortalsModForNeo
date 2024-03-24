@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core.portal;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -22,7 +20,7 @@ import java.util.UUID;
  */
 public interface PortalLike {
     @Deprecated
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     BoxPredicate getInnerFrustumCullingFunc(
         double cameraX, double cameraY, double cameraZ
     );

@@ -6,8 +6,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.LevelStem;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -177,7 +175,7 @@ public class DimensionAPI {
         return DimensionIdRecord.serverRecord.getIntId(dimension);
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static int getClientDimIntId(
         ResourceKey<Level> dimension
     ) {
@@ -190,7 +188,7 @@ public class DimensionAPI {
         return DimensionIdRecord.serverRecord.getDim(intId);
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static ResourceKey<Level> getClientDimKeyFromIntId(
         int intId
     ) {

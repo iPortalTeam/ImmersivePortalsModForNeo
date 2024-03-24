@@ -10,8 +10,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.LoginNetworkDirection;
 import net.neoforged.neoforge.network.NetworkEvent;
@@ -117,7 +115,7 @@ public class ImmPtlNetworkConfig {
         }
         
         // handled on client side
-        @OnlyIn(Dist.CLIENT)
+//        @OnlyIn(Dist.CLIENT)
         public void handle(Supplier<NetworkEvent.Context> ctx) {
             LOGGER.info(
                 "Client received ImmPtl config packet. Server mod version: {}", versionFromServer
@@ -245,7 +243,7 @@ public class ImmPtlNetworkConfig {
                 S2CConfigStartPacket::read, S2CConfigStartPacket::handle, LoginNetworkDirection.LOGIN_TO_CLIENT);
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static void initClient() {
         // ClientConfigurationNetworking.ConfigurationPacketHandler does not provide
         // ClientConfigurationPacketListenerImpl argument

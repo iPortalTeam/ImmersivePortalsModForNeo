@@ -3,8 +3,6 @@ package qouteall.imm_ptl.peripheral.wand;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.logging.LogUtils;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -36,7 +34,7 @@ import qouteall.q_misc_util.my_util.animation.RenderedPlane;
  * The process and relevant marking rendering is handled purely on client side.
  * When it finishes, it performs a remote procedure call to create the portal.
  */
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class ClientPortalWandPortalCreation {
     
     private static final Logger LOGGER = LogUtils.getLogger();

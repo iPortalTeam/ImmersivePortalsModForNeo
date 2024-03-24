@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core.portal.shape;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -93,7 +91,7 @@ public interface PortalShape {
             Vec3 cameraPos
     );
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     void renderViewAreaMesh(
             Vec3 portalOriginRelativeToCamera,
             UnilateralPortalState portalState,
@@ -164,20 +162,20 @@ public interface PortalShape {
     
     PortalShape cloneIfNecessary();
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     default boolean canDoOuterFrustumCulling() {
         return false;
     }
     
     // the func returning true for culled
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     default @Nullable BoxPredicateF getInnerFrustumCullingFunc(
             Portal portal, Vec3 cameraPos
     ) {
         return null;
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     default @Nullable BoxPredicateF getOuterFrustumCullingFunc(
             Portal portal, Vec3 cameraPos
     ) {

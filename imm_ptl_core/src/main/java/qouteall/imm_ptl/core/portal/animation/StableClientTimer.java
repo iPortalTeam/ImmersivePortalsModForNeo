@@ -1,14 +1,11 @@
 package qouteall.imm_ptl.core.portal.animation;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.q_misc_util.my_util.LimitedLogger;
-
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Sometimes the client time jumps forward and backward. (This even happens in singleplayer).
@@ -30,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  * - The stable time always flows forward, it doesn't flow backward or stop.
  * - The stable time should approach server synced time in a short period of time, even if the server synced time jumps.
  */
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class StableClientTimer {
     // use two numbers to keep precision
     public static final class Time {

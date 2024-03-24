@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core.render.context_management;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
@@ -22,7 +20,7 @@ import java.util.Stack;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class PortalRendering {
     private static final Stack<PortalLike> portalLayers = new Stack<>();
     private static boolean isRenderingCache = false;

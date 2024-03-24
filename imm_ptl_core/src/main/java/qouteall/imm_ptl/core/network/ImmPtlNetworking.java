@@ -1,7 +1,6 @@
 package qouteall.imm_ptl.core.network;
 
 import com.mojang.logging.LogUtils;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -9,31 +8,24 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.NetworkEvent;
 import net.neoforged.neoforge.network.PlayNetworkDirection;
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
-import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPGlobal;
-import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.global_portals.GlobalPortalStorage;
 import qouteall.q_misc_util.api.DimensionAPI;
 import qouteall.q_misc_util.de.nick1st.neo.networking.NeoPacket;
 import qouteall.q_misc_util.de.nick1st.neo.networking.PacketType;
 
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 
 public class ImmPtlNetworking {
     
-    private static final Logger LOGGER = LogUtils.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     
     // client to server
     public record TeleportPacket(
@@ -106,7 +98,7 @@ public class ImmPtlNetworking {
             return TYPE;
         }
         
-        @OnlyIn(Dist.CLIENT)
+//        @OnlyIn(Dist.CLIENT)
         public void handle(Supplier<NetworkEvent.Context> ctx) {
             ResourceKey<Level> dim = DimensionAPI.getClientDimKeyFromIntId(dimensionId);
             
@@ -167,53 +159,55 @@ public class ImmPtlNetworking {
         /**
          * {@link ClientPacketListener#handleAddEntity(ClientboundAddEntityPacket)}
          */
-        @OnlyIn(Dist.CLIENT)
+//        @OnlyIn(Dist.CLIENT)
         public void handle(Supplier<NetworkEvent.Context> ctx) {
-            ResourceKey<Level> dimension = DimensionAPI.getClientDimKeyFromIntId(dimensionId);
-            ClientLevel world = ClientWorldLoader.getWorld(dimension);
-            
-            Entity existing = world.getEntity(id);
-            
-            if (existing instanceof Portal existingPortal) {
-                // update existing portal (handles default animation)
-                if (!Objects.equals(existingPortal.getUUID(), uuid)) {
-                    LOGGER.error("UUID mismatch when syncing portal {} {}", existingPortal, uuid);
-                    return;
-                }
-                
-                if (existingPortal.getType() != type) {
-                    LOGGER.error("Entity type mismatch when syncing portal {} {}", existingPortal, type);
-                    return;
-                }
-                
-                existingPortal.acceptDataSync(new Vec3(x, y, z), extraData);
-            }
-            else {
-                // spawn new portal
-                Entity entity = type.create(world);
-                Validate.notNull(entity, "Entity type is null");
-                
-                if (!(entity instanceof Portal portal)) {
-                    LOGGER.error("Spawned entity is not a portal. {} {}", entity, type);
-                    return;
-                }
-                
-                entity.setId(id);
-                entity.setUUID(uuid);
-                entity.syncPacketPositionCodec(x, y, z);
-                entity.moveTo(x, y, z);
-                
-                portal.readPortalDataFromNbt(extraData);
-                
-                world.addEntity(entity);
-                
-                ClientWorldLoader.getWorld(portal.dimensionTo);
-                Portal.clientPortalSpawnSignal.emit(portal);
-                
-                if (IPGlobal.clientPortalLoadDebug) {
-                    LOGGER.info("Portal loaded to client {}", portal);
-                }
-            }
+            ImmPtlNetworkingClient.handleSyncPacket(ctx, this);
+//
+//            ResourceKey<Level> dimension = DimensionAPI.getClientDimKeyFromIntId(dimensionId);
+//            ClientLevel world = ClientWorldLoader.getWorld(dimension);
+//
+//            Entity existing = world.getEntity(id);
+//
+//            if (existing instanceof Portal existingPortal) {
+//                // update existing portal (handles default animation)
+//                if (!Objects.equals(existingPortal.getUUID(), uuid)) {
+//                    LOGGER.error("UUID mismatch when syncing portal {} {}", existingPortal, uuid);
+//                    return;
+//                }
+//
+//                if (existingPortal.getType() != type) {
+//                    LOGGER.error("Entity type mismatch when syncing portal {} {}", existingPortal, type);
+//                    return;
+//                }
+//
+//                existingPortal.acceptDataSync(new Vec3(x, y, z), extraData);
+//            }
+//            else {
+//                // spawn new portal
+//                Entity entity = type.create(world);
+//                Validate.notNull(entity, "Entity type is null");
+//
+//                if (!(entity instanceof Portal portal)) {
+//                    LOGGER.error("Spawned entity is not a portal. {} {}", entity, type);
+//                    return;
+//                }
+//
+//                entity.setId(id);
+//                entity.setUUID(uuid);
+//                entity.syncPacketPositionCodec(x, y, z);
+//                entity.moveTo(x, y, z);
+//
+//                portal.readPortalDataFromNbt(extraData);
+//
+//                world.addEntity(entity);
+//
+//                ClientWorldLoader.getWorld(portal.dimensionTo);
+//                Portal.clientPortalSpawnSignal.emit(portal);
+//
+//                if (IPGlobal.clientPortalLoadDebug) {
+//                    LOGGER.info("Portal loaded to client {}", portal);
+//                }
+//            }
         }
     }
     

@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.peripheral.dim_stack;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -16,7 +14,7 @@ import qouteall.q_misc_util.my_util.GuiHelper;
 
 import java.util.function.Consumer;
 
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class DimStackScreen extends Screen {
     private static final Logger LOGGER = LoggerFactory.getLogger(DimStackScreen.class);
     

@@ -17,8 +17,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import qouteall.q_misc_util.my_util.IntBox;
 
 public class LoadingIndicatorEntity extends Entity {
@@ -66,7 +64,7 @@ public class LoadingIndicatorEntity extends Entity {
         }
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     private void tickClient() {
         addParticles();
         
@@ -82,7 +80,7 @@ public class LoadingIndicatorEntity extends Entity {
         }
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     private void addParticles() {
         int num = tickCount < 100 ? 50 : 20;
         
@@ -150,7 +148,7 @@ public class LoadingIndicatorEntity extends Entity {
         );
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     private void showMessageClient() {
         Gui inGameHud = Minecraft.getInstance().gui;
         inGameHud.setOverlayMessage(

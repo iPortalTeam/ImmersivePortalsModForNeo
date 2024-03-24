@@ -15,8 +15,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TickEvent;
 import org.jetbrains.annotations.Nullable;
@@ -442,19 +440,19 @@ public class CollisionHelper {
         });
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static void initClient() {
         NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> CollisionHelper.tickClient());
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static void tickClient() {
         updateClientCollidingStatus();
         
         updateClientStagnateStatus();
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     private static void updateClientCollidingStatus() {
         if (ClientWorldLoader.getIsInitialized()) {
             for (ClientLevel world : ClientWorldLoader.getClientWorlds()) {
@@ -520,13 +518,13 @@ public class CollisionHelper {
     private static boolean thisTickStagnate = false;
     private static boolean lastTickStagnate = false;
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static void informClientStagnant() {
         thisTickStagnate = true;
         limitedLogger.log("client movement stagnated");
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     private static void updateClientStagnateStatus() {
         if (thisTickStagnate && lastTickStagnate) {
             Minecraft.getInstance().gui.setOverlayMessage(
@@ -557,7 +555,7 @@ public class CollisionHelper {
         }
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static PortalLike getCollisionHandlingUnitClient(Portal portal) {
         return PortalGroup.getPortalUnit(portal);
     }

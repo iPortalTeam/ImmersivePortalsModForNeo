@@ -1,8 +1,6 @@
 package qouteall.q_misc_util.dimension;
 
 import com.google.common.collect.Streams;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -22,10 +20,10 @@ import java.util.stream.Collectors;
 
 public class DimensionTypeSync {
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static Map<ResourceKey<Level>, ResourceKey<DimensionType>> clientTypeMap;
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     private static Map<ResourceKey<Level>, ResourceKey<DimensionType>> typeMapFromTag(CompoundTag tag) {
         Map<ResourceKey<Level>, ResourceKey<DimensionType>> result = new HashMap<>();
         tag.getAllKeys().forEach(key -> {
@@ -42,7 +40,7 @@ public class DimensionTypeSync {
         return result;
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static void acceptTypeMapData(CompoundTag tag) {
         clientTypeMap = typeMapFromTag(tag);
         
@@ -89,7 +87,7 @@ public class DimensionTypeSync {
         return tag;
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static ResourceKey<DimensionType> getDimensionTypeKey(ResourceKey<Level> worldKey) {
         ResourceKey<DimensionType> obj = clientTypeMap.get(worldKey);
         

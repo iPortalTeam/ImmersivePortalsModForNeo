@@ -30,8 +30,6 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.INetworkDirection;
 import net.neoforged.neoforge.network.NetworkEvent;
 import net.neoforged.neoforge.network.PlayNetworkDirection;
@@ -150,7 +148,7 @@ public class ImplRemoteProcedureCall {
         });
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static void initClient() {
 //        ClientPlayNetworking.registerGlobalReceiver(
 //            MiscNetworking.id_stcRemote,
@@ -212,7 +210,7 @@ public class ImplRemoteProcedureCall {
         buf.writeUtf(jsonString);
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static Packet<ServerCommonPacketListener> createC2SPacket(
         String methodPath,
         Object... arguments
@@ -237,7 +235,7 @@ public class ImplRemoteProcedureCall {
 //        return ServerPlayNetworking.createS2CPacket(MiscNetworking.id_stcRemote, buf);
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static Runnable clientReadPacketAndGetHandler(FriendlyByteBuf buf) {
         String methodPath = null;
         
@@ -278,7 +276,7 @@ public class ImplRemoteProcedureCall {
         }
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     private static void clientTellFailure() {
         Minecraft.getInstance().gui.getChat().addMessage(Component.literal(
             "The client failed to process a packet from server. See the log for details."

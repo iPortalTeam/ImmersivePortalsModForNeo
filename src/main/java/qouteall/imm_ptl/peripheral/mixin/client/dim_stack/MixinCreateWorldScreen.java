@@ -27,13 +27,7 @@ import qouteall.imm_ptl.peripheral.ducks.IECreateWorldScreen;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.dimension.DimId;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalLong;
-import java.util.Set;
+import java.util.*;
 
 @Mixin(CreateWorldScreen.class)
 public abstract class MixinCreateWorldScreen extends Screen implements IECreateWorldScreen {

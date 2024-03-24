@@ -1,11 +1,9 @@
 package qouteall.imm_ptl.core.compat;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.ModList;
 import qouteall.q_misc_util.Helper;
 
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class IPFlywheelCompat {
     
     public static boolean isFlywheelPresent = false;

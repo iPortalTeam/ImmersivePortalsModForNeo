@@ -3,8 +3,6 @@ package qouteall.imm_ptl.peripheral.wand;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -40,7 +38,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.UUID;
 
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class ClientPortalWandPortalCopy {
     
     private sealed interface Status permits Status_SelectPortal, Status_PlacingPortal {}

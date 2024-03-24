@@ -1,16 +1,7 @@
 package qouteall.imm_ptl.core.mixin.common.miscellaneous;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import qouteall.imm_ptl.core.IPMcHelper;
-import qouteall.q_misc_util.Helper;
-
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 @Mixin(BlockGetter.class)
 public interface MixinBlockGetter { // TODO @Nick1st PRIO Get this mixin to work

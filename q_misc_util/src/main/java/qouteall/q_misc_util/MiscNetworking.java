@@ -9,8 +9,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.NetworkEvent;
 import net.neoforged.neoforge.network.PlayNetworkDirection;
@@ -88,13 +86,13 @@ public class MiscNetworking {
             Set<ResourceKey<Level>> dimIdSet = DimensionIdRecord.clientRecord.getDimIdSet();
             ((IEClientPacketListener_Misc) ctx.get().getNetworkManager().getPacketListener()).ip_setLevels(dimIdSet);
             
-            MiscHelper.executeOnRenderThread(() -> {
+//            MiscHelper.executeOnRenderThread(() -> {
                 NeoForge.EVENT_BUS.post(new DimensionEvents.ClientDimensionUpdateEvent(dimIdSet));
-            });
+//            });
         }
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static void initClient() {
 //        ClientPlayNetworking.registerGlobalReceiver(
 //            DimSyncPacket.TYPE,

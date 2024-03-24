@@ -3,8 +3,6 @@ package qouteall.imm_ptl.core.miscellaneous;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TickEvent;
 import qouteall.imm_ptl.core.CHelper;
@@ -39,7 +37,7 @@ public class GcMonitor {
     
     public static final String LINK = "https://filmora.wondershare.com/game-recording/how-to-allocate-more-ram-to-minecraft.html";
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static void initClient() {
         NeoForge.EVENT_BUS.addListener(IPGlobal.PreGameRenderEvent.class, preGameRenderEvent -> GcMonitor.update());
         
@@ -147,7 +145,7 @@ public class GcMonitor {
         }
     }
     
-    @OnlyIn(Dist.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     private static void informMemoryNotEnoughClient() {
         Minecraft client = Minecraft.getInstance();
         if (client.player != null) {

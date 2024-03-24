@@ -14,26 +14,14 @@ import qouteall.imm_ptl.core.compat.IPPortingLibCompat;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.imm_ptl.core.portal.PortalRenderInfo;
-import qouteall.imm_ptl.core.render.FrontClipping;
-import qouteall.imm_ptl.core.render.MyRenderHelper;
-import qouteall.imm_ptl.core.render.PortalRenderable;
-import qouteall.imm_ptl.core.render.PortalRenderer;
-import qouteall.imm_ptl.core.render.RendererUsingStencil;
-import qouteall.imm_ptl.core.render.ViewAreaRenderer;
+import qouteall.imm_ptl.core.render.*;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 import qouteall.imm_ptl.core.render.context_management.WorldRenderInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL11.GL_ALWAYS;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_FUNC;
-import static org.lwjgl.opengl.GL11.GL_EQUAL;
-import static org.lwjgl.opengl.GL11.GL_INCR;
-import static org.lwjgl.opengl.GL11.GL_KEEP;
-import static org.lwjgl.opengl.GL11.GL_LESS;
-import static org.lwjgl.opengl.GL11.GL_REPLACE;
-import static org.lwjgl.opengl.GL11.GL_STENCIL_TEST;
+import static org.lwjgl.opengl.GL11.*;
 
 // Iris now use the vanilla framebuffer's depth texture and support stencil
 // So a better portal rendering method for forward-shading shaders is possible
