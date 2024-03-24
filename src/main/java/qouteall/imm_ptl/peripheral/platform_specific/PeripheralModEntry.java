@@ -10,23 +10,23 @@ import qouteall.imm_ptl.peripheral.PeripheralModMain;
 @Mod(PeripheralModEntry.MODID)
 public class PeripheralModEntry {
     
-    public static final String MODID = "immersive_portals";
-
-    public PeripheralModEntry(IEventBus modEventBus) {
-        modEventBus.addListener(this::onInitialize);
-        modEventBus.addListener((FMLClientSetupEvent event) -> new PeripheralModEntryClient().onInitializeClient());
-    }
-
-    public void onInitialize(RegisterEvent event) {
-        PeripheralModMain.registerBlocks((id1, block1) -> event.register(
-            Registries.BLOCK,
-            id1,
-            () -> block1
+    
+    @Override
+    public void onInitialize() {
+        PeripheralModMain.registerBlocks((id, ele) -> Registry.register(
+            BuiltInRegistries.BLOCK, id, ele
         ));
-        PeripheralModMain.registerItems((id1, item1) -> event.register(
-            Registries.ITEM,
-            id1,
-            () -> item1
+        PeripheralModMain.registerItems((id, ele) -> Registry.register(
+            BuiltInRegistries.ITEM, id, ele
+        ));
+        PeripheralModMain.registerChunkGenerators((id, ele) -> Registry.register(
+            BuiltInRegistries.CHUNK_GENERATOR, id, ele
+        ));
+        PeripheralModMain.registerBiomeSources((id, ele) -> Registry.register(
+            BuiltInRegistries.BIOME_SOURCE, id, ele
+        ));
+        PeripheralModMain.registerCreativeTabs((id, ele) -> Registry.register(
+            BuiltInRegistries.CREATIVE_MODE_TAB, id, ele
         ));
         
         PeripheralModMain.init();

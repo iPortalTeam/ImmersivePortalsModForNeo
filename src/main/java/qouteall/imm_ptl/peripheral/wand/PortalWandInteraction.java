@@ -4,11 +4,13 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
@@ -17,7 +19,9 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.IPGlobal;
+import qouteall.imm_ptl.core.IPPerServerInfo;
 import qouteall.imm_ptl.core.McHelper;
+import qouteall.imm_ptl.core.platform_specific.IPConfig;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.PortalExtension;
 import qouteall.imm_ptl.core.portal.PortalManipulation;
@@ -39,6 +43,16 @@ public class PortalWandInteraction {
     
     private static final Logger LOGGER = LogUtils.getLogger();
     
+    private final WeakHashMap<ServerPlayer, DraggingSession> draggingSessionMap = new WeakHashMap<>();
+
+    public PortalWandInteraction() {
+
+    }
+
+    public static PortalWandInteraction of(MinecraftServer server) {
+        return IPPerServerInfo.of(server).portalWandInteraction;
+    }
+
     public static class RemoteCallables {
         public static void finishPortalCreation(
             ServerPlayer player,
@@ -223,26 +237,26 @@ public class PortalWandInteraction {
             }
         }
         
-        Portal portal = Portal.entityType.create(McHelper.getServerWorld(firstSideDimension));
+        Portal portal = Portal.ENTITY_TYPE.create(McHelper.getServerWorld(firstSideDimension));
         Validate.notNull(portal);
         portal.setOriginPos(
             firstSideLeftBottom
                 .add(firstSideHorizontalAxis.scale(0.5))
                 .add(firstSideVerticalAxis.scale(0.5))
         );
-        portal.width = firstSideWidth;
-        portal.height = firstSideHeight;
-        portal.axisW = firstSideHorizontalUnitAxis;
-        portal.axisH = firstSideVerticalUnitAxis;
+        portal.setWidth(firstSideWidth);
+        portal.setHeight(firstSideHeight);
+        portal.setAxisW(firstSideHorizontalUnitAxis);
+        portal.setAxisH(firstSideVerticalUnitAxis);
         
-        portal.dimensionTo = secondSideDimension;
+        portal.setDestDim(secondSideDimension);
         portal.setDestination(
             secondSideLeftBottom
                 .add(secondSideHorizontalAxis.scale(0.5))
                 .add(secondSideVerticalAxis.scale(0.5))
         );
         
-        portal.scaling = secondSideWidth / firstSideWidth;
+        portal.setScaling(secondSideWidth / firstSideWidth);
         
         DQuaternion secondSideOrientation = DQuaternion.matrixToQuaternion(
             secondSideHorizontalUnitAxis,
@@ -251,9 +265,9 @@ public class PortalWandInteraction {
         );
         portal.setOtherSideOrientation(secondSideOrientation);
         
-        Portal flippedPortal = PortalManipulation.createFlippedPortal(portal, Portal.entityType);
-        Portal reversePortal = PortalManipulation.createReversePortal(portal, Portal.entityType);
-        Portal parallelPortal = PortalManipulation.createFlippedPortal(reversePortal, Portal.entityType);
+        Portal flippedPortal = PortalManipulation.createFlippedPortal(portal, Portal.ENTITY_TYPE);
+        Portal reversePortal = PortalManipulation.createReversePortal(portal, Portal.ENTITY_TYPE);
+        Portal parallelPortal = PortalManipulation.createFlippedPortal(reversePortal, Portal.ENTITY_TYPE);
         
         McHelper.spawnServerEntity(portal);
         
@@ -299,20 +313,22 @@ public class PortalWandInteraction {
             }
         }
     }
-    
-    private static final WeakHashMap<ServerPlayer, DraggingSession> draggingSessionMap = new WeakHashMap<>();
-    
+
     public static void init() {
         NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
             if (event.phase == TickEvent.Phase.END) {
-                draggingSessionMap.entrySet().removeIf(
+                of(event.getServer()).draggingSessionMap.entrySet().removeIf(
                         e -> {
                             ServerPlayer player = e.getKey();
                             if (player.isRemoved()) {
                                 return true;
                             }
 
-                            return player.getMainHandItem().getItem() != PortalWandItem.instance;
+                            if (player.getMainHandItem().getItem() != PortalWandItem.instance) {
+                                return true;
+                            }
+
+                            return false;
                         }
                 );
 
@@ -325,8 +341,8 @@ public class PortalWandInteraction {
             }
         });
         
-        IPGlobal.serverCleanupSignal.connect(draggingSessionMap::clear);
-        IPGlobal.serverCleanupSignal.connect(copyingSessionMap::clear);
+        IPGlobal.SERVER_CLEANUP_EVENT.register(s -> of(s).draggingSessionMap.clear());
+        IPGlobal.SERVER_CLEANUP_EVENT.register(s -> copyingSessionMap.clear());
     }
     
     public static final class DraggingInfo {
@@ -360,7 +376,10 @@ public class PortalWandInteraction {
                     return false;
                 }
             }
-            return draggingAnchor.isValid();
+            if (!draggingAnchor.isValid()) {
+                return false;
+            }
+            return true;
         }
     }
     
@@ -395,7 +414,7 @@ public class PortalWandInteraction {
     }
     
     private static void handleFinishDrag(ServerPlayer player) {
-        DraggingSession session = draggingSessionMap.remove(player);
+        DraggingSession session = of(player.server).draggingSessionMap.remove(player);
         
         if (session == null) {
             return;
@@ -409,7 +428,8 @@ public class PortalWandInteraction {
     }
     
     private static void handleUndoDrag(ServerPlayer player) {
-        DraggingSession session = draggingSessionMap.get(player);
+        PortalWandInteraction portalWandInteraction = of(player.server);
+        DraggingSession session = portalWandInteraction.draggingSessionMap.get(player);
         
         if (session == null) {
 //            player.sendSystemMessage(Component.literal("Cannot undo"));
@@ -427,13 +447,15 @@ public class PortalWandInteraction {
         portal.reloadAndSyncToClientNextTick();
         portal.rectifyClusterPortals(true);
         
-        draggingSessionMap.remove(player);
+        portalWandInteraction.draggingSessionMap.remove(player);
     }
     
     private static void handleDraggingRequest(
         ServerPlayer player, UUID portalId, Vec3 cursorPos, DraggingInfo draggingInfo, Portal portal
     ) {
-        DraggingSession session = draggingSessionMap.get(player);
+        PortalWandInteraction portalWandInteraction = of(player.server);
+
+        DraggingSession session = portalWandInteraction.draggingSessionMap.get(player);
         
         if (session != null && session.portalId.equals(portalId)) {
             // reuse session
@@ -445,7 +467,7 @@ public class PortalWandInteraction {
                 portal.getPortalState(),
                 draggingInfo
             );
-            draggingSessionMap.put(player, session);
+            portalWandInteraction.draggingSessionMap.put(player, session);
         }
         
         UnilateralPortalState newThisSideState = applyDrag(
@@ -494,12 +516,19 @@ public class PortalWandInteraction {
         if (originalState.fromWorld != newThisSideState.dimension()) {
             return false;
         }
-
-        return !(newThisSideState.position().distanceTo(player.position()) > 64);
+        
+        if (newThisSideState.position().distanceTo(player.position()) > 64) {
+            return false;
+        }
+        
+        return true;
     }
     
     private static boolean canPlayerUsePortalWand(ServerPlayer player) {
-        return player.hasPermissions(2) || (IPGlobal.easeCreativePermission && player.isCreative());
+        return player.hasPermissions(2)
+            || (IPGlobal.easeCreativePermission && player.isCreative())
+            || (IPConfig.getConfig().portalWandUsableOnSurvivalMode
+            && player.gameMode.getGameModeForPlayer() == GameType.SURVIVAL);
     }
     
     private static void giveCommandStick(ServerPlayer player, String command) {
@@ -518,7 +547,7 @@ public class PortalWandInteraction {
     }
     
     public static boolean isDragging(ServerPlayer player) {
-        return draggingSessionMap.containsKey(player);
+        return of(player.server).draggingSessionMap.containsKey(player);
     }
     
     @Nullable
@@ -714,7 +743,7 @@ public class PortalWandInteraction {
         return newOrientation;
     }
     
-    public record OneLockDraggingResult(
+    public static record OneLockDraggingResult(
         UnilateralPortalState newState,
         Vec3 rotationAxis
     ) {
@@ -790,7 +819,7 @@ public class PortalWandInteraction {
             return;
         }
         
-        Portal portal = Portal.entityType.create(player.level());
+        Portal portal = Portal.ENTITY_TYPE.create(player.level());
         assert portal != null;
         
         portal.readPortalDataFromNbt(copyingSession.portalData);
@@ -816,18 +845,18 @@ public class PortalWandInteraction {
             McHelper.spawnServerEntity(portal);
             
             if (copyingSession.hasFlipped) {
-                Portal flippedPortal = PortalManipulation.createFlippedPortal(portal, Portal.entityType);
+                Portal flippedPortal = PortalManipulation.createFlippedPortal(portal, Portal.ENTITY_TYPE);
                 flippedPortal.resetAnimationReferenceState(true, false);
                 McHelper.spawnServerEntity(flippedPortal);
             }
             
             if (copyingSession.hasReverse) {
-                Portal reversePortal = PortalManipulation.createReversePortal(portal, Portal.entityType);
+                Portal reversePortal = PortalManipulation.createReversePortal(portal, Portal.ENTITY_TYPE);
                 reversePortal.resetAnimationReferenceState(false, true);
                 McHelper.spawnServerEntity(reversePortal);
                 
                 if (copyingSession.hasParallel) {
-                    Portal parallelPortal = PortalManipulation.createFlippedPortal(reversePortal, Portal.entityType);
+                    Portal parallelPortal = PortalManipulation.createFlippedPortal(reversePortal, Portal.ENTITY_TYPE);
                     parallelPortal.resetAnimationReferenceState(false, true);
                     McHelper.spawnServerEntity(parallelPortal);
                 }

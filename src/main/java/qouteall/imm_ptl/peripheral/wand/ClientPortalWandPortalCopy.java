@@ -30,6 +30,7 @@ import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.api.McRemoteProcedureCall;
 import qouteall.q_misc_util.my_util.AARotation;
 import qouteall.q_misc_util.my_util.DQuaternion;
+import qouteall.q_misc_util.my_util.RayTraceResult;
 import qouteall.q_misc_util.my_util.WithDim;
 import qouteall.q_misc_util.my_util.animation.Animated;
 import qouteall.q_misc_util.my_util.animation.RenderedPoint;
@@ -115,7 +116,7 @@ public class ClientPortalWandPortalCopy {
         if (status instanceof Status_SelectPortal statusSelectPortal) {
             cursor.clearTarget();
             
-            Pair<Portal, Vec3> rayTraceResult = PortalUtils.lenientRayTracePortals(
+            Pair<Portal, RayTraceResult> rayTraceResult = PortalUtils.lenientRayTracePortals(
                 player.level(),
                 eyePos,
                 eyePos.add(viewVec.scale(64)),
@@ -178,7 +179,7 @@ public class ClientPortalWandPortalCopy {
             
             AARotation orientationRot = Arrays.stream(AARotation.values())
                 .min(Comparator.comparingDouble(
-                    r -> DQuaternion.distance(r.quaternion, camRotInverse)
+                    r -> DQuaternion.distanceSq(r.quaternion, camRotInverse)
                 ))
                 .orElseThrow();
             DQuaternion orientation = orientationRot.quaternion;
@@ -222,7 +223,7 @@ public class ClientPortalWandPortalCopy {
                 Portal portal = WandUtil.getClientPortalByUUID(statusSelectPortal.selectedPortalId);
                 if (portal != null) {
                     status = new Status_PlacingPortal(
-                        new PlacementRequirement(portal.width, portal.height),
+                        new PlacementRequirement(portal.getWidth(), portal.getHeight()),
                         true
                     );
                     McRemoteProcedureCall.tellServerToInvoke(
@@ -249,7 +250,7 @@ public class ClientPortalWandPortalCopy {
                 Portal portal = WandUtil.getClientPortalByUUID(statusSelectPortal.selectedPortalId);
                 if (portal != null) {
                     status = new Status_PlacingPortal(
-                        new PlacementRequirement(portal.width, portal.height),
+                        new PlacementRequirement(portal.getWidth(), portal.getHeight()),
                         false
                     );
                     McRemoteProcedureCall.tellServerToInvoke(

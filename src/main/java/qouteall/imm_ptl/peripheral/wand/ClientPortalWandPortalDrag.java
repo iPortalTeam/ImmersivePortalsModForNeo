@@ -33,12 +33,21 @@ import qouteall.imm_ptl.core.render.context_management.RenderStates;
 import qouteall.q_misc_util.CustomTextOverlay;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.api.McRemoteProcedureCall;
-import qouteall.q_misc_util.my_util.*;
+import qouteall.q_misc_util.my_util.Circle;
+import qouteall.q_misc_util.my_util.DQuaternion;
+import qouteall.q_misc_util.my_util.Plane;
+import qouteall.q_misc_util.my_util.RayTraceResult;
+import qouteall.q_misc_util.my_util.Sphere;
+import qouteall.q_misc_util.my_util.WithDim;
 import qouteall.q_misc_util.my_util.animation.Animated;
 import qouteall.q_misc_util.my_util.animation.RenderedPlane;
 import qouteall.q_misc_util.my_util.animation.RenderedPoint;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -55,7 +64,7 @@ public class ClientPortalWandPortalDrag {
     private static boolean lockWidth = false;
     private static boolean lockHeight = false;
     
-    private record SelectionStatus(
+    private static record SelectionStatus(
         PortalLocalXYNormalized selectedAnchor,
         boolean selectsHorizontalEdge,
         boolean selectsVerticalEdge
@@ -94,7 +103,7 @@ public class ClientPortalWandPortalDrag {
         RenderedPlane.NONE
     );
     
-    private static final Animated<RenderedPoint> renderedLockedAnchor = new Animated<>(
+    private static Animated<RenderedPoint> renderedLockedAnchor = new Animated<>(
         Animated.RENDERED_POINT_TYPE_INFO,
         () -> RenderStates.renderStartNanoTime,
         TimingFunction.circle::mapProgress,
@@ -115,14 +124,14 @@ public class ClientPortalWandPortalDrag {
         0.0
     );
     
-    private static final Animated<Double> renderedWidthLock = new Animated<>(
+    private static Animated<Double> renderedWidthLock = new Animated<>(
         Animated.DOUBLE_DEFAULT_ZERO_TYPE_INFO,
         () -> RenderStates.renderStartNanoTime,
         TimingFunction.sine::mapProgress,
         0.0
     );
     
-    private static final Animated<Double> renderedHeightLock = new Animated<>(
+    private static Animated<Double> renderedHeightLock = new Animated<>(
         Animated.DOUBLE_DEFAULT_ZERO_TYPE_INFO,
         () -> RenderStates.renderStartNanoTime,
         TimingFunction.sine::mapProgress,
@@ -144,7 +153,7 @@ public class ClientPortalWandPortalDrag {
     // don't restart dragging in the process
     private static boolean isUndoing = false;
     
-    private record DraggingContext(
+    private static record DraggingContext(
         ResourceKey<Level> dimension,
         @NotNull
         UUID portalId,
@@ -305,7 +314,7 @@ public class ClientPortalWandPortalDrag {
         Vec3 eyePos = player.getEyePosition(RenderStates.getPartialTick());
         Vec3 viewVec = player.getLookAngle();
         
-        Pair<Portal, Vec3> rayTraceResult = PortalUtils.lenientRayTracePortals(
+        Pair<Portal, RayTraceResult> rayTraceResult = PortalUtils.lenientRayTracePortals(
             player.level(),
             eyePos,
             eyePos.add(viewVec.scale(64)),
@@ -337,7 +346,7 @@ public class ClientPortalWandPortalDrag {
         }
         
         Portal portal = rayTraceResult.getFirst();
-        Vec3 hitPos = rayTraceResult.getSecond();
+        Vec3 hitPos = rayTraceResult.getSecond().hitPos();
         
         if (selectedPortalId == null) {
             selectedPortalId = portal.getUUID();
@@ -778,16 +787,16 @@ public class ClientPortalWandPortalDrag {
         Predicate<Vec3> isOrthodox = p ->
             Math.abs(p.dot(X)) > 0.9999 || Math.abs(p.dot(Y)) > 0.9999 || Math.abs(p.dot(Z)) > 0.9999;
         
-        if (!isOrthodox.test(portal.axisW)) {
+        if (!isOrthodox.test(portal.getAxisW())) {
             candidates.add(Pair.of(
-                new Plane(cursorPos, portal.axisW),
+                new Plane(cursorPos, portal.getAxisW()),
                 Component.translatable("imm_ptl.wand.plane.portal_x")
             ));
         }
         
-        if (!isOrthodox.test(portal.axisH)) {
+        if (!isOrthodox.test(portal.getAxisH())) {
             candidates.add(Pair.of(
-                new Plane(cursorPos, portal.axisH),
+                new Plane(cursorPos, portal.getAxisH()),
                 Component.translatable("imm_ptl.wand.plane.portal_y")
             ));
         }

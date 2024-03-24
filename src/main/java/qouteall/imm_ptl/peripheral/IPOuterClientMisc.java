@@ -94,7 +94,7 @@ public class IPOuterClientMisc {
             }
         }
         
-        Portal.clientPortalSpawnSignal.connect(p -> {
+        Portal.CLIENT_PORTAL_SPAWN_EVENT.register(p -> {
             LocalPlayer player = Minecraft.getInstance().player;
             
             if (!outerConfig.wikiInformed) {

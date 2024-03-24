@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "qouteall.q_misc_util.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "IELevelStorageAccess_Misc",
+    "MixinMinecraftServer_Misc",
+    "dimension.MixinPlayerList_Misc"
+  ],
+  "client": [
+    "client.IEClientPacketListener_Misc",
+    "client.MixinGui_Overlay"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

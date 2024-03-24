@@ -1,0 +1,214 @@
+package qouteall.imm_ptl.core.portal.animation;
+
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
+import qouteall.imm_ptl.core.ClientWorldLoader;
+import qouteall.imm_ptl.core.IPCGlobal;
+import qouteall.imm_ptl.core.portal.Portal;
+import qouteall.imm_ptl.core.portal.PortalExtension;
+import qouteall.imm_ptl.core.portal.PortalState;
+import qouteall.q_misc_util.Helper;
+import qouteall.q_misc_util.my_util.Signal;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.function.Consumer;
+
+//@OnlyIn(Dist.CLIENT)
+public class ClientPortalAnimationManagement {
+    public static class ClientPortalDefaultAnimationFinishEvent extends Event {
+        public final Portal portal;
+
+        public ClientPortalDefaultAnimationFinishEvent(Portal portal) {
+            this.portal = portal;
+        }
+    }
+//    public static final Event<Consumer<Portal>> CLIENT_PORTAL_DEFAULT_ANIMATION_FINISH =
+//        Helper.createConsumerEvent();
+    
+    private static final Map<Portal, RunningDefaultAnimation> defaultAnimatedPortals = new HashMap<>();
+    private static final HashSet<Portal> customAnimatedPortals = new HashSet<>();
+    
+    public static final Signal clientAnimationUpdateSignal = new Signal();
+    
+    public static void init() {
+        IPCGlobal.CLIENT_CLEANUP_EVENT.register(ClientPortalAnimationManagement::cleanup);
+        ClientWorldLoader.CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT.register(dim -> cleanup());
+    }
+    
+    public static void addDefaultAnimation(
+        Portal portal,
+        PortalState fromState,
+        PortalState toState,
+        DefaultPortalAnimation animation
+    ) {
+        if (animation.durationTicks <= 0) {
+            return;
+        }
+        
+        long currTime = System.nanoTime();
+        RunningDefaultAnimation runningDefaultAnimation = new RunningDefaultAnimation(
+            fromState,
+            toState,
+            currTime,
+            currTime + Helper.secondToNano(animation.durationTicks / 20.0),
+            animation.timingFunction,
+            animation.inverseScale
+        );
+        defaultAnimatedPortals.put(portal, runningDefaultAnimation);
+    }
+    
+    public static void markRequiresCustomAnimationUpdate(Portal portal) {
+        customAnimatedPortals.add(portal);
+        defaultAnimatedPortals.remove(portal);
+    }
+    
+    public static void tick() {
+        // update the portal state to the end of the tick
+        updateCustomAnimations(true);
+        
+        // update the portal state to the immediate state for teleportation
+        updateCustomAnimations(false);
+        
+//        debugCheck();
+    }
+    
+    public static void debugCheck() {
+        // debug
+        for (Portal portal : customAnimatedPortals) {
+            PortalExtension.forClusterPortals(portal, p -> {
+                PortalState thisTickAnimatedState = p.animation.thisTickAnimatedState;
+                PortalState lastTickAnimatedState = p.animation.lastTickAnimatedState;
+                if (thisTickAnimatedState == null || lastTickAnimatedState == null) {
+                    Helper.log("ouch");
+                }
+            });
+        }
+    }
+    
+    public static void update() {
+        long currTime = System.nanoTime();
+        
+        defaultAnimatedPortals.entrySet().removeIf(entry -> {
+            Portal portal = entry.getKey();
+            RunningDefaultAnimation animation = entry.getValue();
+            
+            if (portal.isRemoved()) {
+                return true;
+            }
+            
+            if (currTime > animation.toTimeNano) {
+                portal.setPortalState(animation.toState);
+                // animation finished
+                NeoForge.EVENT_BUS.post(new ClientPortalDefaultAnimationFinishEvent(portal));
+                return true;
+            }
+            
+            PortalState currentState = animation.getCurrentState(currTime);
+            
+            if (currentState.fromWorld != portal.getOriginDim()) {
+                // stop animation
+                return true;
+            }
+            
+            if (currentState.toWorld != portal.getDestDim()) {
+                // stop animation
+                return true;
+            }
+            
+            portal.setPortalState(currentState);
+            
+            return false;
+        });
+        
+        updateCustomAnimations(false);
+    
+        clientAnimationUpdateSignal.emit();
+    }
+    
+    private static void updateCustomAnimations(boolean isTicking) {
+        long stableTickTime = StableClientTimer.getStableTickTime();
+        float stablePartialTicks = StableClientTimer.getStablePartialTicks();
+        
+        // if isTicking, update the portal as if it's one tick later
+        // due to the presence of StableClientTimer, the partialTick in ticking may be non 0
+        long usedTickTime = isTicking ? stableTickTime + 1 : stableTickTime;
+        float usedPartialTicks = stablePartialTicks;
+        
+        customAnimatedPortals.removeIf(portal -> {
+            if (portal.isRemoved()) {
+                return true;
+            }
+            
+            if (!portal.animation.hasAnimationDriver()) {
+                return true;
+            }
+            
+            portal.animation.updateAnimationDriver(
+                portal,
+                portal.animation,
+                usedTickTime,
+                portal.animation.isPaused() ? 0 : usedPartialTicks,
+                isTicking,
+                !isTicking
+                // in client, the animation is updated in two cases: ticking and before rendering a frame
+                // if it's ticking, the animation should be updated as the end of the tick which is ahead of the current time
+                // to make the animation stop smoothly, don't remove the animation during ticking
+            );
+            
+            // remove the entry if animation finishes
+            return !portal.animation.hasAnimationDriver();
+        });
+    }
+    
+    private static void cleanup() {
+        defaultAnimatedPortals.clear();
+        customAnimatedPortals.clear();
+    }
+    
+    public static void foreachCustomAnimatedPortals(Consumer<Portal> consumer) {
+        customAnimatedPortals.forEach(consumer);
+    }
+    
+    public static class RunningDefaultAnimation {
+        public PortalState fromState;
+        public PortalState toState;
+        public long startTimeNano;
+        public long toTimeNano;
+        public TimingFunction timingFunction;
+        public boolean inverseScale;
+        
+        public RunningDefaultAnimation(
+            PortalState fromState, PortalState toState, long startTimeNano, long toTimeNano,
+            TimingFunction timingFunction,
+            boolean inverseScale
+        ) {
+            this.fromState = fromState;
+            this.toState = toState;
+            this.startTimeNano = startTimeNano;
+            this.toTimeNano = toTimeNano;
+            this.timingFunction = timingFunction;
+            this.inverseScale = inverseScale;
+        }
+        
+        public PortalState getCurrentState(long currTime) {
+            
+            double progress = (currTime - this.startTimeNano)
+                / ((double) (this.toTimeNano - this.startTimeNano));
+            
+            if (progress < 0) {
+                Helper.err("invalid portal animation");
+                progress = 0;
+            }
+            
+            progress = this.timingFunction.mapProgress(progress);
+            
+            PortalState currState = PortalState.interpolate(
+                this.fromState, this.toState, progress, inverseScale
+            );
+            
+            return currState;
+        }
+    }
+}
