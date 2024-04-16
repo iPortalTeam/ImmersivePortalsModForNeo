@@ -3,8 +3,8 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.100'
-    id 'net.neoforged.gradle.mixin' version '7.0.100'
+    id 'net.neoforged.gradle.userdev' version '7.0.105'
+    id 'net.neoforged.gradle.mixin' version '7.0.105'
 }
 
 apply from: "allProjects.gradle"
@@ -15,20 +15,25 @@ base {
 
 jarJar.enable()
 
-//minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
-minecraft.accessTransformers.entry 'public net.minecraft.client.gui.screens.worldselection.CreateWorldScreen$MoreTab # MoreTab class'
-
-// AccessTransformers core
-minecraft.accessTransformers.entry 'public net.minecraft.server.level.ChunkMap$TrackedEntity # TrackedEntity class'
-minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.ClientChunkCache level # level field'
-minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.ClientChunkCache emptyChunk # emptyChunk field'
-minecraft.accessTransformers.entry 'public-f net.minecraft.util.profiling.ActiveProfiler WARNING_TIME_NANOS # WARNING_TIME_NANOS field'
-minecraft.accessTransformers.entry 'public net.minecraft.resources.RegistryDataLoader$Loader # Loader class'
-minecraft.accessTransformers.entry 'public net.minecraft.client.renderer.chunk.SectionRenderDispatcher$RenderSection$CompileTask # CompileTask class'
-minecraft.accessTransformers.entry 'public net.minecraft.world.level.biome.BiomeManager biomeZoomSeed # biomeZoomSeed field'
-minecraft.accessTransformers.entry 'public net.minecraft.server.MinecraftServer storageSource # storageSource field'
-minecraft.accessTransformers.entry 'public-f net.minecraft.world.entity.Entity getBoundingBox()Lnet/minecraft/world/phys/AABB; # getBoundingBox()'
-minecraft.accessTransformers.entry 'public  net.minecraft.world.entity.EntityType$Builder dimensions # dimensions field'
+// AccessTransformers
+minecraft.accessTransformers.entry 'public net.minecraft.server.MinecraftServer storageSource'
+minecraft.accessTransformers.entry 'public net.minecraft.world.level.biome.BiomeManager biomeZoomSeed'
+minecraft.accessTransformers.entry 'public-f net.minecraft.util.profiling.ActiveProfiler WARNING_TIME_NANOS'
+minecraft.accessTransformers.entry 'public net.minecraft.server.level.ChunkMap$TrackedEntity'
+minecraft.accessTransformers.entry 'public net.minecraft.world.level.GameRules register(Ljava/lang/String;Lnet/minecraft/world/level/GameRules$Category;Lnet/minecraft/world/level/GameRules$Type;)Lnet/minecraft/world/level/GameRules$Key;'
+minecraft.accessTransformers.entry 'public net.minecraft.world.level.GameRules$BooleanValue create(Z)Lnet/minecraft/world/level/GameRules$Type;'
+minecraft.accessTransformers.entry 'public com.mojang.blaze3d.shaders.Program$Type getGlType()I'
+minecraft.accessTransformers.entry 'public-f net.minecraft.world.entity.Entity getBoundingBox()Lnet/minecraft/world/phys/AABB;'
+//minecraft.accessTransformers.entry 'public net.minecraft.client.renderer.LevelRenderer$RenderChunkInfo'
+//minecraft.accessTransformers.entry 'public net.minecraft.client.renderer.LevelRenderer$RenderChunkInfo <init>(Lnet/minecraft/client/renderer/chunk/ChunkRenderDispatcher$RenderChunk;Lnet/minecraft/core/Direction;I)V'
+minecraft.accessTransformers.entry 'public net.minecraft.client.renderer.chunk.SectionRenderDispatcher$RenderSection$CompileTask'
+minecraft.accessTransformers.entry 'public-f net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator'
+minecraft.accessTransformers.entry 'public net.minecraft.resources.RegistryDataLoader$Loader'
+minecraft.accessTransformers.entry 'public net.minecraft.client.gui.screens.worldselection.CreateWorldScreen$MoreTab'
+minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.ClientChunkCache emptyChunk'
+minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.ClientChunkCache lightEngine'
+minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.ClientChunkCache storage'
+minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.ClientChunkCache level'
 
 //sourceSets {
 //    main {
