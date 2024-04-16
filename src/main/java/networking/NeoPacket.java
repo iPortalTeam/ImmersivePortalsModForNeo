@@ -1,4 +1,4 @@
-package qouteall.q_misc_util.de.nick1st.neo.networking;
+package networking;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;

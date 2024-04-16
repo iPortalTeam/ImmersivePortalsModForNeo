@@ -1,10 +1,6 @@
 package qouteall.imm_ptl.peripheral;
 
 import com.mojang.serialization.Codec;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
@@ -13,13 +9,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import qouteall.dimlib.api.DimensionAPI;
-import qouteall.imm_ptl.peripheral.alternate_dimension.AlternateDimensions;
-import qouteall.imm_ptl.peripheral.alternate_dimension.ChaosBiomeSource;
-import qouteall.imm_ptl.peripheral.alternate_dimension.ErrorTerrainGenerator;
-import qouteall.imm_ptl.peripheral.alternate_dimension.FormulaGenerator;
-import qouteall.imm_ptl.peripheral.alternate_dimension.NormalSkylandGenerator;
+import qouteall.imm_ptl.peripheral.alternate_dimension.*;
 import qouteall.imm_ptl.peripheral.dim_stack.DimStackManagement;
 import qouteall.imm_ptl.peripheral.portal_generation.IntrinsicPortalGeneration;
 import qouteall.imm_ptl.peripheral.wand.ClientPortalWandPortalDrag;

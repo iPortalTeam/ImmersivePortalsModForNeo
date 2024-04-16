@@ -3,8 +3,8 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.97'
-    id 'net.neoforged.gradle.mixin' version '7.0.97'
+    id 'net.neoforged.gradle.userdev' version '7.0.100'
+    id 'net.neoforged.gradle.mixin' version '7.0.100'
 }
 
 apply from: "allProjects.gradle"
@@ -62,8 +62,6 @@ runs {
 //            project(":q_misc_util").sourceSets.main,
 //            project.sourceSets.main
 //        ]
-        modSource project(":q_misc_util").sourceSets.main
-        modSource project(":imm_ptl_core").sourceSets.main
         modSource project.sourceSets.main
     }
 
@@ -133,8 +131,8 @@ dependencies {
 //    // For more info:
 //    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
 //    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-    implementation project(":imm_ptl_core")
-    implementation project(":q_misc_util")
+//    implementation project(":imm_ptl_core")
+//    implementation project(":q_misc_util")
 
 //    implementation(jarJar("io.github.llamalad7:mixinextras-neoforge:0.2.1")) {
 //        jarJar.ranged(it, "[0.2.1,)")

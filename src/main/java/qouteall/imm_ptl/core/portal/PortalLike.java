@@ -52,8 +52,8 @@ public interface PortalLike {
     Level getDestWorld();
     
     ResourceKey<Level> getDestDim();
-    
-    @Environment(EnvType.CLIENT)
+
+    //@OnlyIn(Dist.CLIENT)
     boolean isRoughlyVisibleTo(Vec3 cameraPos);
     
     @Nullable

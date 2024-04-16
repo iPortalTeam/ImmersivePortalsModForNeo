@@ -35,7 +35,7 @@ import net.neoforged.neoforge.network.NetworkEvent;
 import net.neoforged.neoforge.network.PlayNetworkDirection;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
-import qouteall.q_misc_util.de.nick1st.neo.networking.NeoPacket;
+import networking.NeoPacket;
 import qouteall.q_misc_util.my_util.DQuaternion;
 import qouteall.q_misc_util.my_util.LimitedLogger;
 

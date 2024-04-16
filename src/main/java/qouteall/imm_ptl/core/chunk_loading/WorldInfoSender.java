@@ -43,7 +43,6 @@ public class WorldInfoSender {
                 }
                 event.getServer().getProfiler().pop();
             }
-            server.getProfiler().pop();
         });
     }
     

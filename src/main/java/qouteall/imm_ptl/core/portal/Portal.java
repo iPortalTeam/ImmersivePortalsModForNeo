@@ -30,6 +30,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PlayNetworkDirection;
+import networking.NeoPacket;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

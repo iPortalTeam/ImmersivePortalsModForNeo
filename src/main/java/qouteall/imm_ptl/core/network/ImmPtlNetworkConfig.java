@@ -10,7 +10,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.LoginNetworkDirection;
 import net.neoforged.neoforge.network.NetworkEvent;
 import net.neoforged.neoforge.network.PlayNetworkDirection;
@@ -22,8 +21,8 @@ import qouteall.imm_ptl.core.IPMcHelper;
 import qouteall.imm_ptl.core.mixin.common.other_sync.IEServerConfigurationPacketListenerImpl;
 import qouteall.imm_ptl.core.platform_specific.IPConfig;
 import qouteall.imm_ptl.core.platform_specific.O_O;
-import qouteall.q_misc_util.de.nick1st.neo.networking.NeoPacket;
-import qouteall.q_misc_util.de.nick1st.neo.networking.PacketType;
+import networking.NeoPacket;
+import networking.PacketType;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

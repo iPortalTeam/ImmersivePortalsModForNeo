@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core.api;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -157,12 +155,12 @@ public class PortalAPI {
         ImmPtlChunkTracking.syncBlockUpdateToClientImmediately(world, box);
     }
     
-    @Environment(EnvType.CLIENT)
+    //@OnlyIn(Dist.CLIENT)
     public static int clientDimKeyToInt(ResourceKey<Level> dimension) {
         return DimensionIntId.getClientMap().toIntegerId(dimension);
     }
-    
-    @Environment(EnvType.CLIENT)
+
+    //@OnlyIn(Dist.CLIENT)
     public static ResourceKey<Level> clientIntToDimKey(int integerId) {
         return DimensionIntId.getClientMap().fromIntegerId(integerId);
     }
