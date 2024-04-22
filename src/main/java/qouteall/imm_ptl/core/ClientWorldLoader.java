@@ -1,5 +1,6 @@
 package qouteall.imm_ptl.core;
 
+import de.nick1st.imm_ptl.events.ClientExitEvent;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -93,9 +94,7 @@ public class ClientWorldLoader {
             }
         });
 
-        IPCGlobal.CLIENT_EXIT_EVENT.register(() -> {
-            dimIdToDimTypeId = null;
-        });
+        NeoForge.EVENT_BUS.addListener(ClientExitEvent.class, (e) -> dimIdToDimTypeId = null);
     }
     
     public static boolean getIsInitialized() {

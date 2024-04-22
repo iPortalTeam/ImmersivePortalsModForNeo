@@ -8,7 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
-import io.netty.buffer.Unpooled;
+import de.nick1st.q_misc_util.networking.ImplRPCPayload;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -17,12 +17,10 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.common.ClientCommonPacketListener;
-import net.minecraft.network.protocol.common.ServerCommonPacketListener;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -30,12 +28,9 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.INetworkDirection;
-import net.neoforged.neoforge.network.NetworkEvent;
-import net.neoforged.neoforge.network.PlayNetworkDirection;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
-import networking.NeoPacket;
 import qouteall.q_misc_util.my_util.DQuaternion;
 import qouteall.q_misc_util.my_util.LimitedLogger;
 
@@ -123,42 +118,6 @@ public class ImplRemoteProcedureCall {
             .build();
     }
     
-    public static void init() {
-//        ServerPlayNetworking.registerGlobalReceiver(
-//            MiscNetworking.id_ctsRemote,
-//            (server, player, handler, buf, responseSender) -> {
-//                Runnable runnable = serverReadPacketAndGetHandler(player, buf);
-//                MiscHelper.executeOnServerThread(server, runnable);
-//            }
-//        );
-        NeoPacket.register(MiscNetworking.id_ctsRemote, networkEvent -> { // TODO @Nick1st check
-            if (!(networkEvent instanceof NetworkEvent.ChannelRegistrationChangeEvent)) {
-                Runnable runnable = serverReadPacketAndGetHandler(networkEvent.getSource().getSender(), networkEvent.getPayload());
-                MiscHelper.executeOnServerThread(networkEvent.getSource().getSender().server, runnable);
-            }
-            networkEvent.getSource().setPacketHandled(true);
-        });
-
-        NeoPacket.register(MiscNetworking.id_stcRemote, networkEvent -> { // TODO @Nick1st check
-            if (!(networkEvent instanceof NetworkEvent.ChannelRegistrationChangeEvent)) {
-                Runnable runnable = clientReadPacketAndGetHandler(networkEvent.getPayload());
-                MiscHelper.executeOnRenderThread(runnable);
-            }
-            networkEvent.getSource().setPacketHandled(true);
-        });
-    }
-    
-    //@OnlyIn(Dist.CLIENT)
-    public static void initClient() {
-//        ClientPlayNetworking.registerGlobalReceiver(
-//            MiscNetworking.id_stcRemote,
-//            (client, handler, buf, responseSender) -> {
-//                Runnable runnable = clientReadPacketAndGetHandler(buf);
-//                MiscHelper.executeOnRenderThread(runnable);
-//            }
-//        );
-    }
-    
     @SuppressWarnings("rawtypes")
     private static Object deserializeByCodec(FriendlyByteBuf buf, Codec codec) {
         String jsonString = buf.readUtf();
@@ -209,35 +168,12 @@ public class ImplRemoteProcedureCall {
         String jsonString = gson.toJson(result);
         buf.writeUtf(jsonString);
     }
-    
-    //@OnlyIn(Dist.CLIENT)
-    public static Packet<ServerCommonPacketListener> createC2SPacket(
-        String methodPath,
-        Object... arguments
-    ) {
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        
-        serializeStringWithArguments(methodPath, arguments, buf);
 
-        return (Packet<ServerCommonPacketListener>) PlayNetworkDirection.PLAY_TO_SERVER.buildPacket(new INetworkDirection.PacketData(buf, 0), MiscNetworking.id_ctsRemote); // TODO @Nick1st check
-//        return ClientPlayNetworking.createC2SPacket(MiscNetworking.id_ctsRemote, buf);
-    }
-    
-    public static Packet<ClientCommonPacketListener> createS2CPacket(
-        String methodPath,
-        Object... arguments
-    ) {
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        
-        serializeStringWithArguments(methodPath, arguments, buf);
-
-        return (Packet<ClientCommonPacketListener>) PlayNetworkDirection.PLAY_TO_CLIENT.buildPacket(new INetworkDirection.PacketData(buf, 0), MiscNetworking.id_stcRemote); // TODO @Nick1st check
-//        return ServerPlayNetworking.createS2CPacket(MiscNetworking.id_stcRemote, buf);
-    }
-    
     //@OnlyIn(Dist.CLIENT)
-    public static Runnable clientReadPacketAndGetHandler(FriendlyByteBuf buf) {
+    public static ImplRPCPayload clientReadPacketAndGetHandler(FriendlyByteBuf buf) {
         String methodPath = null;
+
+        Runnable r;
         
         try {
             methodPath = buf.readUtf();
@@ -253,7 +189,7 @@ public class ImplRemoteProcedureCall {
                 arguments[i] = obj;
             }
             
-            return () -> {
+            r = () -> {
                 try {
                     method.invoke(null, arguments);
                 }
@@ -272,8 +208,14 @@ public class ImplRemoteProcedureCall {
                 clientTellFailure();
             });
             
-            return () -> {};
+            r = () -> {};
         }
+        return new ImplRPCPayload(r) {
+            @Override
+            public ResourceLocation id() {
+                return MiscNetworking.id_stcRemote;
+            }
+        };
     }
     
     //@OnlyIn(Dist.CLIENT)
@@ -282,54 +224,130 @@ public class ImplRemoteProcedureCall {
             "The client failed to process a packet from server. See the log for details."
         ).withStyle(ChatFormatting.RED));
     }
-    
-    public static Runnable serverReadPacketAndGetHandler(ServerPlayer player, FriendlyByteBuf buf) {
+
+    // @Nick1st split into two methods on Neo Port (serverReadPacket(), handleServerPayload())
+//    public static ImplRPCPayload serverReadPacketAndGetHandler(ServerPlayer player, FriendlyByteBuf buf) {
+//        String methodPath = null;
+//        Runnable r;
+//        try {
+//            methodPath = buf.readUtf();
+//            Method method = getMethodByPath(methodPath);
+//
+//            Type[] genericParameterTypes = method.getGenericParameterTypes();
+//
+//            Object[] arguments = new Object[genericParameterTypes.length];
+//            arguments[0] = player;
+//
+//            //the first argument is the player
+//            for (int i = 1; i < genericParameterTypes.length; i++) {
+//                Type parameterType = genericParameterTypes[i];
+//                Object obj = deserializeArgument(buf, parameterType);
+//                arguments[i] = obj;
+//            }
+//
+//            r = () -> {
+//                try {
+//                    method.invoke(null, arguments);
+//                }
+//                catch (Exception e) {
+//                    LIMITED_LOGGER.invoke(() -> {
+//                        LOGGER.error("Processing remote procedure call {}", player, e);
+//                        serverTellFailure(player);
+//                    });
+//                }
+//            };
+//        }
+//        catch (Exception e) {
+//            String methodPath_ = methodPath;
+//            LIMITED_LOGGER.invoke(() -> {
+//                LOGGER.error("Failed to parse remote procedure call {}", methodPath_, e);
+//                serverTellFailure(player);
+//            });
+//            r = () -> {};
+//        }
+//        return new ImplRPCPayload(r) {
+//            @Override
+//            public ResourceLocation id() {
+//                return MiscNetworking.id_ctsRemote;
+//            }
+//        };
+//    }
+
+    public static ImplRPCPayload serverReadPacket(FriendlyByteBuf buf) {
         String methodPath = null;
         try {
             methodPath = buf.readUtf();
             Method method = getMethodByPath(methodPath);
-            
+
             Type[] genericParameterTypes = method.getGenericParameterTypes();
-            
+
             Object[] arguments = new Object[genericParameterTypes.length];
-            arguments[0] = player;
-            
+
             //the first argument is the player
             for (int i = 1; i < genericParameterTypes.length; i++) {
                 Type parameterType = genericParameterTypes[i];
                 Object obj = deserializeArgument(buf, parameterType);
                 arguments[i] = obj;
             }
-            
-            return () -> {
+
+            return new ImplRPCPayload(methodPath, arguments) {
+                @Override
+                public ResourceLocation id() {
+                    return MiscNetworking.id_ctsRemote;
+                }
+            };
+        }
+        catch (Exception e) {
+            // Swallow the exception and handle it later (Within the handler method)
+        }
+        return new ImplRPCPayload(methodPath, new Object[0]) {
+            @Override
+            public ResourceLocation id() {
+                return MiscNetworking.id_ctsRemote;
+            }
+        };
+    }
+
+    public static Runnable handleServerPayload(ImplRPCPayload payload, PlayPayloadContext context) {
+        Runnable r;
+        Player player = context.player().orElseThrow();
+        try {
+            Method method = getMethodByPath(payload.methodPath);
+
+            Object[] arguments = payload.arguments;
+
+            arguments[0] = player;
+
+            r = () -> {
                 try {
                     method.invoke(null, arguments);
                 }
                 catch (Exception e) {
                     LIMITED_LOGGER.invoke(() -> {
                         LOGGER.error("Processing remote procedure call {}", player, e);
-                        serverTellFailure(player);
+                        serverTellFailure((ServerPlayer) player);
                     });
                 }
             };
         }
         catch (Exception e) {
-            String methodPath_ = methodPath;
+            String methodPath_ = payload.methodPath;
             LIMITED_LOGGER.invoke(() -> {
                 LOGGER.error("Failed to parse remote procedure call {}", methodPath_, e);
-                serverTellFailure(player);
+                serverTellFailure((ServerPlayer) player);
             });
-            return () -> {};
+            r = () -> {};
         }
+        return r;
     }
-    
+
     private static void serverTellFailure(ServerPlayer player) {
         player.sendSystemMessage(Component.literal(
             "The server failed to process a packet sent from client."
         ).withStyle(ChatFormatting.RED));
     }
     
-    private static void serializeStringWithArguments(
+    public static void serializeStringWithArguments(
         String methodPath, Object[] arguments, FriendlyByteBuf buf
     ) {
         buf.writeUtf(methodPath);
@@ -339,7 +357,7 @@ public class ImplRemoteProcedureCall {
         }
     }
     
-    private static Method getMethodByPath(String methodPath) {
+    public static Method getMethodByPath(String methodPath) {
         Method result = methodCache.get(methodPath);
         if (result != null) {
             return result;

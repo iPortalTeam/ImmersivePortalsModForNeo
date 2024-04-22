@@ -1,11 +1,10 @@
 package qouteall.q_misc_util.api;
 
+import de.nick1st.q_misc_util.networking.ImplRPCPayload;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.common.ClientCommonPacketListener;
-import net.minecraft.network.protocol.common.ServerCommonPacketListener;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import qouteall.q_misc_util.ImplRemoteProcedureCall;
+import qouteall.q_misc_util.MiscNetworking;
 
 /**
  * <p>
@@ -111,10 +110,16 @@ public class McRemoteProcedureCall {
     /**
      * Same as the above, but only creates packet and does not send.
      */
-    public static Packet<ClientCommonPacketListener> createPacketToSendToClient(
+    public static ImplRPCPayload createPacketToSendToClient(
         String methodPath, Object... arguments
     ) {
-        return ImplRemoteProcedureCall.createS2CPacket(methodPath, arguments);
+        return new ImplRPCPayload(methodPath, arguments) {
+
+            @Override
+            public ResourceLocation id() {
+                return MiscNetworking.id_stcRemote;
+            }
+        };
     }
     
     /**
@@ -149,9 +154,15 @@ public class McRemoteProcedureCall {
         Minecraft.getInstance().getConnection().send(packet);
     }
     
-    public static Packet<ServerCommonPacketListener> createPacketToSendToServer(
+    public static ImplRPCPayload createPacketToSendToServer(
         String methodPath, Object... arguments
     ) {
-        return ImplRemoteProcedureCall.createC2SPacket(methodPath, arguments);
+        return new ImplRPCPayload(methodPath, arguments) {
+
+            @Override
+            public ResourceLocation id() {
+                return MiscNetworking.id_stcRemote;
+            }
+        };
     }
 }

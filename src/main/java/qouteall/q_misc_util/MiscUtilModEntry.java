@@ -1,16 +1,22 @@
 package qouteall.q_misc_util;
 
-import net.fabricmc.api.ModInitializer;
+import de.nick1st.q_misc_util.networking.Payloads;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
 import qouteall.q_misc_util.dimension.DimensionIntId;
 
-public class MiscUtilModEntry implements ModInitializer {
-    @Override
+import static qouteall.q_misc_util.MiscUtilModEntry.MOD_ID;
+
+@Mod(MOD_ID)
+public class MiscUtilModEntry {
+    public static final String MOD_ID = "q_misc_util";
+
+    public MiscUtilModEntry(IEventBus eventBus) {
+        onInitialize();
+        eventBus.addListener(Payloads::register);
+    }
+
     public void onInitialize() {
-        
-        ImplRemoteProcedureCall.init();
-        
-        MiscNetworking.init();
-        
         DimensionIntId.init();
     }
 }
