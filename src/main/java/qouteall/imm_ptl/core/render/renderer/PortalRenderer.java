@@ -22,6 +22,10 @@ import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.compat.IPModInfoChecking;
+import qouteall.imm_ptl.core.compat.iris_compatibility.ExperimentalIrisPortalRenderer;
+import qouteall.imm_ptl.core.compat.iris_compatibility.IrisCompatibilityPortalRenderer;
+import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
+import qouteall.imm_ptl.core.compat.iris_compatibility.IrisPortalRenderer;
 import qouteall.imm_ptl.core.portal.Mirror;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.PortalLike;
@@ -359,23 +363,22 @@ public abstract class PortalRenderer {
         
         IPModInfoChecking.checkShaderpack();
 
-        // TODO @Nick1st - Iris compat
-//        if (IrisInterface.invoker.isIrisPresent()) {
-//            if (IrisInterface.invoker.isShaders()) {
-//                if (IPCGlobal.experimentalIrisPortalRenderer) {
-//                    switchRenderer(ExperimentalIrisPortalRenderer.instance);
-//                    return;
-//                }
-//
-//                switch (IPGlobal.renderMode) {
-//                    case normal -> switchRenderer(IrisPortalRenderer.instance);
-//                    case compatibility -> switchRenderer(IrisCompatibilityPortalRenderer.instance);
-//                    case debug -> switchRenderer(IrisCompatibilityPortalRenderer.debugModeInstance);
-//                    case none -> switchRenderer(IPCGlobal.rendererDummy);
-//                }
-//                return;
-//            }
-//        }
+        if (IrisInterface.invoker.isIrisPresent()) {
+            if (IrisInterface.invoker.isShaders()) {
+                if (IPCGlobal.experimentalIrisPortalRenderer) {
+                    switchRenderer(ExperimentalIrisPortalRenderer.instance);
+                    return;
+                }
+
+                switch (IPGlobal.renderMode) {
+                    case normal -> switchRenderer(IrisPortalRenderer.instance);
+                    case compatibility -> switchRenderer(IrisCompatibilityPortalRenderer.instance);
+                    case debug -> switchRenderer(IrisCompatibilityPortalRenderer.debugModeInstance);
+                    case none -> switchRenderer(IPCGlobal.rendererDummy);
+                }
+                return;
+            }
+        }
         
         switch (IPGlobal.renderMode) {
             case normal -> switchRenderer(IPCGlobal.rendererUsingStencil);
@@ -390,10 +393,9 @@ public abstract class PortalRenderer {
             Helper.log("switched to renderer " + renderer.getClass());
             IPCGlobal.renderer = renderer;
 
-            // TODO @Nick1st - Iris compat
-//            if (IrisInterface.invoker.isShaders()) {
-//                IrisInterface.invoker.reloadPipelines();
-//            }
+            if (IrisInterface.invoker.isShaders()) {
+                IrisInterface.invoker.reloadPipelines();
+            }
         }
     }
 }

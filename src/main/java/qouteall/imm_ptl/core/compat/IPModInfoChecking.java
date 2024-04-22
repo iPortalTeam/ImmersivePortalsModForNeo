@@ -19,6 +19,7 @@ import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.IPMcHelper;
 import qouteall.imm_ptl.core.McHelper;
+import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
 import qouteall.imm_ptl.core.mc_utils.ServerTaskList;
 import qouteall.imm_ptl.core.platform_specific.IPConfig;
 import qouteall.imm_ptl.core.platform_specific.O_O;
@@ -31,6 +32,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class IPModInfoChecking {
     
@@ -367,24 +369,23 @@ public class IPModInfoChecking {
             return;
         }
 
-        // TODO @Nick1st - Iris Compat
-//        String shaderpackName = IrisInterface.invoker.getShaderpackName();
-//        if (!Objects.equals(lastShaderpackName, shaderpackName)) {
-//            lastShaderpackName = shaderpackName;
-//
-//            if (shaderpackName != null) {
-//                if (incompatibleShaderpacks != null) {
-//                    boolean incompatible = incompatibleShaderpacks.stream().anyMatch(
-//                        n -> shaderpackName.toLowerCase().contains(n.toLowerCase())
-//                    );
-//                    if (incompatible) {
-//                        CHelper.printChat(
-//                            Component.translatable("imm_ptl.incompatible_shaderpack")
-//                                .withStyle(ChatFormatting.RED)
-//                        );
-//                    }
-//                }
-//            }
-//        }
+        String shaderpackName = IrisInterface.invoker.getShaderpackName();
+        if (!Objects.equals(lastShaderpackName, shaderpackName)) {
+            lastShaderpackName = shaderpackName;
+
+            if (shaderpackName != null) {
+                if (incompatibleShaderpacks != null) {
+                    boolean incompatible = incompatibleShaderpacks.stream().anyMatch(
+                        n -> shaderpackName.toLowerCase().contains(n.toLowerCase())
+                    );
+                    if (incompatible) {
+                        CHelper.printChat(
+                            Component.translatable("imm_ptl.incompatible_shaderpack")
+                                .withStyle(ChatFormatting.RED)
+                        );
+                    }
+                }
+            }
+        }
     }
 }

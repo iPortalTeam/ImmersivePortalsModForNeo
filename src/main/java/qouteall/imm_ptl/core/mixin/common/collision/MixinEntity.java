@@ -174,7 +174,7 @@ public abstract class MixinEntity implements IEEntity, ImmPtlEntityExtension {
         locals = LocalCapture.CAPTURE_FAILHARD,
         cancellable = true
     )
-    private void onCheckInsideBlocks(CallbackInfo ci, AABB box) { // TODO @Nick1st check
+    private void onCheckInsideBlocks(CallbackInfo ci, AABB box) {
         if (box == null) {
             ci.cancel();
         }

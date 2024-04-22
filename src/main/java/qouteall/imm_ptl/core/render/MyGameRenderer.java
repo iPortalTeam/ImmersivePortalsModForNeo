@@ -24,6 +24,7 @@ import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationClient;
+import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
 import qouteall.imm_ptl.core.compat.sodium_compatibility.SodiumInterface;
 import qouteall.imm_ptl.core.ducks.IEGameRenderer;
 import qouteall.imm_ptl.core.ducks.IEMinecraftClient;
@@ -154,8 +155,7 @@ public class MyGameRenderer {
         ObjectArrayList<SectionRenderDispatcher.RenderSection> newChunkInfoList = VisibleSectionDiscovery.takeList();
         ((IEWorldRenderer) oldWorldRenderer).portal_setChunkInfoList(newChunkInfoList);
 
-        // TODO @Nick1st - Iris compat
-//        Object irisPipeline = IrisInterface.invoker.getPipeline(worldRenderer);
+        Object irisPipeline = IrisInterface.invoker.getPipeline(worldRenderer);
         
         // switch (note: it will no longer switch the world that client player is in )
         ((IEMinecraftClient) client).ip_setWorldRenderer(worldRenderer);
@@ -205,8 +205,7 @@ public class MyGameRenderer {
         
         ((IEWorldRenderer) worldRenderer).portal_setTransparencyShader(null);
 
-        // TODO @Nick1st - Iris compat
- //       IrisInterface.invoker.setPipeline(worldRenderer, null);
+        IrisInterface.invoker.setPipeline(worldRenderer, null);
         
         //update lightmap
         if (!RenderStates.isDimensionRendered(newDimension)) {
@@ -258,8 +257,7 @@ public class MyGameRenderer {
         
         client.gameRenderer.resetProjectionMatrix(oldProjectionMatrix);
 
-        // TODO @Nick1st - Iris compat
-//        IrisInterface.invoker.setPipeline(worldRenderer, irisPipeline);
+        IrisInterface.invoker.setPipeline(worldRenderer, irisPipeline);
         
         client.getEntityRenderDispatcher()
             .prepare(

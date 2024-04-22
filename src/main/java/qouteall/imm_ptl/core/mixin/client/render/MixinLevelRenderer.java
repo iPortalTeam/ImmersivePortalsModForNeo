@@ -42,6 +42,7 @@ import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.imm_ptl.core.IPGlobal;
+import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
 import qouteall.imm_ptl.core.compat.sodium_compatibility.SodiumInterface;
 import qouteall.imm_ptl.core.ducks.IEWorldRenderer;
 import qouteall.imm_ptl.core.miscellaneous.IPVanillaCopy;
@@ -299,9 +300,8 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     }
     
     private boolean ip_allowOverrideTerrainSetup() {
-        return !SodiumInterface.invoker.isSodiumPresent();
-        // TODO @Nick1st - Iris Compat
-            //&& !IrisInterface.invoker.isRenderingShadowMap();
+        return !SodiumInterface.invoker.isSodiumPresent()
+            && !IrisInterface.invoker.isRenderingShadowMap();
     }
     
     @Inject(
@@ -509,10 +509,9 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     ) {
         if (WorldRenderInfo.isRendering()) {
             if (!WorldRenderInfo.getTopRenderInfo().doRenderSky) {
-                // TODO @Nick1st - Iris Compat
-//                if (!IrisInterface.invoker.isShaders()) {
-//                    ci.cancel();
-//                }
+                if (!IrisInterface.invoker.isShaders()) {
+                    ci.cancel();
+                }
             }
         }
         

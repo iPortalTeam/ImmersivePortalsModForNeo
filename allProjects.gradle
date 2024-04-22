@@ -66,7 +66,7 @@ allprojects {
         // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
         compileOnly "maven.modrinth:embeddium:0.3.14+mc1.20.4" // TODO @Nick1st currently broken?
-        compileOnly "curse.maven:oculus-581495:5108615"
+        compileOnly "maven.modrinth:oculus:1.20.1-1.6.15a"
         //compileOnly files(new File(rootDir, "libs/iris-1.6.10.jar"))
 
         implementation "maven.modrinth:cloth-config:13.0.121+neoforge"
@@ -75,6 +75,6 @@ allprojects {
 
         compileOnly "com.jozufozu.flywheel:flywheel-forge-1.20.1:1.0.0-alpha-83" // No current version available yet
 
-        compileOnly "maven.modrinth:pehkui:3.8.0-1.20.4-neoforge"// No current version available yet
+        compileOnly "maven.modrinth:pehkui:3.8.0+1.20.4-neoforge"// No current version available yet
     }
 }

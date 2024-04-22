@@ -20,6 +20,7 @@ import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.collision.PortalCollisionEntry;
 import qouteall.imm_ptl.core.collision.PortalCollisionHandler;
+import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
 import qouteall.imm_ptl.core.ducks.IEEntity;
 import qouteall.imm_ptl.core.ducks.IEWorldRenderer;
 import qouteall.imm_ptl.core.portal.Mirror;
@@ -88,10 +89,9 @@ public class CrossPortalEntityRenderer {
     }
     
     private static boolean isCrossPortalRenderingEnabled() {
-        // TODO @Nick1st - Iris compat
-//        if (IrisInterface.invoker.isIrisPresent()) {
-//            return false;
-//        }
+        if (IrisInterface.invoker.isIrisPresent()) {
+            return false;
+        }
         return IPGlobal.correctCrossPortalEntityRendering;
     }
     
@@ -369,10 +369,9 @@ public class CrossPortalEntityRenderer {
     
     public static boolean shouldRenderEntityNow(Entity entity) {
         Validate.notNull(entity);
-        // TODO @Nick1st - Iris compat
-//        if (IrisInterface.invoker.isRenderingShadowMap()) {
-//            return true;
-//        }
+        if (IrisInterface.invoker.isRenderingShadowMap()) {
+            return true;
+        }
         if (PortalRendering.isRendering()) {
             PortalLike renderingPortal = PortalRendering.getRenderingPortal();
             Portal collidingPortal = ((IEEntity) entity).ip_getCollidingPortal();
