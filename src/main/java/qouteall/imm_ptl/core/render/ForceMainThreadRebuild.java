@@ -1,6 +1,8 @@
 package qouteall.imm_ptl.core.render;
 
 import com.mojang.logging.LogUtils;
+import de.nick1st.imm_ptl.events.ClientCleanupEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.IPCGlobal;
 
@@ -14,7 +16,7 @@ public class ForceMainThreadRebuild {
     private static boolean currentFrameForceMainThreadRebuild = false;
     
     public static void init() {
-        IPCGlobal.CLIENT_CLEANUP_EVENT.register(ForceMainThreadRebuild::reset);
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> ForceMainThreadRebuild.reset());
     }
     
     private static void reset() {

@@ -80,7 +80,7 @@ public class GravityChangerInterface {
         }
     }
 
-    // TODO @Nick1st
+    // TODO @Nick1st - Gravity Charger Port
     public static class OnGravityChangerPresent extends Invoker {
         @Override
         public boolean isGravityChangerPresent() {

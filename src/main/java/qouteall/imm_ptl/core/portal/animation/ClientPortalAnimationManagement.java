@@ -1,5 +1,6 @@
 package qouteall.imm_ptl.core.portal.animation;
 
+import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
 import qouteall.imm_ptl.core.ClientWorldLoader;
@@ -33,8 +34,9 @@ public class ClientPortalAnimationManagement {
     public static final Signal clientAnimationUpdateSignal = new Signal();
     
     public static void init() {
-        IPCGlobal.CLIENT_CLEANUP_EVENT.register(ClientPortalAnimationManagement::cleanup);
-        ClientWorldLoader.CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT.register(dim -> cleanup());
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> ClientPortalAnimationManagement.cleanup());
+        // @Nick1st - Removal of DynDimLib
+//        ClientWorldLoader.CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT.register(dim -> cleanup());
     }
     
     public static void addDefaultAnimation(

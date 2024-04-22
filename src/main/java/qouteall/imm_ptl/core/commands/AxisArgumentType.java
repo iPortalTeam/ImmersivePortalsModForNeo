@@ -14,7 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.Arrays;
@@ -63,7 +63,7 @@ public class AxisArgumentType implements ArgumentType<Direction.Axis> {
     }
     
     public static void init() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(RegisterEvent.class, registerEvent -> {
+        NeoForge.EVENT_BUS.addListener(RegisterEvent.class, registerEvent -> {
             registerEvent.register(BuiltInRegistries.COMMAND_ARGUMENT_TYPE.key(),
                     new ResourceLocation("imm_ptl:axis"),
                     () -> ArgumentTypeInfos.registerByClass(AxisArgumentType.class, SingletonArgumentInfo.contextFree(() -> instance)));

@@ -1,9 +1,11 @@
 package qouteall.imm_ptl.core.render.context_management;
 
 import com.mojang.blaze3d.vertex.VertexBuffer;
+import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPCGlobal;
@@ -28,8 +30,9 @@ public class CloudContext {
     public static final ArrayList<CloudContext> contexts = new ArrayList<>();
     
     public static void init() {
-        IPCGlobal.CLIENT_CLEANUP_EVENT.register(CloudContext::cleanup);
-        ClientWorldLoader.CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT.register(dim -> cleanup());
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> CloudContext.cleanup());
+        // @Nick1st - DynDimLib removal
+ //       ClientWorldLoader.CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT.register(dim -> cleanup());
     }
     
     public CloudContext() {

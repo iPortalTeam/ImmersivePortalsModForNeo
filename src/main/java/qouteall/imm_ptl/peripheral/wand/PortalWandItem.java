@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.peripheral.wand;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -59,11 +60,11 @@ public class PortalWandItem extends Item {
                 ClientPortalWandPortalDrag.tick();
             }
         });
-        
-        
-        IPCGlobal.CLIENT_CLEANUP_EVENT.register(ClientPortalWandPortalCreation::reset);
-        IPCGlobal.CLIENT_CLEANUP_EVENT.register(ClientPortalWandPortalDrag::reset);
-        IPCGlobal.CLIENT_CLEANUP_EVENT.register(ClientPortalWandPortalCopy::reset);
+
+
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> ClientPortalWandPortalCreation.reset());
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> ClientPortalWandPortalDrag.reset());
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> ClientPortalWandPortalCopy.reset());
     }
     
     public static void addIntoCreativeTag(CreativeModeTab.Output entries) {

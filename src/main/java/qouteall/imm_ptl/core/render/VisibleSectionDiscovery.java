@@ -1,5 +1,6 @@
 package qouteall.imm_ptl.core.render;
 
+import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -9,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.imm_ptl.core.chunk_loading.PerformanceLevel;
@@ -183,11 +185,12 @@ public class VisibleSectionDiscovery {
     }
     
     public static void init() {
-        IPCGlobal.CLIENT_CLEANUP_EVENT.register(VisibleSectionDiscovery::cleanUp);
-        
-        ClientWorldLoader.CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT.register((dim) -> {
-            cleanUp();
-        });
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> VisibleSectionDiscovery.cleanUp());
+
+        // @Nick1st - DynDimLib removal
+//        ClientWorldLoader.CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT.register((dim) -> {
+//            cleanUp();
+//        });
     }
     
     private static void cleanUp() {

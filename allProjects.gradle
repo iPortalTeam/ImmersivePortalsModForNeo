@@ -65,15 +65,16 @@ allprojects {
         // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
         // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-        compileOnly "maven.modrinth:embeddium:0.2.10+mc1.20.2" // TODO @Nick1st currently broken?
-        compileOnly files(new File(rootDir, "libs/iris-1.6.10.jar"))
+        compileOnly "maven.modrinth:embeddium:0.3.14+mc1.20.4" // TODO @Nick1st currently broken?
+        compileOnly "curse.maven:oculus-581495:5108615"
+        //compileOnly files(new File(rootDir, "libs/iris-1.6.10.jar"))
 
-        implementation "maven.modrinth:cloth-config:12.0.111+neoforge"
+        implementation "maven.modrinth:cloth-config:13.0.121+neoforge"
 
 //        implementation "io.github.llamalad7:mixinextras-neoforge:0.2.1" // Now already included with newest NEO
 
-        compileOnly "com.jozufozu.flywheel:flywheel-forge-1.20.1:0.6.10-7" // No current version available yet
+        compileOnly "com.jozufozu.flywheel:flywheel-forge-1.20.1:1.0.0-alpha-83" // No current version available yet
 
-        compileOnly "maven.modrinth:pehkui:3.7.11+1.20.1-forge"// No current version available yet
+        compileOnly "maven.modrinth:pehkui:3.8.0-1.20.4-neoforge"// No current version available yet
     }
 }

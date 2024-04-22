@@ -7,7 +7,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import qouteall.imm_ptl.core.IPGlobal;
-import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
 import qouteall.imm_ptl.core.render.CrossPortalEntityRenderer;
 import qouteall.imm_ptl.core.render.FrontClipping;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
@@ -22,7 +21,9 @@ public class MixinRenderSystem_Clipping {
     )
     private static void onSetShader(Supplier<ShaderInstance> supplier, CallbackInfo ci) {
         if (IPGlobal.enableClippingMechanism) {
-            if (!IrisInterface.invoker.isIrisPresent()) {
+            // TODO @Nick1st - TODO
+//            if (!IrisInterface.invoker.isIrisPresent()) {
+            if (false) {
                 if (CrossPortalEntityRenderer.isRenderingEntityNormally ||
                     CrossPortalEntityRenderer.isRenderingEntityProjection
                 ) {

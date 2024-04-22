@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.teleportation;
 
 import com.mojang.logging.LogUtils;
+import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -82,8 +83,8 @@ public class ClientTeleportationManager {
     
     public static void init() {
         NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> ClientTeleportationManager.tick());
-        
-        IPCGlobal.CLIENT_CLEANUP_EVENT.register(() -> {
+
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> {
             lastPlayerEyePos = null;
 //            disableTeleportFor(2);
         });

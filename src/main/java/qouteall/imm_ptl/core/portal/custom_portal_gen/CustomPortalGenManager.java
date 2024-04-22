@@ -17,6 +17,9 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.IPGlobal;
@@ -49,12 +52,12 @@ public class CustomPortalGenManager {
             CustomPortalGeneration.LEGACY_REGISTRY_KEY,
             CustomPortalGeneration.CODEC
         );
-        
+
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register(
             (server, resourceManager, success) -> onDataPackReloaded(server)
         );
-        
-        ServerLifecycleEvents.SERVER_STARTED.register(CustomPortalGenManager::onDataPackReloaded);
+
+        NeoForge.EVENT_BUS.addListener(ServerStartedEvent.class, (e) -> CustomPortalGenManager.onDataPackReloaded(e.getServer()));
     }
     
     private static void onDataPackReloaded(MinecraftServer server) {

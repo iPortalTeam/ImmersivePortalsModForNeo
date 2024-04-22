@@ -6,9 +6,12 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.MinecraftServer;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -16,7 +19,6 @@ import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.IPMcHelper;
 import qouteall.imm_ptl.core.McHelper;
-import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
 import qouteall.imm_ptl.core.mc_utils.ServerTaskList;
 import qouteall.imm_ptl.core.platform_specific.IPConfig;
 import qouteall.imm_ptl.core.platform_specific.O_O;
@@ -29,7 +31,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class IPModInfoChecking {
     
@@ -268,7 +269,8 @@ public class IPModInfoChecking {
     }
     
     public static void initDedicatedServer() {
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+        NeoForge.EVENT_BUS.addListener(ServerStartedEvent.class, event -> {
+            MinecraftServer server = event.getServer();
             if (!IPGlobal.checkModInfoFromInternet) {
                 return;
             }
@@ -359,29 +361,30 @@ public class IPModInfoChecking {
     private static List<String> incompatibleShaderpacks;
     @Nullable
     private static String lastShaderpackName;
-    
+
     public static void checkShaderpack() {
         if (!IPConfig.getConfig().shaderpackWarning) {
             return;
         }
-        
-        String shaderpackName = IrisInterface.invoker.getShaderpackName();
-        if (!Objects.equals(lastShaderpackName, shaderpackName)) {
-            lastShaderpackName = shaderpackName;
-            
-            if (shaderpackName != null) {
-                if (incompatibleShaderpacks != null) {
-                    boolean incompatible = incompatibleShaderpacks.stream().anyMatch(
-                        n -> shaderpackName.toLowerCase().contains(n.toLowerCase())
-                    );
-                    if (incompatible) {
-                        CHelper.printChat(
-                            Component.translatable("imm_ptl.incompatible_shaderpack")
-                                .withStyle(ChatFormatting.RED)
-                        );
-                    }
-                }
-            }
-        }
+
+        // TODO @Nick1st - Iris Compat
+//        String shaderpackName = IrisInterface.invoker.getShaderpackName();
+//        if (!Objects.equals(lastShaderpackName, shaderpackName)) {
+//            lastShaderpackName = shaderpackName;
+//
+//            if (shaderpackName != null) {
+//                if (incompatibleShaderpacks != null) {
+//                    boolean incompatible = incompatibleShaderpacks.stream().anyMatch(
+//                        n -> shaderpackName.toLowerCase().contains(n.toLowerCase())
+//                    );
+//                    if (incompatible) {
+//                        CHelper.printChat(
+//                            Component.translatable("imm_ptl.incompatible_shaderpack")
+//                                .withStyle(ChatFormatting.RED)
+//                        );
+//                    }
+//                }
+//            }
+//        }
     }
 }

@@ -9,6 +9,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import qouteall.imm_ptl.core.IPModMain;
 import qouteall.imm_ptl.core.commands.AxisArgumentType;
@@ -23,9 +24,9 @@ public class IPModEntry {
     public static final String MODID = "immersive_portals_core";
 
     public IPModEntry(IEventBus modEventBus) {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(RegisterEvent.class, registerEvent ->
+        modEventBus.addListener(RegisterEvent.class, registerEvent ->
                 registerEvent.register(BuiltInRegistries.ENTITY_TYPE.key(), IPModMain::registerEntityTypesForge));
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(RegisterEvent.class, registerEvent ->
+        modEventBus.addListener(RegisterEvent.class, registerEvent ->
                 registerEvent.register(BuiltInRegistries.BLOCK.key(), IPModMain::registerBlocksForge));
         modEventBus.addListener(FMLCommonSetupEvent.class, event -> onInitialize());
         modEventBus.addListener(EntityRenderersEvent.RegisterRenderers.class, IPModEntryClient::initPortalRenderers);

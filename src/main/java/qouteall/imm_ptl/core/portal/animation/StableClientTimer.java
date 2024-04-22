@@ -1,8 +1,10 @@
 package qouteall.imm_ptl.core.portal.animation;
 
+import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
 import net.minecraft.world.TickRateManager;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.IPCGlobal;
@@ -105,7 +107,7 @@ public class StableClientTimer {
     private static double debugOffset;
     
     public static void init() {
-        IPCGlobal.CLIENT_CLEANUP_EVENT.register(StableClientTimer::cleanup);
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> StableClientTimer.cleanup());
     }
     
     public static long getStableTickTime() {

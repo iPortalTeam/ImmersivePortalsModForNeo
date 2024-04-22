@@ -3,7 +3,9 @@ package qouteall.imm_ptl.core.render;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.logging.LogUtils;
+import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import net.minecraft.client.Minecraft;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -118,6 +120,6 @@ public class GuiPortalRendering {
     
     // not API
     public static void _init() {
-        IPCGlobal.CLIENT_CLEANUP_EVENT.register(renderingTasks::clear);
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> renderingTasks.clear());
     }
 }

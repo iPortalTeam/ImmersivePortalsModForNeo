@@ -22,7 +22,6 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 import qouteall.imm_ptl.core.CHelper;
-import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
 import qouteall.imm_ptl.core.compat.sodium_compatibility.SodiumInterface;
 import qouteall.imm_ptl.core.miscellaneous.IPVanillaCopy;
 import qouteall.imm_ptl.core.portal.PortalLike;
@@ -56,14 +55,15 @@ public class OverlayRendering {
         PoseStack matrixStack,
         MultiBufferSource vertexConsumerProvider
     ) {
-        if (IrisInterface.invoker.isShaders()) {
-            if (!shaderOverlayWarned) {
-                shaderOverlayWarned = true;
-                CHelper.printChat("[Immersive Portals] Portal overlay cannot be rendered with shaders");
-            }
-            
-            return;
-        }
+        // TODO @Nick1st - Iris compat
+//        if (IrisInterface.invoker.isShaders()) {
+//            if (!shaderOverlayWarned) {
+//                shaderOverlayWarned = true;
+//                CHelper.printChat("[Immersive Portals] Portal overlay cannot be rendered with shaders");
+//            }
+//
+//            return;
+//        }
         
         if (portal instanceof BreakablePortalEntity) {
             renderBreakablePortalOverlay(

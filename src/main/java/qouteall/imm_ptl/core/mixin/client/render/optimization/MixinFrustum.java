@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
 import qouteall.imm_ptl.core.ducks.IEFrustum;
 import qouteall.imm_ptl.core.render.FrustumCuller;
 
@@ -59,9 +58,10 @@ public class MixinFrustum implements IEFrustum {
         at = @At("TAIL")
     )
     private void onSetOrigin(double double_1, double double_2, double double_3, CallbackInfo ci) {
-        if (IrisInterface.invoker.isRenderingShadowMap()) {
-            return;
-        }
+        // TODO @Nick1st - Iris Compat
+//        if (IrisInterface.invoker.isRenderingShadowMap()) {
+//            return;
+//        }
         
         if (portal_frustumCuller == null) {
             portal_frustumCuller = new FrustumCuller();

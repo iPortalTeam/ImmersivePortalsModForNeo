@@ -1,16 +1,12 @@
 package qouteall.imm_ptl.core;
 
-import net.fabricmc.fabric.api.event.Event;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import qouteall.imm_ptl.core.render.renderer.PortalRenderer;
 import qouteall.imm_ptl.core.render.renderer.RendererDebug;
 import qouteall.imm_ptl.core.render.renderer.RendererDummy;
 import qouteall.imm_ptl.core.render.renderer.RendererUsingFrameBuffer;
 import qouteall.imm_ptl.core.render.renderer.RendererUsingStencil;
-import qouteall.q_misc_util.Helper;
 
-@OnlyIn(Dist.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class IPCGlobal {
     
     public static PortalRenderer renderer;
@@ -37,16 +33,4 @@ public class IPCGlobal {
     public static boolean experimentalIrisPortalRenderer = false;
     
     public static boolean debugEnableStencilWithIris = false;
-
-    /**
-     * Fired when client exits world or doing conventional dimension travel (with loading screen).
-     */
-    public static final Event<Runnable> CLIENT_CLEANUP_EVENT =
-        Helper.createRunnableEvent();
-
-    /**
-     * Fired when client exits world. Does not fire when doing conventional dimension travel.
-     */
-    public static final Event<Runnable> CLIENT_EXIT_EVENT =
-        Helper.createRunnableEvent();
 }

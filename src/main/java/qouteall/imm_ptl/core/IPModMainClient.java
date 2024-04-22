@@ -1,5 +1,6 @@
 package qouteall.imm_ptl.core;
 
+import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -128,7 +129,7 @@ public class IPModMainClient {
         
         ForceMainThreadRebuild.init();
 
-        IPCGlobal.CLIENT_CLEANUP_EVENT.register(() -> {
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> {
             IPGlobal.CLIENT_TASK_LIST.forceClearTasks();
         });
 

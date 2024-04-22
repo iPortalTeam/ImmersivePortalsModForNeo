@@ -14,7 +14,7 @@ import qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer;
 @Mixin(AbstractContainerMenu.class)
 public class MixinAbstractContainerMenu {
     @WrapOperation(
-        method = "method_17696",
+        method = "lambda$stillValid$0",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/world/entity/player/Player;distanceToSqr(DDD)D"

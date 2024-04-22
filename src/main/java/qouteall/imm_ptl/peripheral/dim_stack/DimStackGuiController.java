@@ -180,9 +180,10 @@ public class DimStackGuiController {
             setGravityTransformEnabled(false);
             
             List<DimStackEntry> entriesToAdd = new ArrayList<>();
-            
-            entriesToAdd.add(new DimStackEntry(AlternateDimensions.BRIGHT_VOID));
-            entriesToAdd.add(new DimStackEntry(AlternateDimensions.BRIGHT_SKYLAND));
+
+// TODO @Nick1st - DimCleanup - Remove: IPortals for Neo no longer adds the alternative dimensions
+//            entriesToAdd.add(new DimStackEntry(AlternateDimensions.BRIGHT_VOID));
+//            entriesToAdd.add(new DimStackEntry(AlternateDimensions.BRIGHT_SKYLAND));
             
             entriesToAdd.add(new DimStackEntry(Level.OVERWORLD));
             entriesToAdd.add(new DimStackEntry(Level.NETHER));

@@ -118,14 +118,14 @@ public class NormalSkylandGenerator extends NoiseBasedChunkGenerator {
 
 //        NoiseGeneratorSettings endNGS = IENoiseGeneratorSettings.ip_end();
         
-        NoiseGeneratorSettings usedSkylandNGS = new NoiseGeneratorSettings(
+        NoiseGeneratorSettings usedSkylandNGS = new NoiseGeneratorSettings( // TODO @Nick1st - Replace this with a datapack noise function
             intrinsicSkylandNGS.noiseSettings(),
             intrinsicSkylandNGS.defaultBlock(),
             intrinsicSkylandNGS.defaultFluid(),
             IENoiseRouterData.ip_noNewCaves(
                 densityFunctionHolderGetter,
                 noiseParametersHolderGetter,
-                IENoiseRouterData.ip_slideEndLike(IENoiseRouterData.ip_getFunction(
+                IENoiseRouterData.ip_slideEndLike(IENoiseRouterData.ip_getFunction( //TODO @Nick1st This is a change to Final density (starting after Squeeze -> Mul -> Interpolated -> Blend density -> Add -> Mul
                     densityFunctionHolderGetter, IENoiseRouterData.get_BASE_3D_NOISE_END()
                 ), 0, 128)
             ),

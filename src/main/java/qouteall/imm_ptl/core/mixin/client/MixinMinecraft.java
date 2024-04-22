@@ -3,6 +3,7 @@ package qouteall.imm_ptl.core.mixin.client;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import de.nick1st.imm_ptl.events.ClientExitEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -157,7 +158,7 @@ public abstract class MixinMinecraft implements IEMinecraftClient {
     private void onSetWorld(ClientLevel clientLevel, CallbackInfo ci) {
         if (ClientWorldLoader.getIsInitialized()) {
             LOGGER.info("Client cleanup");
-            IPCGlobal.CLIENT_CLEANUP_EVENT.invoker().run();
+            NeoForge.EVENT_BUS.post(new ClientCleanupEvent());
 
             if (clientLevel == null) {
                 LOGGER.info("Client exit world");

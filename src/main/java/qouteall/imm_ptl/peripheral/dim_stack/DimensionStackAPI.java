@@ -9,7 +9,6 @@ import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldOptions;
 import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.Nullable;
-import qouteall.dimlib.api.DimensionAPI;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;

@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -15,12 +16,10 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
-import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.collision.PortalCollisionEntry;
 import qouteall.imm_ptl.core.collision.PortalCollisionHandler;
-import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
 import qouteall.imm_ptl.core.ducks.IEEntity;
 import qouteall.imm_ptl.core.ducks.IEWorldRenderer;
 import qouteall.imm_ptl.core.portal.Mirror;
@@ -49,10 +48,11 @@ public class CrossPortalEntityRenderer {
     
     public static void init() {
         NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> CrossPortalEntityRenderer.onClientTick());
-        
-        IPCGlobal.CLIENT_CLEANUP_EVENT.register(CrossPortalEntityRenderer::cleanUp);
-        
-        ClientWorldLoader.CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT.register(dim -> cleanUp());
+
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> CrossPortalEntityRenderer.cleanUp());
+
+        // @Nick1st - DynDimLib removal
+ //       ClientWorldLoader.CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT.register(dim -> cleanUp());
     }
     
     private static void cleanUp() {
@@ -88,9 +88,10 @@ public class CrossPortalEntityRenderer {
     }
     
     private static boolean isCrossPortalRenderingEnabled() {
-        if (IrisInterface.invoker.isIrisPresent()) {
-            return false;
-        }
+        // TODO @Nick1st - Iris compat
+//        if (IrisInterface.invoker.isIrisPresent()) {
+//            return false;
+//        }
         return IPGlobal.correctCrossPortalEntityRendering;
     }
     
@@ -368,9 +369,10 @@ public class CrossPortalEntityRenderer {
     
     public static boolean shouldRenderEntityNow(Entity entity) {
         Validate.notNull(entity);
-        if (IrisInterface.invoker.isRenderingShadowMap()) {
-            return true;
-        }
+        // TODO @Nick1st - Iris compat
+//        if (IrisInterface.invoker.isRenderingShadowMap()) {
+//            return true;
+//        }
         if (PortalRendering.isRendering()) {
             PortalLike renderingPortal = PortalRendering.getRenderingPortal();
             Portal collidingPortal = ((IEEntity) entity).ip_getCollidingPortal();

@@ -1,5 +1,6 @@
 package qouteall.imm_ptl.core.portal.global_portals;
 
+import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -20,15 +21,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TickEvent;
-import net.neoforged.neoforge.network.PlayNetworkDirection;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import qouteall.dimlib.api.DimensionAPI;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
-import qouteall.imm_ptl.core.IPCGlobal;
-import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.api.PortalAPI;
 import qouteall.imm_ptl.core.ducks.IEClientWorld;
@@ -72,13 +69,14 @@ public class GlobalPortalStorage extends SavedData {
             }
         });
 
-        NeoForge.EVENT_BUS.addListener(DimensionEvents.ServerDimensionDynamicUpdateEvent.class, event -> {
-            for (ServerLevel world : server.getAllLevels()) {
-                GlobalPortalStorage gps = get(world);
-                gps.clearAbnormalPortals();
-                gps.syncToAllPlayers();
-            }
-        });
+        // @Nick1st - DimLib removal
+//        NeoForge.EVENT_BUS.addListener(DimensionEvents.ServerDimensionDynamicUpdateEvent.class, event -> {
+//            for (ServerLevel world : server.getAllLevels()) {
+//                GlobalPortalStorage gps = get(world);
+//                gps.clearAbnormalPortals();
+//                gps.syncToAllPlayers();
+//            }
+//        });
         
         if (!O_O.isDedicatedServer()) {
             initClient();
@@ -107,7 +105,7 @@ public class GlobalPortalStorage extends SavedData {
     
     //@OnlyIn(Dist.CLIENT)
     private static void initClient() {
-        IPCGlobal.CLIENT_CLEANUP_EVENT.register(GlobalPortalStorage::onClientCleanup);
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> GlobalPortalStorage.onClientCleanup());
     }
     
     //@OnlyIn(Dist.CLIENT)
