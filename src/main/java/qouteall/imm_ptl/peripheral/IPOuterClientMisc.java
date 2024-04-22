@@ -2,10 +2,12 @@ package qouteall.imm_ptl.peripheral;
 
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
+import de.nick1st.imm_ptl.events.ClientPortalSpawnEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.CHelper;
@@ -93,21 +95,22 @@ public class IPOuterClientMisc {
                 LOGGER.info("Failed to upgrade dimension stack preset", e);
             }
         }
-        
-        Portal.CLIENT_PORTAL_SPAWN_EVENT.register(p -> {
+
+        NeoForge.EVENT_BUS.addListener(ClientPortalSpawnEvent.class, event -> {
+            Portal p = event.portal;
+
             LocalPlayer player = Minecraft.getInstance().player;
-            
+
             if (!outerConfig.wikiInformed) {
                 if (player != null && player.isCreative()) {
                     outerConfig.wikiInformed = true;
                     writeToFile(outerConfig);
                     informWithURL(
-                        "https://qouteall.fun/immptl/wiki/Portal-Customization",
-                        Component.translatable("imm_ptl.inform_wiki")
+                            "https://qouteall.fun/immptl/wiki/Portal-Customization",
+                            Component.translatable("imm_ptl.inform_wiki")
                     );
                 }
             }
-            
         });
     }
     

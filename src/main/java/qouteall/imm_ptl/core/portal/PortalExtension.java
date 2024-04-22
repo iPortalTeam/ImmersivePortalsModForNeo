@@ -1,8 +1,13 @@
 package qouteall.imm_ptl.core.portal;
 
 import com.mojang.logging.LogUtils;
+import de.nick1st.imm_ptl.events.ClientPortalTickEvent;
+import de.nick1st.imm_ptl.events.ReadPortalDataEvent;
+import de.nick1st.imm_ptl.events.ServerPortalTickEvent;
+import de.nick1st.imm_ptl.events.WritePortalDataEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.ducks.IEWorld;
@@ -27,19 +32,24 @@ public class PortalExtension {
     }
     
     public static void init() {
-        Portal.CLIENT_PORTAL_TICK_SIGNAL.register(portal -> {
+        NeoForge.EVENT_BUS.addListener(ClientPortalTickEvent.class, event -> {
+            Portal portal = event.portal;
             get(portal).tick(portal);
         });
-        
-        Portal.SERVER_PORTAL_TICK_SIGNAL.register(portal -> {
-            get(portal).tick(portal);
+
+        NeoForge.EVENT_BUS.addListener(ServerPortalTickEvent.class, event -> {
+           Portal portal = event.portal;
+           get(portal).tick(portal);
         });
-        
-        Portal.READ_PORTAL_DATA_SIGNAL.register((portal, tag) -> {
+
+        NeoForge.EVENT_BUS.addListener(ReadPortalDataEvent.class, event -> {
+            Portal portal = event.portal;
+            CompoundTag tag = event.tag;
             get(portal).readFromNbt(tag);
         });
-        
-        Portal.WRITE_PORTAL_DATA_SIGNAL.register((portal, tag) -> {
+        NeoForge.EVENT_BUS.addListener(WritePortalDataEvent.class, event -> {
+            Portal portal = event.portal;
+            CompoundTag tag = event.tag;
             get(portal).writeToNbt(tag);
         });
     }

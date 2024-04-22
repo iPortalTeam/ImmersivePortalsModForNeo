@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.peripheral.wand;
 
 import com.mojang.logging.LogUtils;
+import de.nick1st.imm_ptl.events.ServerCleanupEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -340,9 +341,12 @@ public class PortalWandInteraction {
                 );
             }
         });
-        
-        IPGlobal.SERVER_CLEANUP_EVENT.register(s -> of(s).draggingSessionMap.clear());
-        IPGlobal.SERVER_CLEANUP_EVENT.register(s -> copyingSessionMap.clear());
+
+        NeoForge.EVENT_BUS.addListener(ServerCleanupEvent.class, event -> {
+            MinecraftServer s = event.server;
+            of(s).draggingSessionMap.clear();
+            copyingSessionMap.clear();
+        });
     }
     
     public static final class DraggingInfo {

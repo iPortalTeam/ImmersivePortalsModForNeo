@@ -2,16 +2,10 @@ package qouteall.imm_ptl.core;
 
 import com.google.gson.Gson;
 import me.shedaniel.autoconfig.ConfigHolder;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.event.Event;
-import net.minecraft.server.MinecraftServer;
 import net.neoforged.bus.api.Event;
 import qouteall.imm_ptl.core.platform_specific.IPConfig;
-import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.MiscHelper;
 import qouteall.q_misc_util.my_util.MyTaskList;
-
-import java.util.function.Consumer;
 
 public class IPGlobal {
     
@@ -34,10 +28,7 @@ public class IPGlobal {
     // won't be cleared
     public static final MyTaskList PRE_GAME_RENDER_TASK_LIST = new MyTaskList();
     public static final MyTaskList PRE_TOTAL_RENDER_TASK_LIST = new MyTaskList();
-    
-    public static final Event<Consumer<MinecraftServer>> SERVER_CLEANUP_EVENT =
-        Helper.createConsumerEvent();
-    
+
     public static final Gson gson = MiscHelper.gson;
     
     public static int maxPortalLayer = 5;

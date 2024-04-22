@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.chunk_loading;
 
 import com.mojang.logging.LogUtils;
+import de.nick1st.imm_ptl.events.ServerCleanupEvent;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -19,8 +20,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TickEvent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import qouteall.dimlib.api.DimensionAPI;
-import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.ducks.IEChunkMap;
 import qouteall.imm_ptl.core.mixin.common.chunk_sync.IEServerCommonPacketListenerImpl;
 import qouteall.imm_ptl.core.network.PacketRedirection;
@@ -48,10 +47,15 @@ public class ImmPtlChunkTracking {
                 ImmPtlChunkTracking.tick(event.getServer());
             }
         });
-        IPGlobal.serverCleanupSignal.connect(ImmPtlChunkTracking::cleanup);
 
-        NeoForge.EVENT_BUS.addListener(DimensionEvents.BeforeRemovingDimensionEvent.class,
-                beforeRemovingDimensionEvent -> ImmPtlChunkTracking.onDimensionRemove(beforeRemovingDimensionEvent.dimension));
+        NeoForge.EVENT_BUS.addListener(ServerCleanupEvent.class, event -> {
+            MinecraftServer server = event.server;
+            cleanup(server);
+        });
+
+// TODO @Nick1st - DimAPI - Removal: Dimension API is removed from Neo versions
+//        NeoForge.EVENT_BUS.addListener(DimensionEvents.BeforeRemovingDimensionEvent.class,
+//                beforeRemovingDimensionEvent -> ImmPtlChunkTracking.onDimensionRemove(beforeRemovingDimensionEvent.dimension));
     }
     
     public static void onChunkProvidedDeferred(LevelChunk chunk) {

@@ -10,6 +10,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -63,8 +64,9 @@ public class GlobalPortalStorage extends SavedData {
                 gps.tick();
             });
         });
-        
-        IPGlobal.SERVER_CLEANUP_EVENT.register((s) -> {
+
+        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
+            MinecraftServer s = event.getServer();
             for (ServerLevel world : s.getAllLevels()) {
                 get(world).onServerClose();
             }

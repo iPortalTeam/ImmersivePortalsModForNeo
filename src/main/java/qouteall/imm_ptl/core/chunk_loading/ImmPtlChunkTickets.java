@@ -2,6 +2,7 @@ package qouteall.imm_ptl.core.chunk_loading;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
+import de.nick1st.imm_ptl.events.ServerCleanupEvent;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -22,7 +23,6 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
-import qouteall.dimlib.api.DimensionAPI;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.ducks.IEChunkMap;
 import qouteall.imm_ptl.core.ducks.IEDistanceManager;
@@ -72,10 +72,11 @@ public class ImmPtlChunkTickets {
     public static final WeakHashMap<ServerLevel, ImmPtlChunkTickets> BY_DIMENSION = new WeakHashMap<>();
     
     public static void init() {
-        NeoForge.EVENT_BUS.addListener(DimensionEvents.BeforeRemovingDimensionEvent.class,
-                beforeRemovingDimensionEvent -> ImmPtlChunkTickets.onDimensionRemove(beforeRemovingDimensionEvent.dimension));
-        
-        IPGlobal.SERVER_CLEANUP_EVENT.register(ImmPtlChunkTickets::cleanup);
+// TODO @Nick1st - DimAPI - Removal: Dimension API is removed from Neo versions
+//        NeoForge.EVENT_BUS.addListener(DimensionEvents.BeforeRemovingDimensionEvent.class,
+//                beforeRemovingDimensionEvent -> ImmPtlChunkTickets.onDimensionRemove(beforeRemovingDimensionEvent.dimension));
+
+        NeoForge.EVENT_BUS.addListener(ServerCleanupEvent.class, ImmPtlChunkTickets::cleanup);
     }
     
     public static class ChunkTicketInfo {
@@ -319,7 +320,8 @@ public class ImmPtlChunkTickets {
         return ((IEServerChunkCache) world.getChunkSource()).ip_getDistanceManager();
     }
     
-    private static void cleanup(MinecraftServer server) {
+    private static void cleanup(ServerCleanupEvent event) {
+        MinecraftServer server = event.server;
         for (ImmPtlChunkTickets immPtlChunkTickets : BY_DIMENSION.values()) {
             immPtlChunkTickets.isValid = false;
         }

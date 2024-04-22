@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.teleportation;
 
 import com.mojang.logging.LogUtils;
+import de.nick1st.imm_ptl.events.ServerPortalTickEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -62,14 +63,13 @@ public class ServerTeleportationManager {
             of(event.getServer()).tick(event.getServer());
         });
 
-        Portal.SERVER_PORTAL_TICK_SIGNAL.register(
-            (portal) -> {
-                ServerTeleportationManager serverTeleportationManager = of(portal.getServer());
-                getEntitiesToTeleport(portal).forEach(entity -> {
-                    serverTeleportationManager.startTeleportingRegularEntity(portal, entity);
-                });
-            }
-        );
+        NeoForge.EVENT_BUS.addListener(ServerPortalTickEvent.class, event -> {
+            Portal portal = event.portal;
+            ServerTeleportationManager serverTeleportationManager = of(portal.getServer());
+            getEntitiesToTeleport(portal).forEach(entity -> {
+                serverTeleportationManager.startTeleportingRegularEntity(portal, entity);
+            });
+        });
 
         NeoForge.EVENT_BUS.addListener(DimensionEvents.BeforeRemovingDimensionEvent.class,
                 beforeRemovingDimensionEvent -> of(beforeRemovingDimensionEvent.getServer()).evacuatePlayersFromDimension(beforeRemovingDimensionEvent.dimension));

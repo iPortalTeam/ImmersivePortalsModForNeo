@@ -5,7 +5,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.DistanceManager;
 import net.minecraft.server.level.ServerLevel;
-import qouteall.dimlib.api.DimensionAPI;
 import qouteall.imm_ptl.core.ducks.IEChunkMap;
 import qouteall.imm_ptl.core.ducks.IETrackedEntity;
 import qouteall.imm_ptl.core.network.PacketRedirection;
@@ -13,8 +12,9 @@ import qouteall.imm_ptl.core.network.PacketRedirection;
 public class EntitySync {
     
     public static void init() {
-        NeoForge.EVENT_BUS.addListener(DimensionEvents.BeforeRemovingDimensionEvent.class,
-                beforeRemovingDimensionEvent -> EntitySync.forceRemoveDimension(beforeRemovingDimensionEvent.dimension));
+// TODO @Nick1st - DimAPI - Removal: Dimension API is removed from Neo versions
+//        NeoForge.EVENT_BUS.addListener(DimensionEvents.BeforeRemovingDimensionEvent.class,
+//                beforeRemovingDimensionEvent -> EntitySync.forceRemoveDimension(beforeRemovingDimensionEvent.dimension));
     }
     
     /**

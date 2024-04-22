@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.network;
 
 import com.mojang.logging.LogUtils;
+import de.nick1st.imm_ptl.events.ClientPortalSpawnEvent;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -13,6 +14,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.fml.ModLoader;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeEventHandler;
+import networking.NeoPacket;
+import networking.PacketType;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.ClientWorldLoader;
@@ -208,7 +214,7 @@ public class ImmPtlNetworking {
                 world.addEntity(entity);
 
                 ClientWorldLoader.getWorld(portal.getDestDim());
-                Portal.CLIENT_PORTAL_SPAWN_EVENT.invoker().accept(portal);
+                NeoForge.EVENT_BUS.post(new ClientPortalSpawnEvent(portal));
 
                 if (IPGlobal.clientPortalLoadDebug) {
                     LOGGER.info("Portal loaded to client {}", portal);

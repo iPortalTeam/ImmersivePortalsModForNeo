@@ -1,7 +1,9 @@
 package qouteall.imm_ptl.core.mc_utils;
 
+import de.nick1st.imm_ptl.events.ServerCleanupEvent;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
+import net.neoforged.neoforge.common.NeoForge;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.IPPerServerInfo;
 import qouteall.q_misc_util.my_util.MyTaskList;
@@ -11,8 +13,9 @@ public class ServerTaskList {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             of(server).processTasks();
         });
-        
-        IPGlobal.SERVER_CLEANUP_EVENT.register(server -> {
+
+        NeoForge.EVENT_BUS.addListener(ServerCleanupEvent.class, event -> {
+            MinecraftServer server = event.server;
             of(server).forceClearTasks();
         });
     }

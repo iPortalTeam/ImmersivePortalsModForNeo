@@ -1,5 +1,7 @@
 package qouteall.imm_ptl.core.portal;
 
+import de.nick1st.imm_ptl.events.ClientPortalTickEvent;
+import de.nick1st.imm_ptl.events.PortalDisposeEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.NeoForge;
@@ -76,7 +78,8 @@ public class PortalRenderInfo {
     private PortalGroup renderingGroup;
     
     public static void init() {
-        Portal.CLIENT_PORTAL_TICK_SIGNAL.register(portal -> {
+        NeoForge.EVENT_BUS.addListener(ClientPortalTickEvent.class, event -> {
+            Portal portal = event.portal;
             PortalRenderInfo presentation = getOptional(portal);
             if (presentation != null) {
                 presentation.tick(portal);
@@ -87,8 +90,9 @@ public class PortalRenderInfo {
                 PortalRenderInfo.updateGroupBinding(clientPortalAcceptSyncEvent.portal));
         NeoForge.EVENT_BUS.addListener(ClientPortalAnimationManagement.ClientPortalDefaultAnimationFinishEvent.class, event ->
                 PortalRenderInfo.updateGroupBinding(event.portal));
-        
-        Portal.PORTAL_DISPOSE_SIGNAL.register(portal -> {
+
+        NeoForge.EVENT_BUS.addListener(PortalDisposeEvent.class, event -> {
+            Portal portal = event.portal;
             if (portal.level().isClientSide()) {
                 PortalRenderInfo renderInfo = getOptional(portal);
                 if (renderInfo != null) {

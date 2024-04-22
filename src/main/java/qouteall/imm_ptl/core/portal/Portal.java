@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.portal;
 
 import com.mojang.logging.LogUtils;
+import de.nick1st.imm_ptl.events.*;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -75,8 +76,6 @@ import qouteall.q_misc_util.my_util.TriangleConsumer;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -95,9 +94,6 @@ public class Portal extends Entity implements
         }
     }
 
-    public static final Event<Consumer<Portal>> CLIENT_PORTAL_SPAWN_EVENT =
-        Helper.createConsumerEvent();
-    
     public static <T extends Portal> EntityType<T> createPortalEntityType(
         EntityType.EntityFactory<T> constructor
     ) {
@@ -211,20 +207,7 @@ public class Portal extends Entity implements
     private @Nullable VoxelShape thisSideCollisionExclusion;
     private @Nullable UnilateralPortalState thisSideStateCache;
     private @Nullable UnilateralPortalState otherSideStateCache;
-    
-    public static final Event<Consumer<Portal>> CLIENT_PORTAL_TICK_SIGNAL =
-        Helper.createConsumerEvent();
-    public static final Event<Consumer<Portal>> SERVER_PORTAL_TICK_SIGNAL =
-        Helper.createConsumerEvent();
-    
-    public static final Event<Consumer<Portal>> PORTAL_DISPOSE_SIGNAL =
-        Helper.createConsumerEvent();
-    
-    public static final Event<BiConsumer<Portal, CompoundTag>> READ_PORTAL_DATA_SIGNAL =
-        Helper.createBiConsumerEvent();
-    public static final Event<BiConsumer<Portal, CompoundTag>> WRITE_PORTAL_DATA_SIGNAL =
-        Helper.createBiConsumerEvent();
-    
+
     public Portal(
         EntityType<?> entityType, Level world
     ) {
@@ -358,8 +341,8 @@ public class Portal extends Entity implements
         }
         
         animation.readFromTag(compoundTag);
-        
-        READ_PORTAL_DATA_SIGNAL.invoker().accept(this, compoundTag);
+
+        NeoForge.EVENT_BUS.post(new ReadPortalDataEvent(this, compoundTag));
         
         updateCache();
     }
@@ -422,8 +405,8 @@ public class Portal extends Entity implements
         }
         
         animation.writeToTag(compoundTag);
-        
-        WRITE_PORTAL_DATA_SIGNAL.invoker().accept(this, compoundTag);
+
+        NeoForge.EVENT_BUS.post(new WritePortalDataEvent(this, compoundTag));
         
     }
     
@@ -456,7 +439,7 @@ public class Portal extends Entity implements
     
     @Override
     public void ip_onRemoved(RemovalReason reason) {
-        PORTAL_DISPOSE_SIGNAL.invoker().accept(this);
+        NeoForge.EVENT_BUS.post(new PortalDisposeEvent(this));
     }
     
     /**
@@ -874,7 +857,7 @@ public class Portal extends Entity implements
      *                                  Every 3 vertices correspond to a triangle.
      *                                  In camera-centered coordinate.
      */
-    @Environment(EnvType.CLIENT)
+//    @Environment(EnvType.CLIENT)
     public void renderViewAreaMesh(
         Vec3 portalPosRelativeToCamera, TriangleConsumer vertexOutput
     ) {
@@ -940,7 +923,7 @@ public class Portal extends Entity implements
         }
         
         if (level().isClientSide()) {
-            CLIENT_PORTAL_TICK_SIGNAL.invoker().accept(this);
+            NeoForge.EVENT_BUS.post(new ClientPortalTickEvent(this));
         }
         else {
             if (!isPortalValid()) {
@@ -948,7 +931,7 @@ public class Portal extends Entity implements
                 remove(RemovalReason.KILLED);
                 return;
             }
-            SERVER_PORTAL_TICK_SIGNAL.invoker().accept(this);
+            NeoForge.EVENT_BUS.post(new ServerPortalTickEvent(this));
         }
         
         animation.tick(this);
