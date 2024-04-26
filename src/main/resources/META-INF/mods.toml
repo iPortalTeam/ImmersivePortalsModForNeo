@@ -10,7 +10,7 @@ issue_tracker_url="${issue_tracker_url}"
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
-modId="immersive_portals" #mandatory
+modId="immersive_portals_core" #mandatory
 # The version number of the mod
 version="${mod_version}" #mandatory
 # A display name for the mod
@@ -25,15 +25,55 @@ logoFile="icon.png" #optional
 #credits="" #optional
 # A text field displayed in the mod UI
 authors="${mod_authors}" #optional
-
 # The description text for the mod (multi line!) (#mandatory)
 description='''${mod_description}'''
+
+[[mods]] #mandatory
+# The modid of the mod
+modId="q_misc_util" #mandatory
+# The version number of the mod
+version="${mod_version}" #mandatory
+# A display name for the mod
+displayName="Immersive Portals" #mandatory
+# A URL to query for updates for this mod. See the JSON update specification https://docs.neoforged.net/docs/misc/updatechecker/
+#updateJSONURL="https://change.me.example.invalid/updates.json" #optional
+# A URL for the "homepage" for this mod, displayed in the mod UI
+#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
+# A file name (in the root of the mod JAR) containing a logo for display
+logoFile="icon.png" #optional
+# A text field displayed in the mod UI
+#credits="" #optional
+# A text field displayed in the mod UI
+authors="${mod_authors}" #optional
+# The description text for the mod (multi line!) (#mandatory)
+description='''${mod_description}'''
+
+[[mods]] #mandatory
+# The modid of the mod
+modId="imm_ptl" #mandatory
+# The version number of the mod
+version="${mod_version}" #mandatory
+# A display name for the mod
+displayName="Immersive Portals" #mandatory
+# A URL to query for updates for this mod. See the JSON update specification https://docs.neoforged.net/docs/misc/updatechecker/
+#updateJSONURL="https://change.me.example.invalid/updates.json" #optional
+# A URL for the "homepage" for this mod, displayed in the mod UI
+#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
+# A file name (in the root of the mod JAR) containing a logo for display
+logoFile="icon.png" #optional
+# A text field displayed in the mod UI
+#credits="" #optional
+# A text field displayed in the mod UI
+authors="${mod_authors}" #optional
+# The description text for the mod (multi line!) (#mandatory)
+description='''${mod_description}'''
+
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.immersive_portals]] #optional
+[[dependencies.immersive_portals_core]] #optional
 # the modid of the dependency
 modId="neoforge" #mandatory
 # Does this dependency have to exist - if not, ordering below must be specified
-mandatory=true #mandatory
+type="required"
 # The version range of the dependency
 versionRange="${neo_version_range}" #mandatory
 # An ordering relationship for the dependency - BEFORE or AFTER required if the dependency is not mandatory
@@ -43,9 +83,9 @@ ordering="NONE"
 # Side this dependency is applied on - BOTH, CLIENT, or SERVER
 side="BOTH"
 # Here's another dependency
-[[dependencies.immersive_portals]]
+[[dependencies.immersive_portals_core]]
 modId="minecraft"
-mandatory=true
+type="required"
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
 versionRange="${minecraft_version_range}"
 ordering="NONE"

@@ -24,7 +24,7 @@ public class MixinClientboundCustomPayloadPacket implements IECustomPayloadPacke
     private CustomPacketPayload payload;
     
     @Inject(
-        method = "readPayload",
+        method = "readPayload*",
         at = @At("HEAD"),
         cancellable = true
     )

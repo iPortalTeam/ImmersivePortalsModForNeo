@@ -36,15 +36,15 @@ public class IPModEntry {
             new IPModEntryClient().onInitializeClient(modEventBus);
         }
 
-        onInitialize();
+        onInitialize(modEventBus);
 
-        SubCommandArgumentType.init();
-        TimingFunctionArgumentType.init();
-        AxisArgumentType.init();
+        SubCommandArgumentType.init(modEventBus);
+        TimingFunctionArgumentType.init(modEventBus);
+        AxisArgumentType.init(modEventBus);
     }
 
-    public void onInitialize() {
-        IPModMain.init();
+    public void onInitialize(IEventBus eventBus) {
+        IPModMain.init(eventBus);
         RequiemCompat.init();
         
 //        IPModMain.registerEntityTypes(

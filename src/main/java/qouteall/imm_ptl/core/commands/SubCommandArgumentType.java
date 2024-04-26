@@ -16,6 +16,7 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -77,8 +78,8 @@ public class SubCommandArgumentType implements ArgumentType<String> {
         return context.getArgument(name, String.class);
     }
     
-    public static void init() {
-        NeoForge.EVENT_BUS.addListener(RegisterEvent.class, registerEvent -> {
+    public static void init(IEventBus modEventBus) {
+        modEventBus.addListener(RegisterEvent.class, registerEvent -> {
             registerEvent.register(BuiltInRegistries.COMMAND_ARGUMENT_TYPE.key(),
                     new ResourceLocation("imm_ptl:sub_command_argument_type"),
                     () -> ArgumentTypeInfos.registerByClass(SubCommandArgumentType.class, SingletonArgumentInfo.contextFree(() -> instance)));

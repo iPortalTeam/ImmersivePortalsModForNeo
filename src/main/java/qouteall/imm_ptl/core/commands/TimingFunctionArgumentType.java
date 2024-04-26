@@ -13,6 +13,7 @@ import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import qouteall.imm_ptl.core.portal.animation.TimingFunction;
@@ -59,8 +60,8 @@ public class TimingFunctionArgumentType implements ArgumentType<TimingFunction> 
             .map(Enum::toString).collect(Collectors.toList());
     }
     
-    public static void init() {
-        NeoForge.EVENT_BUS.addListener(RegisterEvent.class, registerEvent -> {
+    public static void init(IEventBus modEventBus) {
+        modEventBus.addListener(RegisterEvent.class, registerEvent -> {
             registerEvent.register(BuiltInRegistries.COMMAND_ARGUMENT_TYPE.key(),
                     new ResourceLocation("imm_ptl:timing_function_argument_type"),
                     () -> ArgumentTypeInfos.registerByClass(TimingFunctionArgumentType.class, SingletonArgumentInfo.contextFree(() -> instance)));

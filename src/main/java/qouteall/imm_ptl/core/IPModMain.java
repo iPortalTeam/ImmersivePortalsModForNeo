@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TickEvent;
@@ -61,12 +62,12 @@ public class IPModMain {
     
     private static final Logger LOGGER = LogUtils.getLogger();
     
-    public static void init() {
+    public static void init(IEventBus eventBus) {
         loadConfig();
         
         Helper.LOGGER.info("Immersive Portals Mod Initializing");
 
-        NeoForge.EVENT_BUS.addListener(RegisterPayloadHandlerEvent.class, Payloads::register);
+        eventBus.addListener(RegisterPayloadHandlerEvent.class, Payloads::register);
         ImmPtlNetworkConfig.init();
 
         NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> IPGlobal.CLIENT_TASK_LIST.processTasks());

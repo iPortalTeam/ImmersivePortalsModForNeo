@@ -1,9 +1,9 @@
 package qouteall.imm_ptl.peripheral;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -24,10 +24,7 @@ public class PeripheralModMain {
     
     public static final Block portalHelperBlock =
         new Block(BlockBehaviour.Properties.of().noOcclusion().isRedstoneConductor((a, b, c) -> false));
-    
-    public static final BlockItem portalHelperBlockItem =
-        new PortalHelperItem(PeripheralModMain.portalHelperBlock, new Item.Properties());
-    
+
     public static final CreativeModeTab TAB = CreativeModeTab.builder()
             .icon(() -> new ItemStack(PortalWandItem.instance))
             .title(Component.translatable("imm_ptl.item_group"))
@@ -36,7 +33,7 @@ public class PeripheralModMain {
                 
                 CommandStickItem.addIntoCreativeTag(entries);
                 
-                entries.accept(PeripheralModMain.portalHelperBlockItem);
+                entries.accept(BuiltInRegistries.ITEM.get(new ResourceLocation("immersive_portals", "portal_helper")));
             })
             .build();
     
@@ -74,7 +71,7 @@ public class PeripheralModMain {
     public static void registerItems(BiConsumer<ResourceLocation, Item> regFunc) {
         regFunc.accept(
             new ResourceLocation("immersive_portals", "portal_helper"),
-            portalHelperBlockItem
+            new PortalHelperItem(PeripheralModMain.portalHelperBlock, new Item.Properties())
         );
         
         regFunc.accept(
@@ -91,7 +88,7 @@ public class PeripheralModMain {
     public static void registerBlocks(BiConsumer<ResourceLocation, Block> regFunc) {
         regFunc.accept(
             new ResourceLocation("immersive_portals", "portal_helper"),
-            portalHelperBlock
+            new Block(BlockBehaviour.Properties.of().noOcclusion().isRedstoneConductor((a, b, c) -> false))
         );
     }
 
