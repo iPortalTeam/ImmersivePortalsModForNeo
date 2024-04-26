@@ -299,7 +299,7 @@ public class ClientWorldLoader {
     
     /**
      * Get the client world and create if missing.
-     * If the dimension id is invalid, it will throw an error
+     * If the dimension intId is invalid, it will throw an error
      */
     @NotNull
     public static ClientLevel getWorld(ResourceKey<Level> dimension) {
@@ -319,7 +319,7 @@ public class ClientWorldLoader {
     
     /**
      * Get the client world and create if missing.
-     * If the dimension id is invalid, it will return null
+     * If the dimension intId is invalid, it will return null
      */
     @Nullable
     public static ClientLevel getOptionalWorld(ResourceKey<Level> dimension) {
@@ -617,15 +617,15 @@ public class ClientWorldLoader {
                 int expectedId = entry.getValue();
                 
                 if (biomes.getId(biomes.get(id)) != expectedId) {
-                    LOGGER.error("Biome id mismatch: {} {}", id, expectedId);
+                    LOGGER.error("Biome intId mismatch: {} {}", id, expectedId);
                 }
             }
             
             if (idMap.size() != biomes.keySet().size()) {
-                LOGGER.error("Biome id mismatch: size not equal");
+                LOGGER.error("Biome intId mismatch: size not equal");
             }
             
-            LOGGER.info("Biome id check finished");
+            LOGGER.info("Biome intId check finished");
         }
     }
 }

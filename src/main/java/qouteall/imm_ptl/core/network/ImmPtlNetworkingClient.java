@@ -22,7 +22,7 @@ public abstract class ImmPtlNetworkingClient {
         ResourceKey<Level> dimension = DimensionAPI.getClientDimKeyFromIntId(syncPacket.dimensionId());
         ClientLevel world = ClientWorldLoader.getWorld(dimension);
 
-        Entity existing = world.getEntity(syncPacket.id());
+        Entity existing = world.getEntity(syncPacket.intId());
 
         if (existing instanceof Portal existingPortal) {
             // update existing portal (handles default animation)
@@ -48,7 +48,7 @@ public abstract class ImmPtlNetworkingClient {
                 return;
             }
 
-            entity.setId(syncPacket.id());
+            entity.setId(syncPacket.intId());
             entity.setUUID(syncPacket.uuid());
             entity.syncPacketPositionCodec(syncPacket.x(), syncPacket.y(), syncPacket.z());
             entity.moveTo(syncPacket.x(), syncPacket.y(), syncPacket.z());

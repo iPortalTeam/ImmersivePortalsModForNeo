@@ -193,7 +193,7 @@ public class NormalSkylandGenerator extends NoiseBasedChunkGenerator {
     @Override
     public ChunkGeneratorStructureState createState(HolderLookup<StructureSet> structureSetLookup, RandomState randomState, long seed) {
         // filter the mineshaft out
-        // cannot use HolderLookup.filterElements because it does not provide id in predicate
+        // cannot use HolderLookup.filterElements because it does not provide intId in predicate
         HolderLookup<StructureSet> structureSetLookupDelegate = new HolderLookup<StructureSet>() {
             @Override
             public Stream<Holder.Reference<StructureSet>> listElements() {

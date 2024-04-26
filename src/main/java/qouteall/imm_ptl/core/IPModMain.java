@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core;
 
 import com.mojang.logging.LogUtils;
+import de.nick1st.imm_ptl.networking.Payloads;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -8,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer;
 import qouteall.imm_ptl.core.chunk_loading.EntitySync;
@@ -63,7 +65,8 @@ public class IPModMain {
         loadConfig();
         
         Helper.LOGGER.info("Immersive Portals Mod Initializing");
-        
+
+        NeoForge.EVENT_BUS.addListener(RegisterPayloadHandlerEvent.class, Payloads::register);
         ImmPtlNetworking.init();
         ImmPtlNetworkConfig.init();
 

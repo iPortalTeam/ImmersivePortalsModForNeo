@@ -20,7 +20,7 @@ public class MixinHashMapPalette<T> {
         int id = idMap.getId(object);
         if (id == -1) {
             throw new RuntimeException(
-                "(Note: ImmPtl is just doing checking to help debugging) Cannot find id for %s. Something is wrong with registries.".formatted(object)
+                "(Note: ImmPtl is just doing checking to help debugging) Cannot find intId for %s. Something is wrong with registries.".formatted(object)
             );
         }
         return id;

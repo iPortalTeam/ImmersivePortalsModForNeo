@@ -14,7 +14,7 @@ import qouteall.q_misc_util.my_util.WithDim;
 
 /**
  * The proto-portal's one-side when using portal wand to create new portal.
- * Will be serialized to JSON (require type adapter for dimension id).
+ * Will be serialized to JSON (require type adapter for dimension intId).
  */
 public class ProtoPortalSide {
     @NotNull

@@ -37,8 +37,8 @@ import java.util.function.Supplier;
 public class PacketRedirection {
     private static final Logger LOGGER = LoggerFactory.getLogger(PacketRedirection.class);
     
-    // most game packets sent are redirected, so that payload id will be used very frequently
-    // use a short id to reduce packet size
+    // most game packets sent are redirected, so that payload intId will be used very frequently
+    // use a short intId to reduce packet size
     public static final ResourceLocation payloadId =
         new ResourceLocation("i:r");
     
@@ -244,7 +244,7 @@ public class PacketRedirection {
     }
 
     /**
-     * @param dimensionIntId use integer here because the mapping between dimension id and integer id is per-server the deserialization context does not give access to MinecraftServer object (going to handle the case of multiple servers per JVM)
+     * @param dimensionIntId use integer here because the mapping between dimension intId and integer intId is per-server the deserialization context does not give access to MinecraftServer object (going to handle the case of multiple servers per JVM)
      */
     public record Payload(
         int dimensionIntId, Packet<? extends ClientCommonPacketListener> packet

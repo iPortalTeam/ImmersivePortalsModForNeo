@@ -181,7 +181,7 @@ public class PortalExtension {
             }
             
             if (flippedPortalId != null) {
-                // if the id is not null, find the portal entity
+                // if the intId is not null, find the portal entity
                 if (flippedPortal == null) {
                     Entity e = ((IEWorld) portal.level()).portal_getEntityLookup().get(flippedPortalId);
                     if (e instanceof Portal p) {
@@ -194,7 +194,7 @@ public class PortalExtension {
                 }
             }
             if (flippedPortalId == null) {
-                // if the id is null, find the portal from world
+                // if the intId is null, find the portal from world
                 flippedPortal = PortalManipulation.findFlippedPortal(portal);
                 if (flippedPortal != null) {
                     flippedPortalId = flippedPortal.getUUID();
@@ -294,7 +294,7 @@ public class PortalExtension {
     private void updateClusterStatusClient(Portal portal) {
         if (bindCluster) {
             if (flippedPortalId != null) {
-                // if the id is not null, find the portal
+                // if the intId is not null, find the portal
                 Entity e = ((IEWorld) portal.level()).portal_getEntityLookup().get(flippedPortalId);
                 if (e instanceof Portal p) {
                     flippedPortal = p;

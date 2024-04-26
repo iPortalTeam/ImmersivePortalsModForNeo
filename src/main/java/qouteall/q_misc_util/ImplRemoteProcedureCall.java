@@ -267,7 +267,7 @@ public class ImplRemoteProcedureCall {
 //        }
 //        return new ImplRPCPayload(r) {
 //            @Override
-//            public ResourceLocation id() {
+//            public ResourceLocation intId() {
 //                return MiscNetworking.id_ctsRemote;
 //            }
 //        };

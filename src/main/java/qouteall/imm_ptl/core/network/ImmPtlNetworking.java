@@ -2,23 +2,23 @@ package qouteall.imm_ptl.core.network;
 
 import com.mojang.logging.LogUtils;
 import de.nick1st.imm_ptl.events.ClientPortalSpawnEvent;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.NeoForgeEventHandler;
-import networking.NeoPacket;
-import networking.PacketType;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.ClientWorldLoader;
@@ -38,11 +38,8 @@ public class ImmPtlNetworking {
     // client to server
     public static record TeleportPacket(
         int dimensionId, Vec3 eyePosBeforeTeleportation, UUID portalId
-    ) implements NeoPacket {
-        public static final PacketType<TeleportPacket> TYPE = PacketType.create(
-            new ResourceLocation("imm_ptl:teleport"),
-            TeleportPacket::read
-        );
+    ) implements CustomPacketPayload {
+        public static final ResourceLocation ID = new ResourceLocation("imm_ptl:teleport");
         
         public static TeleportPacket read(FriendlyByteBuf buf) {
             int dimId = buf.readVarInt();
@@ -63,19 +60,20 @@ public class ImmPtlNetworking {
             buf.writeDouble(eyePosBeforeTeleportation.z);
             buf.writeUUID(portalId);
         }
-        
+
         @Override
-        public PacketType<?> getType() {
-            return TYPE;
+        public ResourceLocation id() {
+            return ID;
         }
         
-        public void handle(Supplier<NetworkEvent.Context> ctx) {
+        public void handle(PlayPayloadContext playPayloadContext) {
+            Player player = playPayloadContext.player().get();
             ResourceKey<Level> dim = PortalAPI.serverIntToDimKey(
-                ctx.get().getSender().getServer(), dimensionId
+                player.getServer(), dimensionId
             );
             
-            ServerTeleportationManager.of(player.server).onPlayerTeleportedInClient(
-                ctx.get().getSender(), dim, eyePosBeforeTeleportation, portalId
+            ServerTeleportationManager.of(player.getServer()).onPlayerTeleportedInClient(
+                    (ServerPlayer) player, dim, eyePosBeforeTeleportation, portalId
             );
         }
     }
@@ -83,11 +81,8 @@ public class ImmPtlNetworking {
     // server to client
     public static record GlobalPortalSyncPacket(
         int dimensionId, CompoundTag data
-    ) implements NeoPacket {
-        public static final PacketType<GlobalPortalSyncPacket> TYPE = PacketType.create(
-            new ResourceLocation("imm_ptl:upd_glb_ptl"),
-            GlobalPortalSyncPacket::read
-        );
+    ) implements CustomPacketPayload {
+        public static final ResourceLocation ID = new ResourceLocation("imm_ptl:upd_glb_ptl");
         
         public static GlobalPortalSyncPacket read(FriendlyByteBuf buf) {
             int dimId = buf.readVarInt();
@@ -100,14 +95,14 @@ public class ImmPtlNetworking {
             buf.writeVarInt(dimensionId);
             buf.writeNbt(data);
         }
-        
+
         @Override
-        public PacketType<?> getType() {
-            return TYPE;
+        public ResourceLocation id() {
+            return ID;
         }
         
-//        @OnlyIn(Dist.CLIENT)
-        public void handle(Supplier<NetworkEvent.Context> ctx) {
+        //@OnlyIn(Dist.CLIENT)
+        public void handle(PlayPayloadContext playPayloadContext) {
             ResourceKey<Level> dim = PortalAPI.clientIntToDimKey(dimensionId);
             
             GlobalPortalStorage.receiveGlobalPortalSync(dim, data);
@@ -117,10 +112,10 @@ public class ImmPtlNetworking {
     /**
      * server to client
      * {@link ClientboundAddEntityPacket}
-     * This packet is redirected, so there is no need to contain dimension id
+     * This packet is redirected, so there is no need to contain dimension intId
      */
     public static record PortalSyncPacket(
-        int id,
+        int intId,
         UUID uuid,
         EntityType<?> type,
         int dimensionId,
@@ -128,20 +123,18 @@ public class ImmPtlNetworking {
         double y,
         double z,
         CompoundTag extraData
-    ) implements NeoPacket {
+    ) implements CustomPacketPayload {
+
         public PortalSyncPacket {
             // debug
 //            Helper.LOGGER.info("PortalSyncPacket create {}", MiscHelper.getServer().overworld().getGameTime());
         }
         
-        public static final PacketType<PortalSyncPacket> TYPE = PacketType.create(
-            new ResourceLocation("imm_ptl:spawn_portal"),
-            PortalSyncPacket::read
-        );
+        public static final ResourceLocation ID = new ResourceLocation("imm_ptl:spawn_portal");
         
         @Override
         public void write(FriendlyByteBuf buf) {
-            buf.writeVarInt(id);
+            buf.writeVarInt(intId);
             buf.writeUUID(uuid);
             buf.writeId(BuiltInRegistries.ENTITY_TYPE, type);
             buf.writeVarInt(dimensionId);
@@ -150,7 +143,12 @@ public class ImmPtlNetworking {
             buf.writeDouble(z);
             buf.writeNbt(extraData);
         }
-        
+
+        @Override
+        public ResourceLocation id() {
+            return ID;
+        }
+
         public static PortalSyncPacket read(FriendlyByteBuf buf) {
             int id = buf.readVarInt();
             UUID uuid = buf.readUUID();
@@ -163,22 +161,17 @@ public class ImmPtlNetworking {
             return new PortalSyncPacket(id, uuid, type, dimensionId, x, y, z, extraData);
         }
         
-        @Override
-        public PacketType<?> getType() {
-            return TYPE;
-        }
-        
         /**
          * {@link ClientPacketListener#handleAddEntity(ClientboundAddEntityPacket)}
          */
-        @Environment(EnvType.CLIENT)
-        public void handle() {
+        //@OnlyIn(Dist.CLIENT)
+        public void handle(PlayPayloadContext playPayloadContext) {
 //            Helper.LOGGER.info("PortalSyncPacket handle {}", RenderStates.frameIndex);
 
             ResourceKey<Level> dimension = PortalAPI.clientIntToDimKey(dimensionId);
             ClientLevel world = ClientWorldLoader.getWorld(dimension);
 
-            Entity existing = world.getEntity(id);
+            Entity existing = world.getEntity(intId);
 
             if (existing instanceof Portal existingPortal) {
                 // update existing portal (handles default animation)
@@ -204,7 +197,7 @@ public class ImmPtlNetworking {
                     return;
                 }
 
-                entity.setId(id);
+                entity.setId(intId);
                 entity.setUUID(uuid);
                 entity.syncPacketPositionCodec(x, y, z);
                 entity.moveTo(x, y, z);
@@ -222,32 +215,4 @@ public class ImmPtlNetworking {
             }
         }
     }
-    
-    public static void init() {
-//        ServerPlayNetworking.registerGlobalReceiver(
-//            TeleportPacket.TYPE,
-//            (packet, player, responseSender) -> packet.handle(player)
-//        );
-        NeoPacket.register(TeleportPacket.class, TeleportPacket.TYPE, TeleportPacket::write,
-                TeleportPacket::read, TeleportPacket::handle, PlayNetworkDirection.PLAY_TO_SERVER);
-
-        NeoPacket.register(GlobalPortalSyncPacket.class, GlobalPortalSyncPacket.TYPE, GlobalPortalSyncPacket::write,
-                GlobalPortalSyncPacket::read, GlobalPortalSyncPacket::handle, PlayNetworkDirection.PLAY_TO_CLIENT);
-
-        NeoPacket.register(PortalSyncPacket.class, PortalSyncPacket.TYPE, PortalSyncPacket::write,
-                PortalSyncPacket::read, PortalSyncPacket::handle, PlayNetworkDirection.PLAY_TO_CLIENT);
-    }
-    
-    public static void initClient() {
-        ClientPlayNetworking.registerGlobalReceiver(
-            GlobalPortalSyncPacket.TYPE,
-            (packet, player, responseSender) -> packet.handle()
-        );
-        
-        ClientPlayNetworking.registerGlobalReceiver(
-            PortalSyncPacket.TYPE,
-            (packet, player, responseSender) -> packet.handle()
-        );
-    }
-    
 }

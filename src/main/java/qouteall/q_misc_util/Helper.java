@@ -500,7 +500,7 @@ public class Helper {
             return dimIdToKey(id);
         }
         
-        LOGGER.error("Cannot read world id from {}. Fallback to overworld", tag);
+        LOGGER.error("Cannot read world intId from {}. Fallback to overworld", tag);
         return Level.OVERWORLD;
     }
     

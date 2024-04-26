@@ -43,10 +43,10 @@ public class IPModEntry {
         RequiemCompat.init();
         
 //        IPModMain.registerEntityTypes(
-//            (id, entityType) -> Registry.register(BuiltInRegistries.ENTITY_TYPE, id, entityType)
+//            (intId, entityType) -> Registry.register(BuiltInRegistries.ENTITY_TYPE, intId, entityType)
 //        );
         
-//        IPModMain.registerBlocks((id, obj) -> Registry.register(BuiltInRegistries.BLOCK, id, obj));
+//        IPModMain.registerBlocks((intId, obj) -> Registry.register(BuiltInRegistries.BLOCK, intId, obj));
         
         if (ModList.get().isLoaded("dimthread")) {
             O_O.isDimensionalThreadingPresent = true;

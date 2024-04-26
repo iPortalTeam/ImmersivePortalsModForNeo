@@ -27,7 +27,7 @@ public class DimensionIntId {
     public static DimIntIdMap clientRecord;
     
     public static void init() {
-        // make sure that dimension int id updates before global portal storage update
+        // make sure that dimension int intId updates before global portal storage update
         // @Nick1st DynDimLib is not used in the Neo Port
 //        DimensionAPI.SERVER_DIMENSION_DYNAMIC_UPDATE_EVENT.addPhaseOrdering(
 //            DYNAMIC_UPDATE_EVENT_EARLY_PHASE,
@@ -51,14 +51,14 @@ public class DimensionIntId {
     }
 
     public static @NotNull DimIntIdMap getClientMap() {
-        Validate.notNull(clientRecord, "Client dim id record is not yet synced");
+        Validate.notNull(clientRecord, "Client dim intId record is not yet synced");
         return clientRecord;
     }
     
     public static @NotNull DimIntIdMap getServerMap(MinecraftServer server) {
         IPPerServerInfo perServerInfo = IPPerServerInfo.of(server);
         DimIntIdMap rec = perServerInfo.dimIntIdMap;
-        Validate.notNull(rec, "Server dim id record is not yet initialized");
+        Validate.notNull(rec, "Server dim intId record is not yet initialized");
         return rec;
     }
     
@@ -76,7 +76,7 @@ public class DimensionIntId {
         
         IPPerServerInfo perServerInfo = IPPerServerInfo.of(server);
         perServerInfo.dimIntIdMap = rec;
-        LOGGER.info("Server dimension integer id mapping:\n{}", rec);
+        LOGGER.info("Server dimension integer intId mapping:\n{}", rec);
     }
     
     private static void fillInVanillaDimIds(DimIntIdMap rec) {
@@ -109,7 +109,7 @@ public class DimensionIntId {
         
         map.removeUnused(usedDimKeys);
         
-        LOGGER.info("Current dimension integer id mapping:\n{}", map);
+        LOGGER.info("Current dimension integer intId mapping:\n{}", map);
         
         var packet = MiscNetworking.DimIdSyncPacket.createPacket(server);
         

@@ -103,7 +103,7 @@ public class ImmPtlChunkTickets {
     
     }
     
-    // it takes in world instead of dimension id, to ensure dimension really exists
+    // it takes in world instead of dimension intId, to ensure dimension really exists
     public static ImmPtlChunkTickets get(ServerLevel world) {
         return BY_DIMENSION.computeIfAbsent(world, k -> new ImmPtlChunkTickets());
     }

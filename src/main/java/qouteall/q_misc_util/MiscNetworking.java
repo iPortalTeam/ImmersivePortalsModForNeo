@@ -92,7 +92,7 @@ public class MiscNetworking {
         // should not be handled in client main thread, otherwise it may be late
         public void handleOnNetworkingThread() {
             DimIntIdMap rec = DimIntIdMap.fromTag(dimIntIdTag);
-            LOGGER.info("Client received dim id sync packet\n{}", rec);
+            LOGGER.info("Client received dim intId sync packet\n{}", rec);
             DimensionIntId.clientRecord = rec;
             
             ImmutableMap.Builder<ResourceKey<Level>, ResourceKey<DimensionType>> builder =

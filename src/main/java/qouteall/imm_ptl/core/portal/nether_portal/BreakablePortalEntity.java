@@ -68,7 +68,7 @@ public abstract class BreakablePortalEntity extends Portal {
         
         reversePortalId = Helper.getUuid(compoundTag, "reversePortalId");
         if (reversePortalId == null) {
-            Helper.err("missing reverse portal id " + compoundTag);
+            Helper.err("missing reverse portal intId " + compoundTag);
             reversePortalId = Util.NIL_UUID;
         }
         

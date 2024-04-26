@@ -104,7 +104,7 @@ public class SimpleBlockPredicate implements Predicate<BlockState> {
                 
                 DataResult<ResourceLocation> bockTagRl = ResourceLocation.read(blockTagIdStr);
                 if (bockTagRl.result().isEmpty()) {
-                    return DataResult.error(() -> "Invalid block tag id:" + blockTagIdStr);
+                    return DataResult.error(() -> "Invalid block tag intId:" + blockTagIdStr);
                 }
                 ResourceLocation resourceLocation = bockTagRl.result().get();
                 

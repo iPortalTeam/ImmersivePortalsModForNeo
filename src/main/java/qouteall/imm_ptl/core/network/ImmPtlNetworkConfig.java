@@ -8,11 +8,13 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
-import net.neoforged.neoforge.network.LoginNetworkDirection;
-import net.neoforged.neoforge.network.NetworkEvent;
-import net.neoforged.neoforge.network.PlayNetworkDirection;
+import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -21,11 +23,8 @@ import qouteall.imm_ptl.core.IPMcHelper;
 import qouteall.imm_ptl.core.mixin.common.other_sync.IEServerConfigurationPacketListenerImpl;
 import qouteall.imm_ptl.core.platform_specific.IPConfig;
 import qouteall.imm_ptl.core.platform_specific.O_O;
-import networking.NeoPacket;
-import networking.PacketType;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @SuppressWarnings("UnstableApiUsage")
 public class ImmPtlNetworkConfig {
@@ -74,9 +73,9 @@ public class ImmPtlNetworkConfig {
         @Override
         public void start(Consumer<Packet<?>> consumer) {
             consumer.accept(
-                    NeoPacket.channels.get(S2CConfigStartPacket.TYPE).toVanillaPacket(new S2CConfigStartPacket(
-                            immPtlVersion
-                    ), PlayNetworkDirection.PLAY_TO_CLIENT)
+                ServerConfigurationNetworking.createS2CPacket(new S2CConfigStartPacket(
+                    immPtlVersion
+                ))
             );
         }
         
@@ -88,12 +87,8 @@ public class ImmPtlNetworkConfig {
     
     public static record S2CConfigStartPacket(
         ModVersion versionFromServer
-    ) implements NeoPacket {
-        public static final PacketType<S2CConfigStartPacket> TYPE =
-            PacketType.create(
-                new ResourceLocation("iportal:config_packet"),
-                S2CConfigStartPacket::read
-            );
+    ) implements CustomPacketPayload {
+        public static final ResourceLocation ID = new ResourceLocation("iportal:config_packet");
         
         public static S2CConfigStartPacket read(FriendlyByteBuf buf) {
             ModVersion info = ModVersion.read(buf);
@@ -103,21 +98,21 @@ public class ImmPtlNetworkConfig {
         public void write(FriendlyByteBuf buf) {
             versionFromServer.write(buf);
         }
-        
+
         @Override
-        public PacketType<?> getType() {
-            return TYPE;
+        public ResourceLocation id() {
+            return ID;
         }
         
         // handled on client side
-//        @OnlyIn(Dist.CLIENT)
-        public void handle(Supplier<NetworkEvent.Context> ctx) {
+        //@OnlyIn(Dist.CLIENT)
+        public void handle(ConfigurationPayloadContext configurationPayloadContext) {
             LOGGER.info(
                 "Client received ImmPtl config packet. Server mod version: {}", versionFromServer
             );
             
             serverVersion = versionFromServer;
-            NeoPacket.channels.get(C2SConfigCompletePacket.TYPE.identifier).sendToServer(new C2SConfigCompletePacket(
+            configurationPayloadContext.replyHandler().send(new C2SConfigCompletePacket(
                 immPtlVersion, IPConfig.getConfig().clientTolerantVersionMismatchWithServer
             ));
         }
@@ -126,11 +121,8 @@ public class ImmPtlNetworkConfig {
     public record C2SConfigCompletePacket(
         ModVersion versionFromClient,
         boolean clientTolerantVersionMismatch
-    ) implements NeoPacket {
-        public static final PacketType<C2SConfigCompletePacket> TYPE = PacketType.create(
-            new ResourceLocation("iportal:configure_complete"),
-            C2SConfigCompletePacket::read
-        );
+    ) implements CustomPacketPayload {
+        public static final ResourceLocation ID = new ResourceLocation("iportal:configure_complete");
         
         public static C2SConfigCompletePacket read(FriendlyByteBuf buf) {
             ModVersion info = ModVersion.read(buf);
@@ -143,18 +135,16 @@ public class ImmPtlNetworkConfig {
             versionFromClient.write(buf);
             buf.writeBoolean(clientTolerantVersionMismatch);
         }
-        
+
         @Override
-        public PacketType<?> getType() {
-            return TYPE;
+        public ResourceLocation id() {
+            return ID;
         }
         
         // handled on server side
-        public void handle(
-            Supplier<NetworkEvent.Context> ctx
+        public void handle(ConfigurationPayloadContext configurationPayloadContext
         ) {
-            GameProfile gameProfile = ((IEServerConfigurationPacketListenerImpl)
-                    ctx.get().getNetworkManager().getPacketListener()).ip_getGameProfile();
+            GameProfile gameProfile = ((IEServerConfigurationPacketListenerImpl) networkHandler).ip_getGameProfile();
             
             LOGGER.info(
                 "Server received ImmPtl config packet. Mod version: {} Player: {} {}",
@@ -167,7 +157,7 @@ public class ImmPtlNetworkConfig {
                     !IPConfig.getConfig().serverTolerantVersionMismatchWithClient &&
                     !clientTolerantVersionMismatch
                 ) {
-                    ctx.get().getNetworkManager().disconnect(Component.translatable(
+                    configurationPayloadContext.replyHandler().disconnect(Component.translatable(
                         "imm_ptl.mod_major_minor_version_mismatch",
                         immPtlVersion.toString(),
                         versionFromClient.toString()
@@ -180,9 +170,11 @@ public class ImmPtlNetworkConfig {
                             Server ImmPtl version: {}""",
                         gameProfile, versionFromClient, immPtlVersion
                     );
+                    return;
                 }
             }
-            
+
+            configurationPayloadContext.
             networkHandler.completeTask(ImmPtlConfigurationTask.TYPE);
         }
     }
@@ -201,7 +193,7 @@ public class ImmPtlNetworkConfig {
                     if (IPConfig.getConfig().serverRejectClientWithoutImmPtl) {
                         // cannot use translation key here
                         // because the translation does not exist on client without the mod
-                        event.getSource().getNetworkManager().disconnect(Component.literal(
+                        handler.disconnect(Component.literal(
                             """
                                 The server detected that client does not install Immersive Portals mod.
                                 A server with Immersive Portals mod only works with the clients that have it.
