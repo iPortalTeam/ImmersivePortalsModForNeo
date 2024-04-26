@@ -3,8 +3,6 @@ package qouteall.imm_ptl.core.portal.custom_portal_gen;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.mojang.logging.LogUtils;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
@@ -19,7 +17,6 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.IPGlobal;
@@ -44,18 +41,20 @@ public class CustomPortalGenManager {
     private final Map<UUID, WithDim<Vec3>> playerPosBeforeTravel = new HashMap<>();
     
     public static void init() {
-        DynamicRegistries.register(
-            CustomPortalGeneration.REGISTRY_KEY,
-            CustomPortalGeneration.CODEC
-        );
-        DynamicRegistries.register(
-            CustomPortalGeneration.LEGACY_REGISTRY_KEY,
-            CustomPortalGeneration.CODEC
-        );
+        // TODO @Nick1st - Register the codecs
+//        DynamicRegistries.register(
+//            CustomPortalGeneration.REGISTRY_KEY,
+//            CustomPortalGeneration.CODEC
+//        );
+//        DynamicRegistries.register(
+//            CustomPortalGeneration.LEGACY_REGISTRY_KEY,
+//            CustomPortalGeneration.CODEC
+//        );
 
-        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register(
-            (server, resourceManager, success) -> onDataPackReloaded(server)
-        );
+        // TODO @Nick1st - This must probably be fixed, but there is no event for it on Forge
+//        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register(
+//            (server, resourceManager, success) -> onDataPackReloaded(server)
+//        );
 
         NeoForge.EVENT_BUS.addListener(ServerStartedEvent.class, (e) -> CustomPortalGenManager.onDataPackReloaded(e.getServer()));
     }

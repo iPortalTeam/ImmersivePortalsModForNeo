@@ -20,6 +20,8 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -41,6 +43,8 @@ import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -52,6 +56,7 @@ import qouteall.imm_ptl.core.mc_utils.MyNbtTextFormatter;
 import qouteall.imm_ptl.core.mc_utils.ServerTaskList;
 import qouteall.imm_ptl.core.miscellaneous.IPVanillaCopy;
 import qouteall.imm_ptl.core.mixin.common.mc_util.IELevelEntityGetterAdapter;
+import qouteall.imm_ptl.core.network.ImmPtlNetworking;
 import qouteall.imm_ptl.core.platform_specific.O_O;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.q_misc_util.Helper;
@@ -441,6 +446,17 @@ public class McHelper {
         }
         
         entityTracker.broadcastAndSend(packet);
+    }
+
+    public static void sendToTrackers(Entity entity, CustomPacketPayload packet) {
+        ChunkMap.TrackedEntity entityTracker =
+                getIEChunkMap(entity.level().dimension()).ip_getEntityTrackerMap().get(entity.getId());
+        if (entityTracker == null) {
+//            Helper.err("missing entity tracker object");
+            return;
+        }
+
+        entityTracker.broadcastAndSend(new ClientboundCustomPayloadPacket(packet));
     }
     
     //it's a little bit incorrect with corner glass pane

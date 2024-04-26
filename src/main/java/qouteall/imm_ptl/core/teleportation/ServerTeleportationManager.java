@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.teleportation;
 
 import com.mojang.logging.LogUtils;
+import de.nick1st.imm_ptl.events.DimensionEvents;
 import de.nick1st.imm_ptl.events.ServerPortalTickEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

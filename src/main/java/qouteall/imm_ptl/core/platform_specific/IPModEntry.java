@@ -8,6 +8,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -27,11 +28,15 @@ public class IPModEntry {
         modEventBus.addListener(RegisterEvent.class, registerEvent ->
                 registerEvent.register(BuiltInRegistries.ENTITY_TYPE.key(), IPModMain::registerEntityTypesForge));
         modEventBus.addListener(RegisterEvent.class, registerEvent ->
-                registerEvent.register(BuiltInRegistries.BLOCK.key(), IPModMain::registerBlocksForge));
-        modEventBus.addListener(FMLCommonSetupEvent.class, event -> onInitialize());
+                registerEvent.register(BuiltInRegistries.BLOCK. key(), IPModMain::registerBlocksForge));
         modEventBus.addListener(EntityRenderersEvent.RegisterRenderers.class, IPModEntryClient::initPortalRenderers);
-        modEventBus.addListener(FMLClientSetupEvent.class, event -> new IPModEntryClient().onInitializeClient(modEventBus));
         modEventBus.addListener(FMLDedicatedServerSetupEvent.class, event -> new IPModEntryDedicatedServer().onInitializeServer());
+
+        if (FMLEnvironment.dist.isClient()) {
+            new IPModEntryClient().onInitializeClient(modEventBus);
+        }
+
+        onInitialize();
 
         SubCommandArgumentType.init();
         TimingFunctionArgumentType.init();

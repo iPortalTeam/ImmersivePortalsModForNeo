@@ -11,7 +11,6 @@ import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import qouteall.dimlib.api.DimensionAPI;
 import qouteall.imm_ptl.peripheral.alternate_dimension.*;
 import qouteall.imm_ptl.peripheral.dim_stack.DimStackManagement;
 import qouteall.imm_ptl.peripheral.portal_generation.IntrinsicPortalGeneration;
@@ -56,10 +55,11 @@ public class PeripheralModMain {
         IntrinsicPortalGeneration.init();
         
         DimStackManagement.init();
-        
-        AlternateDimensions.init();
-        
-        DimensionAPI.suppressExperimentalWarningForNamespace("immersive_portals");
+
+        // TODO @Nick1st - DynDim removal
+//        AlternateDimensions.init();
+//
+//        DimensionAPI.suppressExperimentalWarningForNamespace("immersive_portals");
         
         PortalWandItem.init();
         

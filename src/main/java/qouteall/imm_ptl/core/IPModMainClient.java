@@ -123,8 +123,7 @@ public class IPModMainClient {
         IPFlywheelCompat.init();
     
         GuiPortalRendering._init();
-        
-        ImmPtlNetworking.initClient();
+
         ImmPtlNetworkConfig.initClient();
         
         ForceMainThreadRebuild.init();

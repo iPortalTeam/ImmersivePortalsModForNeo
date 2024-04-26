@@ -151,10 +151,10 @@ public class PacketRedirection {
             // don't wrap a bundle packet into a normal packet
             List<Packet<ClientGamePacketListener>> newSubPackets = new ArrayList<>();
             for (var subPacket : bundlePacket.subPackets()) {
-                newSubPackets.add(createRedirectedMessage(server, dimension, subPacket));
+                newSubPackets.add(createRedirectedMessage(server, dimension, (Packet<ClientGamePacketListener>) subPacket));
             }
             
-            return new ClientboundBundlePacket(newSubPackets);
+            return new ClientboundBundlePacket((Iterable<Packet<? super ClientGamePacketListener>>) newSubPackets.iterator());
         }
         else {
             // will use the server argument in the future
@@ -234,7 +234,7 @@ public class PacketRedirection {
             for (var e : map.entrySet()) {
                 ServerCommonPacketListenerImpl listener = e.getKey();
                 List<Packet<ClientGamePacketListener>> packets = e.getValue();
-                listener.send(new ClientboundBundlePacket(packets));
+                listener.send(new ClientboundBundlePacket((Iterable<Packet<? super ClientGamePacketListener>>) packets.iterator()));
             }
         }
     }

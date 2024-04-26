@@ -11,10 +11,11 @@ import qouteall.imm_ptl.peripheral.PeripheralModMain;
 
 @Mod(PeripheralModEntry.MODID)
 public class PeripheralModEntry {
-    
-    
-    @Override
-    public void onInitialize() {
+
+    public static final String MODID = "imm_ptl";
+
+    public PeripheralModEntry(IEventBus modEventBus) {
+        // TODO @Nick1st - This will probably cause frozen registries
         PeripheralModMain.registerBlocks((id, ele) -> Registry.register(
             BuiltInRegistries.BLOCK, id, ele
         ));

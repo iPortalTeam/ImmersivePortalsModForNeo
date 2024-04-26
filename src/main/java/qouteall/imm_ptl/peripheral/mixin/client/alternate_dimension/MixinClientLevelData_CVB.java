@@ -6,7 +6,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import qouteall.imm_ptl.peripheral.alternate_dimension.AlternateDimensions;
 
 @Mixin(ClientLevel.ClientLevelData.class)
 public class MixinClientLevelData_CVB {
@@ -18,9 +17,11 @@ public class MixinClientLevelData_CVB {
     private void onGetSkyDarknessHeight(CallbackInfoReturnable<Double> cir) {
         ClientLevel world = Minecraft.getInstance().level;
         assert world != null;
-        boolean isAlternateDimension =
-            AlternateDimensions.isAlternateDimension(world);
-    
+        // TODO @Nick1st - DynDim removal
+//        boolean isAlternateDimension =
+//            AlternateDimensions.isAlternateDimension(world);
+        boolean isAlternateDimension = false;
+
         if (isAlternateDimension) {
             cir.setReturnValue(-10000.0);
         }

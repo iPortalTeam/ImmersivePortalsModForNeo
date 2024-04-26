@@ -4,12 +4,15 @@ import com.mojang.logging.LogUtils;
 import de.nick1st.imm_ptl.networking.Payloads;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer;
 import qouteall.imm_ptl.core.chunk_loading.EntitySync;
@@ -18,10 +21,7 @@ import qouteall.imm_ptl.core.chunk_loading.ImmPtlChunkTracking;
 import qouteall.imm_ptl.core.chunk_loading.ServerPerformanceMonitor;
 import qouteall.imm_ptl.core.chunk_loading.WorldInfoSender;
 import qouteall.imm_ptl.core.collision.CollisionHelper;
-import qouteall.imm_ptl.core.commands.AxisArgumentType;
 import qouteall.imm_ptl.core.commands.PortalCommand;
-import qouteall.imm_ptl.core.commands.SubCommandArgumentType;
-import qouteall.imm_ptl.core.commands.TimingFunctionArgumentType;
 import qouteall.imm_ptl.core.compat.IPPortingLibCompat;
 import qouteall.imm_ptl.core.debug.DebugUtil;
 import qouteall.imm_ptl.core.mc_utils.ServerTaskList;
@@ -67,28 +67,11 @@ public class IPModMain {
         Helper.LOGGER.info("Immersive Portals Mod Initializing");
 
         NeoForge.EVENT_BUS.addListener(RegisterPayloadHandlerEvent.class, Payloads::register);
-        ImmPtlNetworking.init();
         ImmPtlNetworkConfig.init();
 
-        NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> IPGlobal.clientTaskList.processTasks());
+        NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> IPGlobal.CLIENT_TASK_LIST.processTasks());
 
-        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
-            if (event.phase == TickEvent.Phase.END) {
-                // TODO make it per-server
-                IPGlobal.serverTaskList.processTasks();
-            }
-        });
-
-        NeoForge.EVENT_BUS.addListener(IPGlobal.PreGameRenderEvent.class, preGameRenderEvent -> IPGlobal.preGameRenderTaskList.processTasks());
-        
-        IPGlobal.clientCleanupSignal.connect(() -> {
-            if (ClientWorldLoader.getIsInitialized()) {
-                IPGlobal.clientTaskList.forceClearTasks();
-            }
-        });
-        IPGlobal.serverCleanupSignal.connect(IPGlobal.serverTaskList::forceClearTasks);
-        
-        IPGlobal.serverTeleportationManager = new ServerTeleportationManager();
+        NeoForge.EVENT_BUS.addListener(IPGlobal.PreGameRenderEvent.class, preGameRenderEvent -> IPGlobal.PRE_GAME_RENDER_TASK_LIST.processTasks());
         
         RectangularPortalShape.init();
         SpecialFlatPortalShape.init();

@@ -5,6 +5,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
 import net.minecraft.resources.ResourceKey;
@@ -115,19 +116,19 @@ public abstract class MixinMultiPlayerGameMode implements IEClientPlayerInteract
             ResourceKey<Level> dimension = Minecraft.getInstance().level.dimension();
             if (packet instanceof ServerboundPlayerActionPacket playerActionPacket) {
                 if (BlockManipulationServer.isAttackingAction(playerActionPacket.getAction())) {
-                    return McRemoteProcedureCall.createPacketToSendToServer(
+                    return new ServerboundCustomPayloadPacket(McRemoteProcedureCall.createPacketToSendToServer(
                         "qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer.RemoteCallables.processPlayerActionPacket",
                         dimension,
                         IPMcHelper.packetToBytes(playerActionPacket)
-                    );
+                    ));
                 }
             }
             else if (packet instanceof ServerboundUseItemOnPacket useItemOnPacket) {
-                return McRemoteProcedureCall.createPacketToSendToServer(
+                return new ServerboundCustomPayloadPacket(McRemoteProcedureCall.createPacketToSendToServer(
                     "qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer.RemoteCallables.processUseItemOnPacket",
                     dimension,
                     IPMcHelper.packetToBytes(useItemOnPacket)
-                );
+                ));
             }
             // ServerboundUseItemPacket is not redirected
         }

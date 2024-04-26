@@ -33,7 +33,7 @@ import java.util.UUID;
 
 public class ImmPtlNetworking {
     
-    private static final Logger LOGGER = LogUtils.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     
     // client to server
     public static record TeleportPacket(

@@ -9,6 +9,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -140,12 +141,11 @@ public class GlobalPortalStorage extends SavedData {
     public static Packet<ClientCommonPacketListener> createSyncPacket(
         ServerLevel world, GlobalPortalStorage storage
     ) { // TODO @Nick1st Check
-        return (Packet<ClientCommonPacketListener>) NeoPacket.channels.get(ImmPtlNetworking.GlobalPortalSyncPacket.TYPE.identifier).toVanillaPacket(
+        return new ClientboundCustomPayloadPacket(
             new ImmPtlNetworking.GlobalPortalSyncPacket(
                 PortalAPI.serverDimKeyToInt(world.getServer(), world.dimension()),
                 storage.save(new CompoundTag())
-            ), PlayNetworkDirection.PLAY_TO_CLIENT
-        );
+            ));
     }
     
     public void onDataChanged() {

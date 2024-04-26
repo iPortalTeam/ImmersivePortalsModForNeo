@@ -35,6 +35,8 @@ minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.Clie
 minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.ClientChunkCache storage'
 minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.ClientChunkCache level'
 
+// Neo only transformers
+minecraft.accessTransformers.entry 'public net.minecraft.world.entity.EntityType$Builder dimensions'
 //sourceSets {
 //    main {
 //        java {

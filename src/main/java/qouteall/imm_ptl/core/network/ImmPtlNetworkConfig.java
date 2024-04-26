@@ -8,12 +8,14 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -73,7 +75,7 @@ public class ImmPtlNetworkConfig {
         @Override
         public void start(Consumer<Packet<?>> consumer) {
             consumer.accept(
-                ServerConfigurationNetworking.createS2CPacket(new S2CConfigStartPacket(
+                new ClientboundCustomPayloadPacket(new S2CConfigStartPacket(
                     immPtlVersion
                 ))
             );
@@ -144,13 +146,7 @@ public class ImmPtlNetworkConfig {
         // handled on server side
         public void handle(ConfigurationPayloadContext configurationPayloadContext
         ) {
-            GameProfile gameProfile = ((IEServerConfigurationPacketListenerImpl) networkHandler).ip_getGameProfile();
-            
-            LOGGER.info(
-                "Server received ImmPtl config packet. Mod version: {} Player: {} {}",
-                versionFromClient, gameProfile.getName(), gameProfile.getId()
-            );
-            
+           // TODO @Nick1st - This method body must be synced with the fabric system
             if (versionFromClient.isNormalVersion() && immPtlVersion.isNormalVersion()) {
                 if ((versionFromClient.major != immPtlVersion.major ||
                     versionFromClient.minor != immPtlVersion.minor) &&
@@ -165,17 +161,16 @@ public class ImmPtlNetworkConfig {
                     LOGGER.info(
                         """
                             Disconnecting client because of ImmPtl version difference (only patch version difference is tolerated).
-                            Game Profile: {}
+                            Game Profile:
                             Client ImmPtl version: {}
                             Server ImmPtl version: {}""",
-                        gameProfile, versionFromClient, immPtlVersion
+                        versionFromClient, immPtlVersion
                     );
                     return;
                 }
             }
 
-            configurationPayloadContext.
-            networkHandler.completeTask(ImmPtlConfigurationTask.TYPE);
+            configurationPayloadContext.taskCompletedHandler().onTaskCompleted(ImmPtlConfigurationTask.TYPE);
         }
     }
     
@@ -183,69 +178,72 @@ public class ImmPtlNetworkConfig {
         immPtlVersion = O_O.getImmPtlVersion();
         
         LOGGER.info("Immersive Portals Core version {}", immPtlVersion);
-        
-        ServerConfigurationConnectionEvents.CONFIGURE.register((handler, server) -> {
-            if (ServerConfigurationNetworking.canSend(handler, S2CConfigStartPacket.TYPE)) {
-                handler.addTask(new ImmPtlConfigurationTask());
-            }
-            else {
-                if (server.isDedicatedServer()) {
-                    if (IPConfig.getConfig().serverRejectClientWithoutImmPtl) {
-                        // cannot use translation key here
-                        // because the translation does not exist on client without the mod
-                        handler.disconnect(Component.literal(
-                            """
-                                The server detected that client does not install Immersive Portals mod.
-                                A server with Immersive Portals mod only works with the clients that have it.
-                                
-                                (Note: The networking sync may be interfered by Essential mod or other mods. When you are using these mods, the detection may malfunction. In this case, you can disable networking check in the server side by changing `serverRejectClientWithoutImmPtl` to `false` in the server's config file `config/immersive_portals.json` and restart.)
-                                """
-                        ));
-                    }
-                    else {
-                        GameProfile gameProfile =
-                            ((IEServerConfigurationPacketListenerImpl) handler).ip_getGameProfile();
-                        
-                        LOGGER.warn(
-                            "Fabric API's sendable channel sync detected that client does not install ImmPtl. {} {}",
-                            gameProfile.getName(), gameProfile.getId()
-                        );
-                    }
-                }
-                else {
-                    LOGGER.error("ImmPtl configuration channel is non-sendable from Fabric API in integrated server. Fabric API sendable channel sync is interfered.");
-                }
-            }
-        });
-        
-        ServerConfigurationNetworking.registerGlobalReceiver(
-            C2SConfigCompletePacket.TYPE,
-            C2SConfigCompletePacket::handle
-        );
+
+        // TODO @Nick1st - Important networking
+//        ServerConfigurationConnectionEvents.CONFIGURE.register((handler, server) -> {
+//            if (ServerConfigurationNetworking.canSend(handler, S2CConfigStartPacket.TYPE)) {
+//                handler.addTask(new ImmPtlConfigurationTask());
+//            }
+//            else {
+//                if (server.isDedicatedServer()) {
+//                    if (IPConfig.getConfig().serverRejectClientWithoutImmPtl) {
+//                        // cannot use translation key here
+//                        // because the translation does not exist on client without the mod
+//                        handler.disconnect(Component.literal(
+//                            """
+//                                The server detected that client does not install Immersive Portals mod.
+//                                A server with Immersive Portals mod only works with the clients that have it.
+//
+//                                (Note: The networking sync may be interfered by Essential mod or other mods. When you are using these mods, the detection may malfunction. In this case, you can disable networking check in the server side by changing `serverRejectClientWithoutImmPtl` to `false` in the server's config file `config/immersive_portals.json` and restart.)
+//                                """
+//                        ));
+//                    }
+//                    else {
+//                        GameProfile gameProfile =
+//                            ((IEServerConfigurationPacketListenerImpl) handler).ip_getGameProfile();
+//
+//                        LOGGER.warn(
+//                            "Fabric API's sendable channel sync detected that client does not install ImmPtl. {} {}",
+//                            gameProfile.getName(), gameProfile.getId()
+//                        );
+//                    }
+//                }
+//                else {
+//                    LOGGER.error("ImmPtl configuration channel is non-sendable from Fabric API in integrated server. Fabric API sendable channel sync is interfered.");
+//                }
+//            }
+//        });
+//
+//        ServerConfigurationNetworking.registerGlobalReceiver(
+//            C2SConfigCompletePacket.TYPE,
+//            C2SConfigCompletePacket::handle
+//        );
     }
     
     //@OnlyIn(Dist.CLIENT)
     public static void initClient() {
         // ClientConfigurationNetworking.ConfigurationPacketHandler does not provide
         // ClientConfigurationPacketListenerImpl argument
-        ClientConfigurationNetworking.registerGlobalReceiver(
-            S2CConfigStartPacket.TYPE,
-            S2CConfigStartPacket::handle
-        );
-        
-        ClientLoginConnectionEvents.INIT.register(
-            (handler, client) -> {
-                LOGGER.info("Client login init");
-                // if the config packet is not received,
-                // serverProtocolInfo will always be nul
-                // it will become not null when receiving ImmPtl config packet
-                serverVersion = null;
-            }
-        );
-        
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            onClientJoin();
-        });
+
+        // TODO @Nick1st - Important networking
+//        ClientConfigurationNetworking.registerGlobalReceiver(
+//            S2CConfigStartPacket.TYPE,
+//            S2CConfigStartPacket::handle
+//        );
+//
+//        ClientLoginConnectionEvents.INIT.register(
+//            (handler, client) -> {
+//                LOGGER.info("Client login init");
+//                // if the config packet is not received,
+//                // serverProtocolInfo will always be nul
+//                // it will become not null when receiving ImmPtl config packet
+//                serverVersion = null;
+//            }
+//        );
+//
+//        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+//            onClientJoin();
+//        });
     }
     
     private static void onClientJoin() {

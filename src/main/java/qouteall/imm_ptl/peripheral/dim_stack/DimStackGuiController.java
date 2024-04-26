@@ -9,7 +9,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.Validate;
 import qouteall.imm_ptl.core.portal.global_portals.VerticalConnectingPortal;
-import qouteall.imm_ptl.peripheral.alternate_dimension.AlternateDimensions;
 import qouteall.q_misc_util.Helper;
 
 import java.util.ArrayList;

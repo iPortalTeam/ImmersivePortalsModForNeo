@@ -15,9 +15,13 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.javafmlmod.FMLJavaModLanguageProvider;
+import net.neoforged.fml.javafmlmod.FMLModContainer;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
@@ -209,42 +213,43 @@ public class O_O {
     
     @Nullable
     public static ResourceLocation getModIconLocation(String modid) {
-        String path = FabricLoader.getInstance().getModContainer(modid)
-            .flatMap(c -> c.getMetadata().getIconPath(512))
-            .orElse(null);
-        if (path == null) {
-            return null;
-        }
-        
-        // for example, if the icon path is "assets/modid/icon.png"
-        // then the result should be modid:icon.png
-        
-        if (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-        if (path.startsWith("assets")) {
-            path = path.substring("assets".length());
-        }
-        if (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-        String[] parts = path.split("/");
-        if (parts.length != 2) {
-            return null;
-        }
-        return new ResourceLocation(parts[0], parts[1]);
+        // TODO @Nick1st - Fix this
+        return null;
+//        String path = FabricLoader.getInstance().getModContainer(modid)
+//            .flatMap(c -> c.getMetadata().getIconPath(512))
+//            .orElse(null);
+//        if (path == null) {
+//            return null;
+//        }
+//
+//        // for example, if the icon path is "assets/modid/icon.png"
+//        // then the result should be modid:icon.png
+//
+//        if (path.startsWith("/")) {
+//            path = path.substring(1);
+//        }
+//        if (path.startsWith("assets")) {
+//            path = path.substring("assets".length());
+//        }
+//        if (path.startsWith("/")) {
+//            path = path.substring(1);
+//        }
+//        String[] parts = path.split("/");
+//        if (parts.length != 2) {
+//            return null;
+//        }
+//        return new ResourceLocation(parts[0], parts[1]);
     }
     
     @Nullable
     public static String getModName(String modid) {
-        return FabricLoader.getInstance().getModContainer(modid)
-            .map(c -> c.getMetadata().getName())
-            .orElse(null);
+        return FMLLoader.getLoadingModList().getModFileById(modid).getMods().stream().findFirst().get().getDisplayName();
     }
     
     // most quilt installations use quilted fabric api
     public static boolean isQuilt() {
-        return FabricLoader.getInstance().isModLoaded("quilted_fabric_api");
+        return false;
+        //return FabricLoader.getInstance().isModLoaded("quilted_fabric_api");
     }
     
     public static List<String> getLoadedModIds() {
@@ -257,6 +262,6 @@ public class O_O {
     }
 
     public static boolean isDevEnv() {
-        return FabricLoader.getInstance().isDevelopmentEnvironment();
+        return !FMLEnvironment.production;
     }
 }

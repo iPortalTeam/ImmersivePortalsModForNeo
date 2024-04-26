@@ -3,6 +3,9 @@ package qouteall.imm_ptl.core.platform_specific;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.IPMcHelper;
@@ -52,7 +55,7 @@ public class IPModEntryClient {
             )
         );
         
-        EntityRendererRegistry.register(
+        event.registerEntityRenderer(
             LoadingIndicatorEntity.entityType,
             LoadingIndicatorRenderer::new
         );
@@ -61,8 +64,8 @@ public class IPModEntryClient {
 
     public void onInitializeClient(IEventBus modEventBus) {
         IPModMainClient.init();
-        
-        initPortalRenderers();
+
+        modEventBus.addListener(EntityRenderersEvent.RegisterRenderers.class, IPModEntryClient::initPortalRenderers);
         
         boolean isSodiumPresent =
             ModList.get().isLoaded("sodium");

@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core;
 
 import de.nick1st.imm_ptl.events.ClientExitEvent;
+import de.nick1st.imm_ptl.events.DimensionEvents;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -25,7 +26,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import qouteall.dimlib.api.DimensionAPI;
 import qouteall.imm_ptl.core.ducks.IECamera;
 import qouteall.imm_ptl.core.ducks.IEClientPlayNetworkHandler;
 import qouteall.imm_ptl.core.ducks.IEClientWorld;
@@ -38,14 +38,12 @@ import qouteall.imm_ptl.core.mixin.client.accessor.IEClientLevel_Accessor;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.render.context_management.DimensionRenderHelper;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
-import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.my_util.CountDownInt;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -56,11 +54,6 @@ public class ClientWorldLoader {
     
     private static final CountDownInt LOG_LIMIT = new CountDownInt(20);
 
-    public static final Event<Consumer<ResourceKey<Level>>> CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT =
-        Helper.createConsumerEvent();
-    public static final Event<Consumer<ClientLevel>> CLIENT_WORLD_LOAD_EVENT =
-        Helper.createConsumerEvent();
-    
     private static final Map<ResourceKey<Level>, ClientLevel> CLIENT_WORLD_MAP =
         new Object2ObjectOpenHashMap<>();
     public static final Map<ResourceKey<Level>, LevelRenderer> WORLD_RENDERER_MAP =
@@ -81,18 +74,18 @@ public class ClientWorldLoader {
     private static boolean isWorldSwitched = false;
     
     public static void init() {
-        DimensionAPI.CLIENT_DIMENSION_UPDATE_EVENT.register((serverDimensions) -> {
+        NeoForge.EVENT_BUS.addListener(DimensionEvents.CLIENT_DIMENSION_UPDATE_EVENT.class, (event -> {
             if (getIsInitialized()) {
                 List<ResourceKey<Level>> dimensionsToRemove =
-                    CLIENT_WORLD_MAP.keySet().stream()
-                        .filter(dim -> !event.dimensions.contains(dim)).toList();
-                
+                        CLIENT_WORLD_MAP.keySet().stream()
+                                .filter(dim -> !event.dimensions.contains(dim)).toList();
+
                 for (ResourceKey<Level> dim : dimensionsToRemove) {
                     disposeDimensionDynamically(dim);
                 }
-                
+
             }
-        });
+        }));
 
         NeoForge.EVENT_BUS.addListener(ClientExitEvent.class, (e) -> dimIdToDimTypeId = null);
     }
@@ -266,8 +259,8 @@ public class ClientWorldLoader {
         }
         
         CLIENT.gameRenderer.resetData();
-        
-        CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT.invoker().accept(dimension);
+
+        NeoForge.EVENT_BUS.post(new DimensionEvents.CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT(dimension));
     }
     
     @NotNull
@@ -477,8 +470,8 @@ public class ClientWorldLoader {
             isCreatingClientWorld = false;
             CLIENT.getProfiler().pop();
         }
-        
-        CLIENT_WORLD_LOAD_EVENT.invoker().accept(newWorld);
+
+        NeoForge.EVENT_BUS.post(new DimensionEvents.CLIENT_WORLD_LOAD_EVENT(newWorld));
         
         return newWorld;
     }

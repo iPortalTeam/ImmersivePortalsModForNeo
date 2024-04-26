@@ -8,8 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -30,8 +29,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.network.PlayNetworkDirection;
-import networking.NeoPacket;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -76,6 +73,7 @@ import qouteall.q_misc_util.my_util.TriangleConsumer;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -120,7 +118,7 @@ public class Portal extends Entity implements
     protected Vec3 axisW;
     protected Vec3 axisH;
     
-    protected ResourceKey<Level> dimensionTo;
+    public ResourceKey<Level> dimensionTo;
     
     protected Vec3 destination;
     
@@ -879,25 +877,20 @@ public class Portal extends Entity implements
     }
 
     @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return createSyncPacket();
+    public void sendPairingData(ServerPlayer serverPlayer, Consumer<CustomPacketPayload> payloadConsumer) {
+        payloadConsumer.accept(createSyncPacket());
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Packet<ClientGamePacketListener> createSyncPacket() {
+    private ImmPtlNetworking.PortalSyncPacket createSyncPacket() {
         Validate.isTrue(!level().isClientSide());
         
         CompoundTag compoundTag = new CompoundTag();
         addAdditionalSaveData(compoundTag);
-        
-        // the listener generic parameter is contravariant. this is fine
-        return (Packet<ClientGamePacketListener>) NeoPacket.channels.get(ImmPtlNetworking.PortalSyncPacket.TYPE.identifier).toVanillaPacket(
-        new ImmPtlNetworking.PortalSyncPacket(
-        getId(), getUUID(), getType(),
-        PortalAPI.serverDimKeyToInt(getServer(), getOriginDim()),
-        getX(), getY(), getZ(),
-        compoundTag
-    ), PlayNetworkDirection.PLAY_TO_CLIENT);
+
+        return new ImmPtlNetworking.PortalSyncPacket(
+                getId(), getUUID(), getType(),
+                PortalAPI.serverDimKeyToInt(getServer(), getOriginDim()), getX(), getY(), getZ(), compoundTag);
     }
     
     @Override
