@@ -103,25 +103,26 @@ public class MixinServerPlayerGameMode {
             player.getItemInHand(interactionHand), blockHitResult
         );
     }
-    
-    // disable distance check when doing cross-portal interaction
-    @WrapOperation(
-        method = "handleBlockBreakAction",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/world/phys/Vec3;distanceToSqr(Lnet/minecraft/world/phys/Vec3;)D"
-        )
-    )
-    private double wrapDistanceInHandleBlockBreakAction(
-        Vec3 instance, Vec3 vec, Operation<Double> original
-    ) {
-        BlockManipulationServer.Context redirect =
-            BlockManipulationServer.REDIRECT_CONTEXT.get();
-        if (redirect != null) {
-            return 0;
-        }
-        return original.call(instance, vec);
-    }
+
+    // TODO @Nick1st this distance check mixin must be corrected
+//    // disable distance check when doing cross-portal interaction
+//    @WrapOperation(
+//        method = "handleBlockBreakAction",
+//        at = @At(
+//            value = "INVOKE",
+//            target = "Lnet/minecraft/world/phys/Vec3;distanceToSqr(Lnet/minecraft/world/phys/Vec3;)D"
+//        )
+//    )
+//    private double wrapDistanceInHandleBlockBreakAction(
+//        Vec3 instance, Vec3 vec, Operation<Double> original
+//    ) {
+//        BlockManipulationServer.Context redirect =
+//            BlockManipulationServer.REDIRECT_CONTEXT.get();
+//        if (redirect != null) {
+//            return 0;
+//        }
+//        return original.call(instance, vec);
+//    }
     
     // record the world for the destroying pos
     @Inject(

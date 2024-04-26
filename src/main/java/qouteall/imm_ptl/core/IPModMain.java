@@ -113,7 +113,7 @@ public class IPModMain {
         
         ServerTaskList.init();
 
-        CustomPortalGenManager.init();
+        CustomPortalGenManager.init(eventBus);
 
         // intrinsic animation driver types
         RotationAnimation.init();

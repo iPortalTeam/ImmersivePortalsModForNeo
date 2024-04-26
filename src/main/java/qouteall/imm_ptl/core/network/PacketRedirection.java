@@ -1,5 +1,6 @@
 package qouteall.imm_ptl.core.network;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.BundleDelimiterPacket;
@@ -19,6 +20,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -149,12 +152,12 @@ public class PacketRedirection {
         if (packet instanceof ClientboundBundlePacket bundlePacket) {
             // vanilla has special handling to bundle packet
             // don't wrap a bundle packet into a normal packet
-            List<Packet<ClientGamePacketListener>> newSubPackets = new ArrayList<>();
+            List<Packet<? super ClientGamePacketListener>> newSubPackets = new ArrayList<>();
             for (var subPacket : bundlePacket.subPackets()) {
                 newSubPackets.add(createRedirectedMessage(server, dimension, (Packet<ClientGamePacketListener>) subPacket));
             }
             
-            return new ClientboundBundlePacket((Iterable<Packet<? super ClientGamePacketListener>>) newSubPackets.iterator());
+            return new ClientboundBundlePacket(newSubPackets);
         }
         else {
             // will use the server argument in the future
@@ -210,10 +213,10 @@ public class PacketRedirection {
             return func.get();
         }
 
-        Map<ServerCommonPacketListenerImpl, List<Packet<ClientGamePacketListener>>>
+        Map<ServerCommonPacketListenerImpl, List<Packet<? super ClientGamePacketListener>>>
             map = new HashMap<>();
         forceBundle.set((listener, packet) -> {
-            List<Packet<ClientGamePacketListener>> packetsToBundle =
+            List<Packet<? super ClientGamePacketListener>> packetsToBundle =
                 map.computeIfAbsent(listener, k -> new ArrayList<>());
             if (packet instanceof BundlePacket<?> bundlePacket) {
                 Iterable<? extends Packet<?>> subPackets = bundlePacket.subPackets();
@@ -233,8 +236,8 @@ public class PacketRedirection {
             forceBundle.set(null);
             for (var e : map.entrySet()) {
                 ServerCommonPacketListenerImpl listener = e.getKey();
-                List<Packet<ClientGamePacketListener>> packets = e.getValue();
-                listener.send(new ClientboundBundlePacket((Iterable<Packet<? super ClientGamePacketListener>>) packets.iterator()));
+                List<Packet<? super ClientGamePacketListener>> packets = e.getValue();
+                listener.send(new ClientboundBundlePacket(packets));
             }
         }
     }
@@ -280,10 +283,20 @@ public class PacketRedirection {
         
         @SuppressWarnings({"unchecked", "rawtypes"})
         //@OnlyIn(Dist.CLIENT)
+        // TODO @Nick1st - Networking. This is probably going to cause severe bugs
+        public void handle(PlayPayloadContext context) {
+            // ClientGamePacketListener listener
+            ResourceKey<Level> dim = PortalAPI.clientIntToDimKey(dimensionIntId);
+            PacketRedirectionClient.handleRedirectedPacket(
+                dim, (Packet) packet, Minecraft.getInstance().getConnection() // TODO @Nick1st the third thing is null
+                    // TODO @Nick1st this is probably fine, as this gets never actually called. The mixin takes care of it.
+            );
+        }
+
         public void handle(ClientGamePacketListener listener) {
             ResourceKey<Level> dim = PortalAPI.clientIntToDimKey(dimensionIntId);
             PacketRedirectionClient.handleRedirectedPacket(
-                dim, (Packet) packet, listener
+                    dim, (Packet) packet, listener
             );
         }
     }

@@ -6,6 +6,7 @@ import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import qouteall.imm_ptl.core.IPModMain;
 import qouteall.imm_ptl.core.network.ImmPtlNetworkConfig;
 import qouteall.imm_ptl.core.network.ImmPtlNetworking;
+import qouteall.imm_ptl.core.network.PacketRedirection;
 import qouteall.imm_ptl.core.platform_specific.IPModEntry;
 import qouteall.q_misc_util.MiscUtilModEntry;
 
@@ -30,5 +31,8 @@ public class Payloads {
                 handler.client(ImmPtlNetworking.GlobalPortalSyncPacket::handle));
         registrar.play(ImmPtlNetworking.PortalSyncPacket.ID, ImmPtlNetworking.PortalSyncPacket::read, handler ->
                 handler.client(ImmPtlNetworking.PortalSyncPacket::handle));
+
+        final IPayloadRegistrar redirector = event.registrar("i");
+        redirector.play(PacketRedirection.payloadId, PacketRedirection.Payload::read, handler -> handler.client(PacketRedirection.Payload::handle));
     }
 }
