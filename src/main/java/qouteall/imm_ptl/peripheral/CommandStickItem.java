@@ -67,9 +67,7 @@ public class CommandStickItem extends Item {
         BUILT_IN_COMMAND_STICK_TYPES.put(data.command, data);
     }
     
-    public static final CommandStickItem instance = new CommandStickItem(
-        new Item.Properties()
-    );
+    public static CommandStickItem instance;
     
     public CommandStickItem(Properties settings) {
         super(settings);

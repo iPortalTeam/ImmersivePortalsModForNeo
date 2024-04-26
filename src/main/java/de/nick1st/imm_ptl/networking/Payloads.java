@@ -3,14 +3,16 @@ package de.nick1st.imm_ptl.networking;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import qouteall.imm_ptl.core.IPModMain;
 import qouteall.imm_ptl.core.network.ImmPtlNetworkConfig;
 import qouteall.imm_ptl.core.network.ImmPtlNetworking;
+import qouteall.imm_ptl.core.platform_specific.IPModEntry;
 import qouteall.q_misc_util.MiscUtilModEntry;
 
 public class Payloads {
     @SubscribeEvent
     public static void register(final RegisterPayloadHandlerEvent event) {
-        final IPayloadRegistrar registrar = event.registrar(MiscUtilModEntry.MOD_ID);
+        final IPayloadRegistrar registrar = event.registrar(IPModEntry.MODID);
 
         // Configuration
         registrar.configuration(ImmPtlNetworkConfig.S2CConfigStartPacket.ID,

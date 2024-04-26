@@ -39,7 +39,7 @@ public class ImmPtlNetworking {
     public static record TeleportPacket(
         int dimensionId, Vec3 eyePosBeforeTeleportation, UUID portalId
     ) implements CustomPacketPayload {
-        public static final ResourceLocation ID = new ResourceLocation("imm_ptl:teleport");
+        public static final ResourceLocation ID = new ResourceLocation("immersive_portals_core:teleport");
         
         public static TeleportPacket read(FriendlyByteBuf buf) {
             int dimId = buf.readVarInt();
@@ -82,7 +82,7 @@ public class ImmPtlNetworking {
     public static record GlobalPortalSyncPacket(
         int dimensionId, CompoundTag data
     ) implements CustomPacketPayload {
-        public static final ResourceLocation ID = new ResourceLocation("imm_ptl:upd_glb_ptl");
+        public static final ResourceLocation ID = new ResourceLocation("immersive_portals_core:upd_glb_ptl");
         
         public static GlobalPortalSyncPacket read(FriendlyByteBuf buf) {
             int dimId = buf.readVarInt();
@@ -130,7 +130,7 @@ public class ImmPtlNetworking {
 //            Helper.LOGGER.info("PortalSyncPacket create {}", MiscHelper.getServer().overworld().getGameTime());
         }
         
-        public static final ResourceLocation ID = new ResourceLocation("imm_ptl:spawn_portal");
+        public static final ResourceLocation ID = new ResourceLocation("immersive_portals_core:spawn_portal");
         
         @Override
         public void write(FriendlyByteBuf buf) {

@@ -3,6 +3,7 @@ package qouteall.imm_ptl.peripheral.platform_specific;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import qouteall.imm_ptl.peripheral.PeripheralModMain;
 
@@ -22,5 +23,9 @@ public class PeripheralModEntry {
 
         
         PeripheralModMain.init();
+
+        if (FMLEnvironment.dist.isClient()) {
+            new PeripheralModEntryClient().onInitializeClient();
+        }
     }
 }

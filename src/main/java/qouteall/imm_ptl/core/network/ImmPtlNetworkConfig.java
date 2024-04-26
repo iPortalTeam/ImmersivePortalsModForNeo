@@ -90,7 +90,7 @@ public class ImmPtlNetworkConfig {
     public static record S2CConfigStartPacket(
         ModVersion versionFromServer
     ) implements CustomPacketPayload {
-        public static final ResourceLocation ID = new ResourceLocation("iportal:config_packet");
+        public static final ResourceLocation ID = new ResourceLocation("immersive_portals_core:config_packet");
         
         public static S2CConfigStartPacket read(FriendlyByteBuf buf) {
             ModVersion info = ModVersion.read(buf);
@@ -124,7 +124,7 @@ public class ImmPtlNetworkConfig {
         ModVersion versionFromClient,
         boolean clientTolerantVersionMismatch
     ) implements CustomPacketPayload {
-        public static final ResourceLocation ID = new ResourceLocation("iportal:configure_complete");
+        public static final ResourceLocation ID = new ResourceLocation("immersive_portals_core:configure_complete");
         
         public static C2SConfigCompletePacket read(FriendlyByteBuf buf) {
             ModVersion info = ModVersion.read(buf);

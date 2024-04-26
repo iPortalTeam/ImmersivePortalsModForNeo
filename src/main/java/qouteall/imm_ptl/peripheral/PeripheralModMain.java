@@ -21,9 +21,9 @@ import qouteall.imm_ptl.peripheral.wand.PortalWandItem;
 import java.util.function.BiConsumer;
 
 public class PeripheralModMain {
-    
-    public static final Block portalHelperBlock =
-        new Block(BlockBehaviour.Properties.of().noOcclusion().isRedstoneConductor((a, b, c) -> false));
+
+    // TODO @Nick1st - Rework registry (Best would be at fabrics side)
+    public static Block portalHelperBlock;
 
     public static final CreativeModeTab TAB = CreativeModeTab.builder()
             .icon(() -> new ItemStack(PortalWandItem.instance))
@@ -73,23 +73,29 @@ public class PeripheralModMain {
             new ResourceLocation("immersive_portals", "portal_helper"),
             new PortalHelperItem(PeripheralModMain.portalHelperBlock, new Item.Properties())
         );
-        
+
+        CommandStickItem commandStickItem = new CommandStickItem(new Item.Properties());
         regFunc.accept(
             new ResourceLocation("immersive_portals:command_stick"),
-            CommandStickItem.instance
+            commandStickItem
         );
-        
+        CommandStickItem.instance = commandStickItem;
+
+        PortalWandItem portalWandItem = new PortalWandItem(new Item.Properties());
         regFunc.accept(
             new ResourceLocation("immersive_portals:portal_wand"),
-            PortalWandItem.instance
+                portalWandItem
         );
+        PortalWandItem.instance = portalWandItem;
     }
     
     public static void registerBlocks(BiConsumer<ResourceLocation, Block> regFunc) {
+        Block block = new Block(BlockBehaviour.Properties.of().noOcclusion().isRedstoneConductor((a, b, c) -> false));
         regFunc.accept(
             new ResourceLocation("immersive_portals", "portal_helper"),
-            new Block(BlockBehaviour.Properties.of().noOcclusion().isRedstoneConductor((a, b, c) -> false))
+            block
         );
+        portalHelperBlock = block;
     }
 
     public static void registerChunkGenerators(

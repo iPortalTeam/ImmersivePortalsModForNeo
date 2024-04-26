@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PortalWandItem extends Item {
-    public static final PortalWandItem instance = new PortalWandItem(new Properties());
+    public static PortalWandItem instance;
     
     public static void init() {
         NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.LeftClickBlock.class, event -> {

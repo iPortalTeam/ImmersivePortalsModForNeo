@@ -25,15 +25,15 @@ public class MiscNetworking {
     private static final Logger LOGGER = LogUtils.getLogger();
     
     public static final ResourceLocation id_stcRemote =
-        new ResourceLocation("imm_ptl", "remote_stc");
+        new ResourceLocation("q_misc_util", "remote_stc");
     public static final ResourceLocation id_ctsRemote =
-        new ResourceLocation("imm_ptl", "remote_cts");
+        new ResourceLocation("q_misc_util", "remote_cts");
     
     public static record DimIdSyncPacket(
         CompoundTag dimIntIdTag,
         CompoundTag dimTypeTag
     ) implements CustomPacketPayload {
-        public static final ResourceLocation ID = new ResourceLocation("imm_ptl", "dim_int_id_sync");
+        public static final ResourceLocation ID = new ResourceLocation("q_misc_util", "dim_int_id_sync");
         
         public static DimIdSyncPacket createFromServer(MinecraftServer server) {
             DimIntIdMap rec = DimensionIntId.getServerMap(server);
