@@ -505,10 +505,11 @@ public class Portal extends Entity implements
         Validate.isTrue(!isGlobalPortal, "global portal is not synced by this");
         Validate.isTrue(!level().isClientSide(), "must be used on server side");
         updateCache();
-        
-        var packet = createSyncPacket();
-        
-        McHelper.sendToTrackers(this, packet);
+
+        // TODO @Nick1st - Reenable lines below
+//        var packet = createSyncPacket();
+//
+//        McHelper.sendToTrackers(this, packet);
     }
     
     public void reloadAndSyncToClientNextTick() {
@@ -877,7 +878,7 @@ public class Portal extends Entity implements
     }
 
     @Override
-    public void sendPairingData(ServerPlayer serverPlayer, Consumer<CustomPacketPayload> payloadConsumer) {
+    public void sendPairingData(@NotNull ServerPlayer serverPlayer, Consumer<CustomPacketPayload> payloadConsumer) {
         payloadConsumer.accept(createSyncPacket());
     }
     

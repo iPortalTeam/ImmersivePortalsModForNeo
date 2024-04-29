@@ -20,7 +20,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;

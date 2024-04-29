@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import qouteall.imm_ptl.peripheral.wand.PortalWandItem;
+import qouteall.imm_ptl.peripheral.wand.PortalWandItemClient;
 
 @Mixin(Minecraft.class)
 public class MixinMinecraft_PortalWand {
@@ -29,7 +30,7 @@ public class MixinMinecraft_PortalWand {
         assert player != null;
         ItemStack itemStack = player.getMainHandItem();
         if (itemStack.getItem() instanceof PortalWandItem) {
-            PortalWandItem.onClientLeftClick(player, itemStack);
+            PortalWandItemClient.onClientLeftClick(player, itemStack);
             cir.setReturnValue(false);
         }
     }

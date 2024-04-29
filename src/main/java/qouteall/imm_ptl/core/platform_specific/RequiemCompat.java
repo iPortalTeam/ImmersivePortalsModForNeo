@@ -1,22 +1,18 @@
 package qouteall.imm_ptl.core.platform_specific;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.fml.ModList;
 import org.apache.commons.lang3.Validate;
 import qouteall.imm_ptl.core.McHelper;
-import qouteall.imm_ptl.core.teleportation.ClientTeleportationManager;
 import qouteall.imm_ptl.core.teleportation.ServerTeleportationManager;
 import qouteall.q_misc_util.Helper;
 
 import java.lang.reflect.Method;
 
 public class RequiemCompat {
-    private static boolean isRequiemPresent = false;
+    static boolean isRequiemPresent = false;
     private static Class class_RequiemPlayer;
     private static Class class_PossessionComponent;
     private static Method method_asPossessor;
@@ -56,26 +52,27 @@ public class RequiemCompat {
             method_getPossessedEntity.invoke(possessionComponent));
         return (Mob) possessedEntity;
     }
-    
-    //@OnlyIn(Dist.CLIENT)
-    public static void onPlayerTeleportedClient() {
-        if (!isRequiemPresent) {
-            return;
-        }
-        
-        LocalPlayer player = Minecraft.getInstance().player;
-        Mob possessedEntity = getPossessedEntity(player);
-        if (possessedEntity != null) {
-            if (possessedEntity.level() != player.level()) {
-                Helper.LOGGER.info("Move Requiem Possessed Entity at Client");
-                ClientTeleportationManager.moveClientEntityAcrossDimension(
-                    possessedEntity,
-                    ((ClientLevel) player.level()),
-                    player.position()
-                );
-            }
-        }
-    }
+
+    // @Nick1st - Moved to client class
+//    @OnlyIn(Dist.CLIENT)
+//    public static void onPlayerTeleportedClient() {
+//        if (!isRequiemPresent) {
+//            return;
+//        }
+//
+//        LocalPlayer player = Minecraft.getInstance().player;
+//        Mob possessedEntity = getPossessedEntity(player);
+//        if (possessedEntity != null) {
+//            if (possessedEntity.level() != player.level()) {
+//                Helper.LOGGER.info("Move Requiem Possessed Entity at Client");
+//                ClientTeleportationManager.moveClientEntityAcrossDimension(
+//                    possessedEntity,
+//                    ((ClientLevel) player.level()),
+//                    player.position()
+//                );
+//            }
+//        }
+//    }
     
     public static void onPlayerTeleportedServer(ServerPlayer player) {
         if (!isRequiemPresent) {

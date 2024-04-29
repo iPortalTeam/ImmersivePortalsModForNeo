@@ -1,8 +1,6 @@
 package qouteall.imm_ptl.core.network;
 
 import com.mojang.logging.LogUtils;
-import de.nick1st.imm_ptl.events.ClientPortalSpawnEvent;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -12,24 +10,19 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
-import qouteall.imm_ptl.core.ClientWorldLoader;
-import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.api.PortalAPI;
-import qouteall.imm_ptl.core.portal.Portal;
-import qouteall.imm_ptl.core.portal.global_portals.GlobalPortalStorage;
+import qouteall.imm_ptl.core.portal.global_portals.GlobalPortalStorageClient;
 import qouteall.imm_ptl.core.teleportation.ServerTeleportationManager;
 
-import java.util.Objects;
 import java.util.UUID;
+
+import static qouteall.imm_ptl.core.network.ImmPtlNetworkingClient.handleSyncPacket;
 
 public class ImmPtlNetworking {
     
@@ -105,7 +98,7 @@ public class ImmPtlNetworking {
         public void handle(PlayPayloadContext playPayloadContext) {
             ResourceKey<Level> dim = PortalAPI.clientIntToDimKey(dimensionId);
             
-            GlobalPortalStorage.receiveGlobalPortalSync(dim, data);
+            GlobalPortalStorageClient.receiveGlobalPortalSync(dim, data);
         }
     }
     
@@ -166,53 +159,9 @@ public class ImmPtlNetworking {
          */
         //@OnlyIn(Dist.CLIENT)
         public void handle(PlayPayloadContext playPayloadContext) {
-//            Helper.LOGGER.info("PortalSyncPacket handle {}", RenderStates.frameIndex);
-
-            ResourceKey<Level> dimension = PortalAPI.clientIntToDimKey(dimensionId);
-            ClientLevel world = ClientWorldLoader.getWorld(dimension);
-
-            Entity existing = world.getEntity(intId);
-
-            if (existing instanceof Portal existingPortal) {
-                // update existing portal (handles default animation)
-                if (!Objects.equals(existingPortal.getUUID(), uuid)) {
-                    LOGGER.error("UUID mismatch when syncing portal {} {}", existingPortal, uuid);
-                    return;
-                }
-
-                if (existingPortal.getType() != type) {
-                    LOGGER.error("Entity type mismatch when syncing portal {} {}", existingPortal, type);
-                    return;
-                }
-
-                existingPortal.acceptDataSync(new Vec3(x, y, z), extraData);
-            }
-            else {
-                // spawn new portal
-                Entity entity = type.create(world);
-                Validate.notNull(entity, "Entity type is null");
-
-                if (!(entity instanceof Portal portal)) {
-                    LOGGER.error("Spawned entity is not a portal. {} {}", entity, type);
-                    return;
-                }
-
-                entity.setId(intId);
-                entity.setUUID(uuid);
-                entity.syncPacketPositionCodec(x, y, z);
-                entity.moveTo(x, y, z);
-
-                portal.readPortalDataFromNbt(extraData);
-
-                world.addEntity(entity);
-
-                ClientWorldLoader.getWorld(portal.getDestDim());
-                NeoForge.EVENT_BUS.post(new ClientPortalSpawnEvent(portal));
-
-                if (IPGlobal.clientPortalLoadDebug) {
-                    LOGGER.info("Portal loaded to client {}", portal);
-                }
-            }
+            playPayloadContext.workHandler().execute(() -> {
+                handleSyncPacket(this);
+            });
         }
     }
 }

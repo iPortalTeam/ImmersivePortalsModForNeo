@@ -1,7 +1,6 @@
 package qouteall.imm_ptl.core.portal.global_portals;
 
 import de.nick1st.imm_ptl.events.ClientCleanupEvent;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -26,10 +25,8 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.CHelper;
-import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.api.PortalAPI;
-import qouteall.imm_ptl.core.ducks.IEClientWorld;
 import qouteall.imm_ptl.core.network.ImmPtlNetworking;
 import qouteall.imm_ptl.core.platform_specific.O_O;
 import qouteall.imm_ptl.core.portal.Portal;
@@ -106,19 +103,20 @@ public class GlobalPortalStorage extends SavedData {
     
     //@OnlyIn(Dist.CLIENT)
     private static void initClient() {
-        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> GlobalPortalStorage.onClientCleanup());
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> GlobalPortalStorageClient.onClientCleanup());
     }
-    
-    //@OnlyIn(Dist.CLIENT)
-    private static void onClientCleanup() {
-        if (ClientWorldLoader.getIsInitialized()) {
-            for (ClientLevel clientWorld : ClientWorldLoader.getClientWorlds()) {
-                for (Portal globalPortal : getGlobalPortals(clientWorld)) {
-                    globalPortal.remove(Entity.RemovalReason.UNLOADED_TO_CHUNK);
-                }
-            }
-        }
-    }
+
+    // @Nick1st - Moved to client class
+//    @OnlyIn(Dist.CLIENT)
+//    private static void onClientCleanup() {
+//        if (ClientWorldLoader.getIsInitialized()) {
+//            for (ClientLevel clientWorld : ClientWorldLoader.getClientWorlds()) {
+//                for (Portal globalPortal : getGlobalPortals(clientWorld)) {
+//                    globalPortal.remove(Entity.RemovalReason.UNLOADED_TO_CHUNK);
+//                }
+//            }
+//        }
+//    }
     
     public GlobalPortalStorage(ServerLevel world_) {
         world = new WeakReference<>(world_);
@@ -216,9 +214,9 @@ public class GlobalPortalStorage extends SavedData {
         clearAbnormalPortals();
     }
     
-    private static List<Portal> getPortalsFromTag(
-        CompoundTag tag,
-        Level currWorld
+    static List<Portal> getPortalsFromTag(
+            CompoundTag tag,
+            Level currWorld
     ) {
         /**{@link CompoundTag#getType()}*/
         ListTag listTag = tag.getList("data", 10);
@@ -313,32 +311,33 @@ public class GlobalPortalStorage extends SavedData {
     private static void upgradeData(ServerLevel world) {
         //removed
     }
-    
-    //@OnlyIn(Dist.CLIENT)
-    public static void receiveGlobalPortalSync(ResourceKey<Level> dimension, CompoundTag compoundTag) {
-        ClientLevel world = ClientWorldLoader.getWorld(dimension);
-        
-        List<Portal> oldGlobalPortals = ((IEClientWorld) world).ip_getGlobalPortals();
-        if (oldGlobalPortals != null) {
-            for (Portal p : oldGlobalPortals) {
-                p.remove(Entity.RemovalReason.KILLED);
-            }
-        }
-        
-        List<Portal> newPortals = getPortalsFromTag(compoundTag, world);
-        for (Portal p : newPortals) {
-            p.myUnsetRemoved();
-            p.isGlobalPortal = true;
-            
-            Validate.isTrue(p.isPortalValid());
-            
-            ClientWorldLoader.getWorld(p.getDestDim());
-        }
-        
-        ((IEClientWorld) world).ip_setGlobalPortals(newPortals);
-        
-        Helper.log("Global Portals Updated " + dimension.location());
-    }
+
+    // @Nick1st - Moved to client class
+//    @OnlyIn(Dist.CLIENT)
+//    public static void receiveGlobalPortalSync(ResourceKey<Level> dimension, CompoundTag compoundTag) {
+//        ClientLevel world = ClientWorldLoader.getWorld(dimension);
+//
+//        List<Portal> oldGlobalPortals = ((IEClientWorld) world).ip_getGlobalPortals();
+//        if (oldGlobalPortals != null) {
+//            for (Portal p : oldGlobalPortals) {
+//                p.remove(Entity.RemovalReason.KILLED);
+//            }
+//        }
+//
+//        List<Portal> newPortals = getPortalsFromTag(compoundTag, world);
+//        for (Portal p : newPortals) {
+//            p.myUnsetRemoved();
+//            p.isGlobalPortal = true;
+//
+//            Validate.isTrue(p.isPortalValid());
+//
+//            ClientWorldLoader.getWorld(p.getDestDim());
+//        }
+//
+//        ((IEClientWorld) world).ip_setGlobalPortals(newPortals);
+//
+//        Helper.log("Global Portals Updated " + dimension.location());
+//    }
     
     public static void convertNormalPortalIntoGlobalPortal(Portal portal) {
         Validate.isTrue(!portal.getIsGlobal());

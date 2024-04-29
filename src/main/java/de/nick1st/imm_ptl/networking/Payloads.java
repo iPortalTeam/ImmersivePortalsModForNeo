@@ -3,12 +3,10 @@ package de.nick1st.imm_ptl.networking;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
-import qouteall.imm_ptl.core.IPModMain;
 import qouteall.imm_ptl.core.network.ImmPtlNetworkConfig;
 import qouteall.imm_ptl.core.network.ImmPtlNetworking;
 import qouteall.imm_ptl.core.network.PacketRedirection;
 import qouteall.imm_ptl.core.platform_specific.IPModEntry;
-import qouteall.q_misc_util.MiscUtilModEntry;
 
 public class Payloads {
     @SubscribeEvent

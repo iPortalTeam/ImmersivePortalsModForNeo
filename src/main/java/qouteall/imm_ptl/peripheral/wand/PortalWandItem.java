@@ -23,7 +23,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.jetbrains.annotations.Nullable;
-import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.imm_ptl.core.IPMcHelper;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer;
 
@@ -129,28 +128,29 @@ public class PortalWandItem extends Item {
     public PortalWandItem(Properties properties) {
         super(properties);
     }
-    
-    //@OnlyIn(Dist.CLIENT)
-    public static void onClientLeftClick(net.minecraft.client.player.LocalPlayer player, ItemStack itemStack) {
-        if (player.isShiftKeyDown()) {
-            showSettings(player);
-        }
-        else {
-            Mode mode = Mode.fromTag(itemStack.getOrCreateTag());
-            
-            switch (mode) {
-                case CREATE_PORTAL -> {
-                    ClientPortalWandPortalCreation.onLeftClick();
-                }
-                case DRAG_PORTAL -> {
-                    ClientPortalWandPortalDrag.onLeftClick();
-                }
-                case COPY_PORTAL -> {
-                    ClientPortalWandPortalCopy.onLeftClick();
-                }
-            }
-        }
-    }
+
+    // @Nick1st - Moved to client class
+//    @OnlyIn(Dist.CLIENT)
+//    public static void onClientLeftClick(LocalPlayer player, ItemStack itemStack) {
+//        if (player.isShiftKeyDown()) {
+//            showSettings(player);
+//        }
+//        else {
+//            Mode mode = Mode.fromTag(itemStack.getOrCreateTag());
+//
+//            switch (mode) {
+//                case CREATE_PORTAL -> {
+//                    ClientPortalWandPortalCreation.onLeftClick();
+//                }
+//                case DRAG_PORTAL -> {
+//                    ClientPortalWandPortalDrag.onLeftClick();
+//                }
+//                case COPY_PORTAL -> {
+//                    ClientPortalWandPortalCopy.onLeftClick();
+//                }
+//            }
+//        }
+//    }
     
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {

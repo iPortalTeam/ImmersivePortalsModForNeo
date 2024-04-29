@@ -1,8 +1,6 @@
 package qouteall.imm_ptl.core.platform_specific;
 
 import net.minecraft.SharedConstants;
-import net.minecraft.client.multiplayer.ClientChunkCache;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -15,23 +13,18 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.javafmlmod.FMLJavaModLanguageProvider;
-import net.neoforged.fml.javafmlmod.FMLModContainer;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import qouteall.imm_ptl.core.chunk_loading.ImmPtlClientChunkMap;
 import qouteall.imm_ptl.core.network.ImmPtlNetworkConfig;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.custom_portal_gen.PortalGenInfo;
-import qouteall.q_misc_util.Helper;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -48,7 +41,7 @@ public class O_O {
     public static void onPlayerChangeDimensionClient(
         ResourceKey<Level> from, ResourceKey<Level> to
     ) {
-        RequiemCompat.onPlayerTeleportedClient();
+        RequiemCompatClient.onPlayerTeleportedClient();
     }
     
     public static void onPlayerTravelOnServer(
@@ -89,11 +82,12 @@ public class O_O {
     public static void postPortalSpawnEventForge(PortalGenInfo info) {
     
     }
-    
-    //@OnlyIn(Dist.CLIENT)
-    public static ClientChunkCache createMyClientChunkManager(ClientLevel world, int loadDistance) {
-        return new ImmPtlClientChunkMap(world, loadDistance);
-    }
+
+    // @Nick1st - Moved to client class
+//    @OnlyIn(Dist.CLIENT)
+//    public static ClientChunkCache createMyClientChunkManager(ClientLevel world, int loadDistance) {
+//        return new ImmPtlClientChunkMap(world, loadDistance);
+//    }
     
     public static boolean getIsPehkuiPresent() {
         return ModList.get().isLoaded("pehkui");

@@ -2,7 +2,6 @@ package qouteall.imm_ptl.core.collision;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -19,7 +18,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TickEvent;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.CHelper;
-import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.compat.PehkuiInterface;
@@ -37,6 +35,8 @@ import qouteall.q_misc_util.my_util.LimitedLogger;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import static qouteall.imm_ptl.core.collision.CollisionHelperClient.updateClientCollidingStatus;
 
 public class CollisionHelper {
     
@@ -450,15 +450,16 @@ public class CollisionHelper {
         
         updateClientStagnateStatus();
     }
-    
-    //@OnlyIn(Dist.CLIENT)
-    private static void updateClientCollidingStatus() {
-        if (ClientWorldLoader.getIsInitialized()) {
-            for (ClientLevel world : ClientWorldLoader.getClientWorlds()) {
-                updateCollidingPortalForWorld(world, 0);
-            }
-        }
-    }
+
+    // @Nick1st - Moved to client class
+//    @OnlyIn(Dist.CLIENT)
+//    private static void updateClientCollidingStatus() {
+//        if (ClientWorldLoader.getIsInitialized()) {
+//            for (ClientLevel world : ClientWorldLoader.getClientWorlds()) {
+//                updateCollidingPortalForWorld(world, 0);
+//            }
+//        }
+//    }
     
     /**
      * Note that there are 3 kinds of portals in the aspect of collision:
