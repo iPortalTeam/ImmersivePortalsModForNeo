@@ -25,7 +25,7 @@ public class IPCompatMixinPlugin implements IMixinConfigPlugin {
 
         LoadingModList modList = LoadingModList.get();
         if (mixinClassName.contains("IrisSodium")) {
-            boolean sodiumLoaded = modList.getModFileById("sodium") != null;
+            boolean sodiumLoaded = modList.getModFileById("embeddium") != null;
             boolean irisLoaded = modList.getModFileById("iris") != null;
             return sodiumLoaded && irisLoaded;
         }
@@ -36,7 +36,7 @@ public class IPCompatMixinPlugin implements IMixinConfigPlugin {
         }
         
         if (mixinClassName.contains("Sodium")) {
-            boolean sodiumLoaded = modList.getModFileById("sodium") != null;
+            boolean sodiumLoaded = modList.getModFileById("embeddium") != null;
             return sodiumLoaded;
         }
         

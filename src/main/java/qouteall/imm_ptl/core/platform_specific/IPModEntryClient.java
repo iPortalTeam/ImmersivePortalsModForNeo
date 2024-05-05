@@ -68,7 +68,7 @@ public class IPModEntryClient {
         modEventBus.addListener(EntityRenderersEvent.RegisterRenderers.class, IPModEntryClient::initPortalRenderers);
         
         boolean isSodiumPresent =
-            ModList.get().isLoaded("sodium");
+            ModList.get().isLoaded("embeddium");
         if (isSodiumPresent) {
             Helper.log("Sodium is present");
             
