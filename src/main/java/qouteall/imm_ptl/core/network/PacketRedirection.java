@@ -295,7 +295,7 @@ public class PacketRedirection {
         public void handle(ClientGamePacketListener listener) {
             ResourceKey<Level> dim = PortalAPI.clientIntToDimKey(dimensionIntId);
             PacketRedirectionClient.handleRedirectedPacket(
-                    dim, (Packet) packet, listener
+                dim, (Packet) packet, listener
             );
         }
     }

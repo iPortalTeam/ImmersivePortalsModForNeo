@@ -68,6 +68,24 @@ authors="${mod_authors}" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''${mod_description}'''
 
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
+
+[[mixins]]
+config="imm_ptl.mixins.json"
+
+[[mixins]]
+config="imm_ptl_compat.mixins.json"
+
+[[mixins]]
+config="imm_ptl_fabric.mixins.json"
+
+[[mixins]]
+config="imm_ptl_peripheral.mixins.json"
+
+[[mixins]]
+config="q_misc_util.mixins.json"
+
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.immersive_portals_core]] #optional
 # the modid of the dependency

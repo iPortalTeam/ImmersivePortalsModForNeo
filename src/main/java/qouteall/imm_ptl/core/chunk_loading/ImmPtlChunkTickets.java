@@ -2,6 +2,7 @@ package qouteall.imm_ptl.core.chunk_loading;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
+import de.nick1st.imm_ptl.events.DimensionEvents;
 import de.nick1st.imm_ptl.events.ServerCleanupEvent;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
@@ -72,9 +73,8 @@ public class ImmPtlChunkTickets {
     public static final WeakHashMap<ServerLevel, ImmPtlChunkTickets> BY_DIMENSION = new WeakHashMap<>();
     
     public static void init() {
-// TODO @Nick1st - DimAPI - Removal: Dimension API is removed from Neo versions
-//        NeoForge.EVENT_BUS.addListener(DimensionEvents.BeforeRemovingDimensionEvent.class,
-//                beforeRemovingDimensionEvent -> ImmPtlChunkTickets.onDimensionRemove(beforeRemovingDimensionEvent.dimension));
+        NeoForge.EVENT_BUS.addListener(DimensionEvents.BeforeRemovingDimensionEvent.class,
+                beforeRemovingDimensionEvent -> ImmPtlChunkTickets.onDimensionRemove(beforeRemovingDimensionEvent.dimension));
 
         NeoForge.EVENT_BUS.addListener(ServerCleanupEvent.class, ImmPtlChunkTickets::cleanup);
     }

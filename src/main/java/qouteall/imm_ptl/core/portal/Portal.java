@@ -506,10 +506,9 @@ public class Portal extends Entity implements
         Validate.isTrue(!level().isClientSide(), "must be used on server side");
         updateCache();
 
-        // TODO @Nick1st - Reenable lines below
-//        var packet = createSyncPacket();
-//
-//        McHelper.sendToTrackers(this, packet);
+        var packet = createSyncPacket();
+
+        McHelper.sendToTrackers(this, packet);
     }
     
     public void reloadAndSyncToClientNextTick() {
@@ -1756,14 +1755,16 @@ public class Portal extends Entity implements
     
     //@OnlyIn(Dist.CLIENT)
     public void acceptDataSync(Vec3 pos, CompoundTag customData) {
-        PortalState oldState = getPortalState();
+        // TODO @Nick1st - Reenable this
+//        PortalState oldState = getPortalState();
         
         setPos(pos);
         readAdditionalSaveData(customData);
-        
-        if (animation.defaultAnimation.durationTicks > 0) {
-            animation.defaultAnimation.startClientDefaultAnimation(this, oldState);
-        }
+
+        // TODO @Nick1st - Reenable this
+//        if (animation.defaultAnimation.durationTicks > 0) {
+//            animation.defaultAnimation.startClientDefaultAnimation(this, oldState);
+//        }
 
         NeoForge.EVENT_BUS.post(new ClientPortalAcceptSyncEvent(this));
     }

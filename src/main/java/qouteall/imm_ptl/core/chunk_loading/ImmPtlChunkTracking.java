@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.chunk_loading;
 
 import com.mojang.logging.LogUtils;
+import de.nick1st.imm_ptl.events.DimensionEvents;
 import de.nick1st.imm_ptl.events.ServerCleanupEvent;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -53,9 +54,8 @@ public class ImmPtlChunkTracking {
             cleanup(server);
         });
 
-// TODO @Nick1st - DimAPI - Removal: Dimension API is removed from Neo versions
-//        NeoForge.EVENT_BUS.addListener(DimensionEvents.BeforeRemovingDimensionEvent.class,
-//                beforeRemovingDimensionEvent -> ImmPtlChunkTracking.onDimensionRemove(beforeRemovingDimensionEvent.dimension));
+        NeoForge.EVENT_BUS.addListener(DimensionEvents.BeforeRemovingDimensionEvent.class,
+                beforeRemovingDimensionEvent -> ImmPtlChunkTracking.onDimensionRemove(beforeRemovingDimensionEvent.dimension));
     }
     
     public static void onChunkProvidedDeferred(LevelChunk chunk) {
