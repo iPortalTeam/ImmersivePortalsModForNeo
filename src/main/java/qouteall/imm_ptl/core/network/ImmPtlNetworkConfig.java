@@ -7,9 +7,8 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.minecraft.ChatFormatting;
@@ -17,7 +16,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
@@ -32,7 +33,6 @@ import qouteall.imm_ptl.core.platform_specific.O_O;
 
 import java.util.function.Consumer;
 
-@SuppressWarnings("UnstableApiUsage")
 public class ImmPtlNetworkConfig {
     private static final Logger LOGGER = LogUtils.getLogger();
     
@@ -93,12 +93,12 @@ public class ImmPtlNetworkConfig {
     
     public static record S2CConfigStartPacket(
         ModVersion versionFromServer
-    ) implements FabricPacket {
-        public static final PacketType<S2CConfigStartPacket> TYPE =
-            PacketType.create(
-                new ResourceLocation("iportal:config_packet"),
-                S2CConfigStartPacket::read
-            );
+    ) implements CustomPacketPayload {
+        public static final CustomPacketPayload.Type<S2CConfigStartPacket> TYPE =
+            CustomPacketPayload.createType("iportal:config_packet");
+        public static final StreamCodec<FriendlyByteBuf, S2CConfigStartPacket> CODEC = StreamCodec.of(
+            (b, p) -> p.write(b), S2CConfigStartPacket::read
+        );
         
         public static S2CConfigStartPacket read(FriendlyByteBuf buf) {
             ModVersion info = ModVersion.read(buf);
@@ -107,11 +107,6 @@ public class ImmPtlNetworkConfig {
         
         public void write(FriendlyByteBuf buf) {
             versionFromServer.write(buf);
-        }
-        
-        @Override
-        public PacketType<?> getType() {
-            return TYPE;
         }
         
         // handled on client side
@@ -125,6 +120,11 @@ public class ImmPtlNetworkConfig {
             responseSender.sendPacket(new C2SConfigCompletePacket(
                 immPtlVersion, IPConfig.getConfig().clientTolerantVersionMismatchWithServer
             ));
+        }
+        
+        @Override
+        public @NotNull Type<? extends CustomPacketPayload> type() {
+            return TYPE;
         }
     }
     
@@ -197,6 +197,10 @@ public class ImmPtlNetworkConfig {
         immPtlVersion = O_O.getImmPtlVersion();
         
         LOGGER.info("Immersive Portals Core version {}", immPtlVersion);
+        
+        PayloadTypeRegistry.configurationS2C().register(
+            S2CConfigStartPacket.TYPE, S2CConfigStartPacket.CODEC
+        );
         
         ServerConfigurationConnectionEvents.CONFIGURE.register((handler, server) -> {
             if (ServerConfigurationNetworking.canSend(handler, S2CConfigStartPacket.TYPE)) {
