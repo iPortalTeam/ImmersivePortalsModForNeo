@@ -13,9 +13,12 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.configuration.ICustomConfigurationTask;
+import net.neoforged.neoforge.network.event.OnGameConfigurationEvent;
 import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -68,16 +71,14 @@ public class ImmPtlNetworkConfig {
     public static ModVersion immPtlVersion;
     
     public static record ImmPtlConfigurationTask(
-    ) implements ConfigurationTask {
+    ) implements ICustomConfigurationTask {
         public static final ConfigurationTask.Type TYPE =
-            new ConfigurationTask.Type("iportal:config");
-        
+            new ConfigurationTask.Type("immersive_portals_core:config");
+
         @Override
-        public void start(Consumer<Packet<?>> consumer) {
-            consumer.accept(
-                new ClientboundCustomPayloadPacket(new S2CConfigStartPacket(
-                    immPtlVersion
-                ))
+        public void run(Consumer<CustomPacketPayload> sender) {
+            sender.accept(
+                    new S2CConfigStartPacket(immPtlVersion)
             );
         }
         
@@ -174,50 +175,46 @@ public class ImmPtlNetworkConfig {
         }
     }
     
-    public static void init() {
+    public static void init(IEventBus eventBus) {
         immPtlVersion = O_O.getImmPtlVersion();
         
         LOGGER.info("Immersive Portals Core version {}", immPtlVersion);
 
-        // TODO @Nick1st - Important networking
-//        ServerConfigurationConnectionEvents.CONFIGURE.register((handler, server) -> {
-//            if (ServerConfigurationNetworking.canSend(handler, S2CConfigStartPacket.TYPE)) {
-//                handler.addTask(new ImmPtlConfigurationTask());
-//            }
-//            else {
-//                if (server.isDedicatedServer()) {
-//                    if (IPConfig.getConfig().serverRejectClientWithoutImmPtl) {
-//                        // cannot use translation key here
-//                        // because the translation does not exist on client without the mod
-//                        handler.disconnect(Component.literal(
-//                            """
-//                                The server detected that client does not install Immersive Portals mod.
-//                                A server with Immersive Portals mod only works with the clients that have it.
-//
-//                                (Note: The networking sync may be interfered by Essential mod or other mods. When you are using these mods, the detection may malfunction. In this case, you can disable networking check in the server side by changing `serverRejectClientWithoutImmPtl` to `false` in the server's config file `config/immersive_portals.json` and restart.)
-//                                """
-//                        ));
-//                    }
-//                    else {
-//                        GameProfile gameProfile =
-//                            ((IEServerConfigurationPacketListenerImpl) handler).ip_getGameProfile();
-//
-//                        LOGGER.warn(
-//                            "Fabric API's sendable channel sync detected that client does not install ImmPtl. {} {}",
-//                            gameProfile.getName(), gameProfile.getId()
-//                        );
-//                    }
-//                }
-//                else {
-//                    LOGGER.error("ImmPtl configuration channel is non-sendable from Fabric API in integrated server. Fabric API sendable channel sync is interfered.");
-//                }
-//            }
-//        });
-//
-//        ServerConfigurationNetworking.registerGlobalReceiver(
-//            C2SConfigCompletePacket.TYPE,
-//            C2SConfigCompletePacket::handle
-//        );
+        // TODO @Nick1st - Check that this fixes Server login
+        eventBus.addListener(OnGameConfigurationEvent.class, (event) -> {
+            if (event.getListener().getConnectionType().isNeoForge()) {
+                event.register(new ImmPtlConfigurationTask());
+            }
+            else {
+                if (FMLEnvironment.dist.isDedicatedServer()) {
+                    if (IPConfig.getConfig().serverRejectClientWithoutImmPtl) {
+                        // cannot use translation key here
+                        // because the translation does not exist on client without the mod
+                        event.getListener().disconnect(Component.literal(
+                                """
+                                    The server detected that client does not install Immersive Portals mod.
+                                    A server with Immersive Portals mod only works with the clients that have it.
+
+                                    (Note: The networking sync may be interfered by Essential mod or other mods. When you are using these mods, the detection may malfunction. In this case, you can disable networking check in the server side by changing `serverRejectClientWithoutImmPtl` to `false` in the server's config file `config/immersive_portals.json` and restart.)
+                                    """
+                        ));
+                    }
+                    else {
+                        GameProfile gameProfile =
+                                ((IEServerConfigurationPacketListenerImpl) event.getListener()).ip_getGameProfile();
+
+                        LOGGER.warn(
+                                "Neo detected that client does not install ImmPtl. {} {}",
+                                gameProfile.getName(), gameProfile.getId()
+                        );
+                    }
+                }
+                // TODO @Nick1st Check if this problem also exist at NEO
+                else {
+                    LOGGER.error("ImmPtl configuration channel is non-sendable from Fabric API in integrated server. Fabric API sendable channel sync is interfered.");
+                }
+            }
+        });
     }
     
     //@OnlyIn(Dist.CLIENT)
@@ -240,10 +237,8 @@ public class ImmPtlNetworkConfig {
 //                serverVersion = null;
 //            }
 //        );
-//
-//        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-//            onClientJoin();
-//        });
+
+        NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingIn.class, (event) -> onClientJoin());
     }
     
     private static void onClientJoin() {

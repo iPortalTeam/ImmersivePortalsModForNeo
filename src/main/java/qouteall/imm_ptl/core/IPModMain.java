@@ -66,7 +66,7 @@ public class IPModMain {
         Helper.LOGGER.info("Immersive Portals Mod Initializing");
 
         eventBus.addListener(RegisterPayloadHandlerEvent.class, Payloads::register);
-        ImmPtlNetworkConfig.init();
+        ImmPtlNetworkConfig.init(eventBus);
 
         NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> IPGlobal.CLIENT_TASK_LIST.processTasks());
 

@@ -20,7 +20,7 @@ public class Payloads {
 
         registrar.configuration(ImmPtlNetworkConfig.C2SConfigCompletePacket.ID,
                 ImmPtlNetworkConfig.C2SConfigCompletePacket::read,
-                handler -> handler.client(ImmPtlNetworkConfig.C2SConfigCompletePacket::handle));
+                handler -> handler.server(ImmPtlNetworkConfig.C2SConfigCompletePacket::handle));
 
         // Play
         registrar.play(ImmPtlNetworking.TeleportPacket.ID, ImmPtlNetworking.TeleportPacket::read, handler ->
