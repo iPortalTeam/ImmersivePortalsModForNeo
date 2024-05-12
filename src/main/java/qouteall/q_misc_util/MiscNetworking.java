@@ -31,11 +31,6 @@ import qouteall.q_misc_util.dimension.DimensionIntId;
 public class MiscNetworking {
     private static final Logger LOGGER = LogUtils.getLogger();
     
-    public static final ResourceLocation id_stcRemote =
-        new ResourceLocation("imm_ptl", "remote_stc");
-    public static final ResourceLocation id_ctsRemote =
-        new ResourceLocation("imm_ptl", "remote_cts");
-    
     public static record DimIdSyncPacket(
         CompoundTag dimIntIdTag,
         CompoundTag dimTypeTag
