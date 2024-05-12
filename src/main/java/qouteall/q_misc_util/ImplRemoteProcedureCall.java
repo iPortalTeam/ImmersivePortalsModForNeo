@@ -381,7 +381,7 @@ public class ImplRemoteProcedureCall {
         Object... arguments
     ) {
         return ClientPlayNetworking.createC2SPacket(
-            new S2CRPCPayload(
+            new C2SRPCPayload(
                 true, methodPath, null, List.of(arguments)
             )
         );
@@ -392,7 +392,7 @@ public class ImplRemoteProcedureCall {
         Object... arguments
     ) {
         return ServerPlayNetworking.createS2CPacket(
-            new C2SRPCPayload(
+            new S2CRPCPayload(
                 true, methodPath, null, List.of(arguments)
             )
         );
