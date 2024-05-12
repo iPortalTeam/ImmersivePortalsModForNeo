@@ -4,14 +4,19 @@ import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.PacketType;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +26,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPGlobal;
@@ -39,10 +45,12 @@ public class ImmPtlNetworking {
     // client to server
     public static record TeleportPacket(
         int dimensionId, Vec3 eyePosBeforeTeleportation, UUID portalId
-    ) implements FabricPacket {
-        public static final PacketType<TeleportPacket> TYPE = PacketType.create(
-            new ResourceLocation("imm_ptl:teleport"),
-            TeleportPacket::read
+    ) implements CustomPacketPayload {
+        public static final CustomPacketPayload.Type<TeleportPacket> TYPE =
+            CustomPacketPayload.createType("imm_ptl:teleport");
+        
+        public static final StreamCodec<FriendlyByteBuf, TeleportPacket> CODEC = StreamCodec.of(
+            (b, p) -> p.write(b), TeleportPacket::read
         );
         
         public static TeleportPacket read(FriendlyByteBuf buf) {
@@ -56,18 +64,12 @@ public class ImmPtlNetworking {
             return new TeleportPacket(dimId, pos, portalId);
         }
         
-        @Override
         public void write(FriendlyByteBuf buf) {
             buf.writeVarInt(dimensionId);
             buf.writeDouble(eyePosBeforeTeleportation.x);
             buf.writeDouble(eyePosBeforeTeleportation.y);
             buf.writeDouble(eyePosBeforeTeleportation.z);
             buf.writeUUID(portalId);
-        }
-        
-        @Override
-        public PacketType<?> getType() {
-            return TYPE;
         }
         
         public void handle(ServerPlayer player) {
@@ -79,15 +81,22 @@ public class ImmPtlNetworking {
                 player, dim, eyePosBeforeTeleportation, portalId
             );
         }
+        
+        @Override
+        public @NotNull Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
     }
     
     // server to client
     public static record GlobalPortalSyncPacket(
         int dimensionId, CompoundTag data
-    ) implements FabricPacket {
-        public static final PacketType<GlobalPortalSyncPacket> TYPE = PacketType.create(
-            new ResourceLocation("imm_ptl:upd_glb_ptl"),
-            GlobalPortalSyncPacket::read
+    ) implements CustomPacketPayload {
+        public static final CustomPacketPayload.Type<GlobalPortalSyncPacket> TYPE =
+            CustomPacketPayload.createType("imm_ptl:upd_glb_ptl");
+        
+        public static final StreamCodec<FriendlyByteBuf, GlobalPortalSyncPacket> CODEC = StreamCodec.of(
+            (b, p) -> p.write(b), GlobalPortalSyncPacket::read
         );
         
         public static GlobalPortalSyncPacket read(FriendlyByteBuf buf) {
@@ -96,15 +105,9 @@ public class ImmPtlNetworking {
             return new GlobalPortalSyncPacket(dimId, compoundTag);
         }
         
-        @Override
         public void write(FriendlyByteBuf buf) {
             buf.writeVarInt(dimensionId);
             buf.writeNbt(data);
-        }
-        
-        @Override
-        public PacketType<?> getType() {
-            return TYPE;
         }
         
         @Environment(EnvType.CLIENT)
@@ -112,6 +115,11 @@ public class ImmPtlNetworking {
             ResourceKey<Level> dim = PortalAPI.clientIntToDimKey(dimensionId);
             
             GlobalPortalStorage.receiveGlobalPortalSync(dim, data);
+        }
+        
+        @Override
+        public @NotNull Type<? extends CustomPacketPayload> type() {
+            return TYPE;
         }
     }
     
@@ -123,29 +131,24 @@ public class ImmPtlNetworking {
     public static record PortalSyncPacket(
         int id,
         UUID uuid,
-        EntityType<?> type,
+        EntityType<?> entityType,
         int dimensionId,
         double x,
         double y,
         double z,
         CompoundTag extraData
-    ) implements FabricPacket {
+    ) implements CustomPacketPayload {
+        public static final CustomPacketPayload.Type<PortalSyncPacket> TYPE =
+            CustomPacketPayload.createType("imm_ptl:spawn_portal");
         
-        public PortalSyncPacket {
-            // debug
-//            Helper.LOGGER.info("PortalSyncPacket create {}", MiscHelper.getServer().overworld().getGameTime());
-        }
-        
-        public static final PacketType<PortalSyncPacket> TYPE = PacketType.create(
-            new ResourceLocation("imm_ptl:spawn_portal"),
-            PortalSyncPacket::read
+        public static final StreamCodec<RegistryFriendlyByteBuf, PortalSyncPacket> CODEC = StreamCodec.of(
+            (b, p) -> p.write(b), PortalSyncPacket::read
         );
         
-        @Override
-        public void write(FriendlyByteBuf buf) {
+        public void write(RegistryFriendlyByteBuf buf) {
             buf.writeVarInt(id);
             buf.writeUUID(uuid);
-            buf.writeId(BuiltInRegistries.ENTITY_TYPE, type);
+            ByteBufCodecs.registry(Registries.ENTITY_TYPE).encode(buf, entityType);
             buf.writeVarInt(dimensionId);
             buf.writeDouble(x);
             buf.writeDouble(y);
@@ -153,21 +156,16 @@ public class ImmPtlNetworking {
             buf.writeNbt(extraData);
         }
         
-        public static PortalSyncPacket read(FriendlyByteBuf buf) {
+        public static PortalSyncPacket read(RegistryFriendlyByteBuf buf) {
             int id = buf.readVarInt();
             UUID uuid = buf.readUUID();
-            EntityType<?> type = buf.readById(BuiltInRegistries.ENTITY_TYPE);
+            EntityType<?> type = ByteBufCodecs.registry(Registries.ENTITY_TYPE).decode(buf);
             int dimensionId = buf.readVarInt();
             double x = buf.readDouble();
             double y = buf.readDouble();
             double z = buf.readDouble();
             CompoundTag extraData = buf.readNbt();
             return new PortalSyncPacket(id, uuid, type, dimensionId, x, y, z, extraData);
-        }
-        
-        @Override
-        public PacketType<?> getType() {
-            return TYPE;
         }
         
         /**
@@ -189,8 +187,10 @@ public class ImmPtlNetworking {
                     return;
                 }
                 
-                if (existingPortal.getType() != type) {
-                    LOGGER.error("Entity type mismatch when syncing portal {} {}", existingPortal, type);
+                if (existingPortal.getType() != entityType) {
+                    LOGGER.error(
+                        "Entity type mismatch when syncing portal {} {}", existingPortal, entityType
+                    );
                     return;
                 }
                 
@@ -198,11 +198,11 @@ public class ImmPtlNetworking {
             }
             else {
                 // spawn new portal
-                Entity entity = type.create(world);
+                Entity entity = entityType.create(world);
                 Validate.notNull(entity, "Entity type is null");
                 
                 if (!(entity instanceof Portal portal)) {
-                    LOGGER.error("Spawned entity is not a portal. {} {}", entity, type);
+                    LOGGER.error("Spawned entity is not a portal. {} {}", entity, entityType);
                     return;
                 }
                 
@@ -223,24 +223,41 @@ public class ImmPtlNetworking {
                 }
             }
         }
+        
+        @Override
+        public @NotNull Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
     }
     
     public static void init() {
+        PayloadTypeRegistry.playC2S().register(
+            TeleportPacket.TYPE, TeleportPacket.CODEC
+        );
+        
+        PayloadTypeRegistry.playS2C().register(
+            GlobalPortalSyncPacket.TYPE, GlobalPortalSyncPacket.CODEC
+        );
+        
+        PayloadTypeRegistry.playS2C().register(
+            PortalSyncPacket.TYPE, PortalSyncPacket.CODEC
+        );
+        
         ServerPlayNetworking.registerGlobalReceiver(
             TeleportPacket.TYPE,
-            (packet, player, responseSender) -> packet.handle(player)
+            (packet, c) -> packet.handle(c.player())
         );
     }
     
     public static void initClient() {
         ClientPlayNetworking.registerGlobalReceiver(
             GlobalPortalSyncPacket.TYPE,
-            (packet, player, responseSender) -> packet.handle()
+            (packet, c) -> packet.handle()
         );
         
         ClientPlayNetworking.registerGlobalReceiver(
             PortalSyncPacket.TYPE,
-            (packet, player, responseSender) -> packet.handle()
+            (packet, c) -> packet.handle()
         );
     }
     

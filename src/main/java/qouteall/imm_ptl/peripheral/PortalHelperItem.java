@@ -4,6 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
@@ -41,9 +42,12 @@ public class PortalHelperItem extends BlockItem {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
-        super.appendHoverText(stack, world, tooltip, context);
+    public void appendHoverText(
+        ItemStack itemStack, Item.TooltipContext tooltipContext,
+        List<Component> list, TooltipFlag tooltipFlag
+    ) {
+        super.appendHoverText(itemStack, tooltipContext, list, tooltipFlag);
         
-        tooltip.add(Component.translatable("imm_ptl.portal_helper_tooltip"));
+        list.add(Component.translatable("imm_ptl.portal_helper_tooltip"));
     }
 }

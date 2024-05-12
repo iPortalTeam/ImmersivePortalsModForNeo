@@ -96,6 +96,7 @@ public class ImmPtlNetworkConfig {
     ) implements CustomPacketPayload {
         public static final CustomPacketPayload.Type<S2CConfigStartPacket> TYPE =
             CustomPacketPayload.createType("iportal:config_packet");
+        
         public static final StreamCodec<FriendlyByteBuf, S2CConfigStartPacket> CODEC = StreamCodec.of(
             (b, p) -> p.write(b), S2CConfigStartPacket::read
         );
@@ -111,13 +112,13 @@ public class ImmPtlNetworkConfig {
         
         // handled on client side
         @Environment(EnvType.CLIENT)
-        public void handle(PacketSender responseSender) {
+        public void handle(ClientConfigurationNetworking.Context context) {
             LOGGER.info(
                 "Client received ImmPtl config packet. Server mod version: {}", versionFromServer
             );
             
             serverVersion = versionFromServer;
-            responseSender.sendPacket(new C2SConfigCompletePacket(
+            context.responseSender().sendPacket(new C2SConfigCompletePacket(
                 immPtlVersion, IPConfig.getConfig().clientTolerantVersionMismatchWithServer
             ));
         }
@@ -131,10 +132,13 @@ public class ImmPtlNetworkConfig {
     public record C2SConfigCompletePacket(
         ModVersion versionFromClient,
         boolean clientTolerantVersionMismatch
-    ) implements FabricPacket {
-        public static final PacketType<C2SConfigCompletePacket> TYPE = PacketType.create(
-            new ResourceLocation("iportal:configure_complete"),
-            C2SConfigCompletePacket::read
+    ) implements CustomPacketPayload {
+        public static final CustomPacketPayload.Type<C2SConfigCompletePacket> TYPE =
+            CustomPacketPayload.createType(
+                ("iportal:configure_complete")
+            );
+        public static final StreamCodec<FriendlyByteBuf, C2SConfigCompletePacket> CODEC = StreamCodec.of(
+            (b, p) -> p.write(b), C2SConfigCompletePacket::read
         );
         
         public static C2SConfigCompletePacket read(FriendlyByteBuf buf) {
@@ -143,21 +147,17 @@ public class ImmPtlNetworkConfig {
             return new C2SConfigCompletePacket(info, clientTolerantVersionMismatch);
         }
         
-        @Override
         public void write(FriendlyByteBuf buf) {
             versionFromClient.write(buf);
             buf.writeBoolean(clientTolerantVersionMismatch);
         }
         
-        @Override
-        public PacketType<?> getType() {
-            return TYPE;
-        }
-        
         // handled on server side
         public void handle(
-            ServerConfigurationPacketListenerImpl networkHandler, PacketSender responseSender
+            ServerConfigurationNetworking.Context context
         ) {
+            ServerConfigurationPacketListenerImpl networkHandler = context.networkHandler();
+            
             GameProfile gameProfile =
                 ((IEServerConfigurationPacketListenerImpl) networkHandler).ip_getGameProfile();
             
@@ -191,6 +191,11 @@ public class ImmPtlNetworkConfig {
             
             networkHandler.completeTask(ImmPtlConfigurationTask.TYPE);
         }
+        
+        @Override
+        public @NotNull Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
     }
     
     public static void init() {
@@ -200,6 +205,10 @@ public class ImmPtlNetworkConfig {
         
         PayloadTypeRegistry.configurationS2C().register(
             S2CConfigStartPacket.TYPE, S2CConfigStartPacket.CODEC
+        );
+        
+        PayloadTypeRegistry.configurationC2S().register(
+            C2SConfigCompletePacket.TYPE, C2SConfigCompletePacket.CODEC
         );
         
         ServerConfigurationConnectionEvents.CONFIGURE.register((handler, server) -> {

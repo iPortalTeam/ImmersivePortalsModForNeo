@@ -1,6 +1,6 @@
 package qouteall.imm_ptl.peripheral;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -104,24 +104,24 @@ public class PeripheralModMain {
     }
     
     public static void registerChunkGenerators(
-        BiConsumer<ResourceLocation, Codec<? extends ChunkGenerator>> regFunc
+        BiConsumer<ResourceLocation, MapCodec<? extends ChunkGenerator>> regFunc
     ) {
         regFunc.accept(
             new ResourceLocation("immersive_portals:error_terrain_generator"),
-            ErrorTerrainGenerator.codec
+            ErrorTerrainGenerator.MAP_CODEC
         );
         regFunc.accept(
             new ResourceLocation("immersive_portals:normal_skyland_generator"),
-            NormalSkylandGenerator.codec
+            NormalSkylandGenerator.MAP_CODEC
         );
     }
     
     public static void registerBiomeSources(
-        BiConsumer<ResourceLocation, Codec<? extends BiomeSource>> regFunc
+        BiConsumer<ResourceLocation, MapCodec<? extends BiomeSource>> regFunc
     ) {
         regFunc.accept(
             new ResourceLocation("immersive_portals:chaos_biome_source"),
-            ChaosBiomeSource.CODEC
+            ChaosBiomeSource.MAP_CODEC
         );
     }
     

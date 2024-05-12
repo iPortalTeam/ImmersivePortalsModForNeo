@@ -2,6 +2,7 @@ package qouteall.imm_ptl.peripheral.alternate_dimension;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -125,7 +126,7 @@ public abstract class DelegatedChunkGenerator extends ChunkGenerator {
     }
     
     @Override
-    public Optional<ResourceKey<Codec<? extends ChunkGenerator>>> getTypeNameForDataFixer() {
+    public Optional<ResourceKey<MapCodec<? extends ChunkGenerator>>> getTypeNameForDataFixer() {
         return delegate.getTypeNameForDataFixer();
     }
     

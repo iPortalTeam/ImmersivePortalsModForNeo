@@ -20,7 +20,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.network.protocol.common.ServerCommonPacketListener;
@@ -56,13 +58,13 @@ public class ImplRemoteProcedureCall {
     
     private static final ConcurrentHashMap<String, Method> methodCache = new ConcurrentHashMap<>();
     
-    private static final ImmutableMap<Class, BiConsumer<FriendlyByteBuf, Object>> serializerMap;
-    private static final ImmutableMap<Type, Function<FriendlyByteBuf, Object>> deserializerMap;
+    private static final ImmutableMap<Class, BiConsumer<RegistryFriendlyByteBuf, Object>> serializerMap;
+    private static final ImmutableMap<Type, Function<RegistryFriendlyByteBuf, Object>> deserializerMap;
     
     private static final JsonParser jsonParser = new JsonParser();
     
     static {
-        serializerMap = ImmutableMap.<Class, BiConsumer<FriendlyByteBuf, Object>>builder()
+        serializerMap = ImmutableMap.<Class, BiConsumer<RegistryFriendlyByteBuf, Object>>builder()
             .put(ResourceLocation.class, (buf, o) -> buf.writeResourceLocation(((ResourceLocation) o)))
             .put(ResourceKey.class, (buf, o) -> buf.writeResourceLocation(((ResourceKey) o).location()))
             .put(BlockPos.class, (buf, o) -> buf.writeBlockPos(((BlockPos) o)))
@@ -78,7 +80,9 @@ public class ImplRemoteProcedureCall {
             .put(BlockState.class, (buf, o) -> serializeByCodec(buf, BlockState.CODEC, o))
             .put(ItemStack.class, (buf, o) -> serializeByCodec(buf, ItemStack.CODEC, o))
             .put(CompoundTag.class, (buf, o) -> buf.writeNbt(((CompoundTag) o)))
-            .put(Component.class, (buf, o) -> buf.writeComponent(((Component) o)))
+            .put(Component.class, (buf, o) ->
+                ComponentSerialization.TRUSTED_STREAM_CODEC.encode(buf, ((Component) o))
+            )
             .put(DQuaternion.class, (buf, o) -> {
                 DQuaternion dQuaternion = (DQuaternion) o;
                 buf.writeDouble(dQuaternion.x);
@@ -89,8 +93,8 @@ public class ImplRemoteProcedureCall {
             .put(byte[].class, (buf, o) -> buf.writeByteArray(((byte[]) o)))
             .build();
         
-        deserializerMap = ImmutableMap.<Type, Function<FriendlyByteBuf, Object>>builder()
-            .put(ResourceLocation.class, buf -> buf.readResourceLocation())
+        deserializerMap = ImmutableMap.<Type, Function<RegistryFriendlyByteBuf, Object>>builder()
+            .put(ResourceLocation.class, FriendlyByteBuf::readResourceLocation)
             .put(
                 new TypeToken<ResourceKey<Level>>() {}.getType(),
                 buf -> ResourceKey.create(
@@ -113,7 +117,7 @@ public class ImplRemoteProcedureCall {
             .put(BlockState.class, buf -> deserializeByCodec(buf, BlockState.CODEC))
             .put(ItemStack.class, buf -> deserializeByCodec(buf, ItemStack.CODEC))
             .put(CompoundTag.class, buf -> buf.readNbt())
-            .put(Component.class, buf -> buf.readComponent())
+            .put(Component.class, ComponentSerialization.TRUSTED_STREAM_CODEC::decode)
             .put(DQuaternion.class, buf ->
                 new DQuaternion(
                     buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble()
@@ -267,7 +271,9 @@ public class ImplRemoteProcedureCall {
         ).withStyle(ChatFormatting.RED));
     }
     
-    public static Runnable serverReadPacketAndGetHandler(ServerPlayer player, FriendlyByteBuf buf) {
+    public static Runnable serverReadPacketAndGetHandler(
+        ServerPlayer player, RegistryFriendlyByteBuf buf
+    ) {
         String methodPath = null;
         try {
             methodPath = buf.readUtf();

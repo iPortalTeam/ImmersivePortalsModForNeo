@@ -1,6 +1,6 @@
 package qouteall.imm_ptl.peripheral.alternate_dimension;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -85,7 +85,7 @@ public class ChaosBiomeSource extends BiomeSource {
         "minecraft:wooded_badlands"
     };
     
-    public static final Codec<ChaosBiomeSource> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<ChaosBiomeSource> MAP_CODEC = RecordCodecBuilder.mapCodec(
         instance -> instance.group(
                 Biome.LIST_CODEC.fieldOf("biomes")
                     .forGetter(checkerboardColumnBiomeSource -> checkerboardColumnBiomeSource.allowedBiomes)
@@ -124,8 +124,8 @@ public class ChaosBiomeSource extends BiomeSource {
     }
     
     @Override
-    protected Codec<? extends BiomeSource> codec() {
-        return CODEC;
+    protected MapCodec<? extends BiomeSource> codec() {
+        return MAP_CODEC;
     }
     
     @Override
