@@ -2,17 +2,19 @@ package qouteall.imm_ptl.core.network;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.ConnectionProtocol;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.ProtocolInfo;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.BundleDelimiterPacket;
 import net.minecraft.network.protocol.BundlePacket;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
+import net.minecraft.network.protocol.game.GameProtocols;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -56,6 +58,10 @@ public class PacketRedirection {
     
     private static final ThreadLocal<ForceBundleCallback> forceBundle =
         ThreadLocal.withInitial(() -> null);
+    
+    public static void init() {
+        PayloadTypeRegistry.playS2C().register(Payload.TYPE, Payload.CODEC);
+    }
     
     public static void withForceRedirect(ServerLevel world, Runnable func) {
         withForceRedirectAndGet(world, () -> {
@@ -153,10 +159,14 @@ public class PacketRedirection {
             // don't wrap a bundle packet into a normal packet
             List<Packet<ClientGamePacketListener>> newSubPackets = new ArrayList<>();
             for (var subPacket : bundlePacket.subPackets()) {
-                newSubPackets.add(createRedirectedMessage(server, dimension, subPacket));
+                newSubPackets.add(createRedirectedMessage(
+                    server, dimension, (Packet<ClientGamePacketListener>) subPacket
+                ));
             }
             
-            return new ClientboundBundlePacket(newSubPackets);
+            return new ClientboundBundlePacket(
+                (List<Packet<? super ClientGamePacketListener>>) (List) newSubPackets
+            );
         }
         else {
             // will use the server argument in the future
@@ -182,29 +192,13 @@ public class PacketRedirection {
         player.connection.send(createRedirectedMessage(player.server, dimension, packet));
     }
     
-    private static final ConnectionProtocol.CodecData<?> clientPlayCodecData =
-        ConnectionProtocol.PLAY.codec(PacketFlow.CLIENTBOUND);
-    
-    public static int getPacketId(Packet<?> packet) {
-        try {
-            return clientPlayCodecData.packetId(packet);
-        }
-        catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-    
-    public static Packet<?> readPacketById(int messageType, FriendlyByteBuf buf) {
-        return clientPlayCodecData.createPacket(messageType, buf);
-    }
-    
     // Note this doesn't consider bundle packet
     public static boolean isRedirectPacket(Packet<?> packet) {
         return packet instanceof ClientboundCustomPayloadPacket customPayloadPacket &&
             customPayloadPacket.payload() instanceof Payload;
     }
     
-    @SuppressWarnings({"unchecked", "ThreadLocalSetWithNull"})
+    @SuppressWarnings({"unchecked", "ThreadLocalSetWithNull", "rawtypes"})
     public static <R> R withForceBundle(Supplier<R> func) {
         ForceBundleCallback forceBundleCallback = getForceBundleCallback();
         if (forceBundleCallback != null) {
@@ -236,7 +230,9 @@ public class PacketRedirection {
             for (var e : map.entrySet()) {
                 ServerCommonPacketListenerImpl listener = e.getKey();
                 List<Packet<ClientGamePacketListener>> packets = e.getValue();
-                listener.send(new ClientboundBundlePacket(packets));
+                listener.send(new ClientboundBundlePacket(
+                    (List<Packet<? super ClientGamePacketListener>>) (List) packets
+                ));
             }
         }
     }
@@ -245,39 +241,48 @@ public class PacketRedirection {
         return forceBundle.get();
     }
     
+    // Mojang's new networking abstraction made packet redirection more convoluted...
+    private static final ProtocolInfo<ClientGamePacketListener> PLACEHOLDER_PROTOCOL_INFO =
+        // the function passed into bind is used for converting ByteBuf to RegistryFriendlyByteBuf
+        // it's a pre-processor
+        // that ProtocolInfo will be used by passing RegistryFriendlyByteBuf
+        // so only a casting is needed
+        GameProtocols.CLIENTBOUND.bind(
+            argBuf -> ((RegistryFriendlyByteBuf) argBuf)
+        );
+    
     /**
      * @param dimensionIntId use integer here because the mapping between dimension id and integer id is per-server the deserialization context does not give access to MinecraftServer object (going to handle the case of multiple servers per JVM)
      */
     public record Payload(
-        int dimensionIntId, Packet<? extends ClientCommonPacketListener> packet
+        int dimensionIntId, Packet<? extends ClientGamePacketListener> packet
     ) implements CustomPacketPayload {
+        public static final CustomPacketPayload.Type<Payload> TYPE =
+            CustomPacketPayload.createType(payloadId.toString());
         
-        @Override
-        public void write(FriendlyByteBuf buf) {
+        public static final StreamCodec<RegistryFriendlyByteBuf, Payload> CODEC =
+            StreamCodec.of(
+                (b, p) -> p.write(b), Payload::read
+            );
+        
+        @SuppressWarnings("unchecked")
+        public void write(RegistryFriendlyByteBuf buf) {
             Validate.notNull(packet, "packet is null");
             
             buf.writeVarInt(dimensionIntId);
             
-            int packetId = getPacketId(packet);
-            buf.writeVarInt(packetId);
-            
-            packet.write(buf);
+            PLACEHOLDER_PROTOCOL_INFO.codec()
+                .encode(buf, (Packet<? super ClientGamePacketListener>) packet);
         }
         
         @SuppressWarnings("unchecked")
         public static Payload read(FriendlyByteBuf buf) {
             int dimensionIntId = buf.readVarInt();
             
-            int packetId = buf.readVarInt();
-            Packet<ClientGamePacketListener> packet =
-                (Packet<ClientGamePacketListener>) readPacketById(packetId, buf);
+            var packet = (Packet<ClientGamePacketListener>)
+                PLACEHOLDER_PROTOCOL_INFO.codec().decode(buf);
             
             return new Payload(dimensionIntId, packet);
-        }
-        
-        @Override
-        public @NotNull ResourceLocation id() {
-            return payloadId;
         }
         
         @SuppressWarnings({"unchecked", "rawtypes"})
@@ -287,6 +292,11 @@ public class PacketRedirection {
             PacketRedirectionClient.handleRedirectedPacket(
                 dim, (Packet) packet, listener
             );
+        }
+        
+        @Override
+        public @NotNull Type<? extends CustomPacketPayload> type() {
+            return TYPE;
         }
     }
 }

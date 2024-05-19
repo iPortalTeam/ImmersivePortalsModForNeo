@@ -14,9 +14,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.MappedRegistry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.thread.ReentrantBlockableEventLoop;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -26,8 +26,6 @@ import qouteall.q_misc_util.mixin.IELevelStorageAccess_Misc;
 
 import java.lang.reflect.Type;
 import java.nio.file.Path;
-import java.util.Map;
-import java.util.function.BiPredicate;
 
 public class MiscHelper {
     
@@ -62,29 +60,8 @@ public class MiscHelper {
         gson = gsonBuilder.create();
     }
     
-    public static <T> MappedRegistry<T> filterAndCopyRegistry(
-        MappedRegistry<T> registry, BiPredicate<ResourceKey<T>, T> predicate
-    ) {
-        MappedRegistry<T> newRegistry = new MappedRegistry<>(
-            registry.key(),
-            registry.registryLifecycle()
-        );
-        
-        for (Map.Entry<ResourceKey<T>, T> entry : registry.entrySet()) {
-            T object = entry.getValue();
-            ResourceKey<T> key = entry.getKey();
-            if (predicate.test(key, object)) {
-                newRegistry.register(
-                    key, object, registry.lifecycle(object)
-                );
-            }
-        }
-        
-        return newRegistry;
-    }
-    
     /**
-     * {@link ReentrantThreadExecutor#shouldExecuteAsync()}
+     * {@link ReentrantBlockableEventLoop#scheduleExecutables()}
      * The execution may get deferred on the render thread
      */
     @Environment(EnvType.CLIENT)

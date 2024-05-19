@@ -25,6 +25,7 @@ import qouteall.imm_ptl.core.mc_utils.ServerTaskList;
 import qouteall.imm_ptl.core.miscellaneous.GcMonitor;
 import qouteall.imm_ptl.core.network.ImmPtlNetworkConfig;
 import qouteall.imm_ptl.core.network.ImmPtlNetworking;
+import qouteall.imm_ptl.core.network.PacketRedirection;
 import qouteall.imm_ptl.core.platform_specific.IPConfig;
 import qouteall.imm_ptl.core.platform_specific.O_O;
 import qouteall.imm_ptl.core.portal.BreakableMirror;
@@ -65,6 +66,7 @@ public class IPModMain {
         
         ImmPtlNetworking.init();
         ImmPtlNetworkConfig.init();
+        PacketRedirection.init();
         
         IPGlobal.POST_CLIENT_TICK_EVENT.register(IPGlobal.CLIENT_TASK_LIST::processTasks);
         
