@@ -2,13 +2,20 @@ package qouteall.imm_ptl.peripheral;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -18,7 +25,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.commands.PortalCommand;
 
@@ -28,6 +36,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandStickItem extends Item {
+    private static final Logger LOGGER = LogUtils.getLogger();
+    
+    public static final Codec<Data> DATA_CODEC = RecordCodecBuilder.create(
+        instance -> instance.group(
+            Codec.STRING.fieldOf("command").forGetter(Data::command),
+            Codec.STRING.fieldOf("nameTranslationKey").forGetter(Data::nameTranslationKey),
+            Codec.STRING.listOf().fieldOf("descriptionTranslationKeys")
+                .forGetter(Data::descriptionTranslationKeys)
+        ).apply(instance, Data::new)
+    );
+    
+    public static final DataComponentType<Data> COMPONENT_TYPE =
+        DataComponentType.<Data>builder()
+            .persistent(DATA_CODEC)
+            .build();
+    
     public record Data(
         String command, String nameTranslationKey, List<String> descriptionTranslationKeys
     ) {
@@ -94,11 +118,18 @@ public class CommandStickItem extends Item {
         }
         
         if (canUseCommand(player)) {
-            Data data = Data.deserialize(stack.getOrCreateTag());
+            Data data = stack.get(COMPONENT_TYPE);
+            
+            if (data == null) {
+                LOGGER.error("Missing component in command stick item {}", stack);
+                return;
+            }
             
             CommandSourceStack commandSource = player.createCommandSourceStack().withPermission(2);
             
-            Commands commandManager = player.getServer().getCommands();
+            MinecraftServer server = player.getServer();
+            assert server != null;
+            Commands commandManager = server.getCommands();
             
             String command = data.command;
             
@@ -124,10 +155,17 @@ public class CommandStickItem extends Item {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
-        super.appendHoverText(stack, world, tooltip, context);
+    public void appendHoverText(
+        ItemStack stack, Item.TooltipContext tooltipContext,
+        List<Component> tooltip, TooltipFlag tooltipFlag
+    ) {
+        super.appendHoverText(stack, tooltipContext, tooltip, tooltipFlag);
         
-        Data data = Data.deserialize(stack.getOrCreateTag());
+        Data data = stack.get(COMPONENT_TYPE);
+        
+        if (data == null) {
+            return;
+        }
         
         Iterable<String> splitCommand = Splitter.fixedLength(40).split(data.command);
         
@@ -143,8 +181,13 @@ public class CommandStickItem extends Item {
     }
     
     @Override
-    public String getDescriptionId(ItemStack stack) {
-        Data data = Data.deserialize(stack.getOrCreateTag());
+    public @NotNull String getDescriptionId(ItemStack stack) {
+        Data data = stack.get(COMPONENT_TYPE);
+        
+        if (data == null) {
+            return "";
+        }
+        
         return data.nameTranslationKey;
     }
     
@@ -153,12 +196,19 @@ public class CommandStickItem extends Item {
     }
     
     public static void init() {
+        Registry.register(
+            BuiltInRegistries.DATA_COMPONENT_TYPE,
+            "iportal:command_stick_data",
+            COMPONENT_TYPE
+        );
+        
         PortalCommand.createCommandStickCommandSignal.connect((player, command) -> {
             ItemStack itemStack = new ItemStack(instance, 1);
             Data data = new Data(
                 command, command, new ArrayList<>()
             );
-            data.serialize(itemStack.getOrCreateTag());
+            
+            itemStack.set(COMPONENT_TYPE, data);
             
             player.getInventory().add(itemStack);
             player.inventoryMenu.broadcastChanges();
@@ -168,7 +218,7 @@ public class CommandStickItem extends Item {
     public static void addIntoCreativeTag(CreativeModeTab.Output entries) {
         for (Data data : BUILT_IN_COMMAND_STICK_TYPES.values()) {
             ItemStack stack = new ItemStack(instance);
-            data.serialize(stack.getOrCreateTag());
+            stack.set(COMPONENT_TYPE, data);
             entries.accept(stack);
         }
     }
