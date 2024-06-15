@@ -101,7 +101,7 @@ public class IPModMain {
         BlockManipulationServer.init();
         
         CommandRegistrationCallback.EVENT.register(
-            (dispatcher, registryAccess, environment) -> PortalCommand.register(dispatcher)
+            (dispatcher, ctx, environment) -> PortalCommand.register(dispatcher, ctx)
         );
         SubCommandArgumentType.init();
         TimingFunctionArgumentType.init();

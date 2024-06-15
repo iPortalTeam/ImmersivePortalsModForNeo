@@ -185,7 +185,7 @@ public class AlternateDimensions {
     }
     
     public static boolean isAlternateDimension(Level world) {
-        ResourceKey<DimensionType> dimensionTypeId = world.dimensionTypeId();
+        ResourceKey<DimensionType> dimensionTypeId = world.dimensionTypeRegistration().unwrapKey().orElseThrow();
         return dimensionTypeId == SURFACE_TYPE
             || dimensionTypeId == SURFACE_TYPE_BRIGHT;
     }

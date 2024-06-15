@@ -159,7 +159,7 @@ public class PlayerChunkLoading {
                 
                 if (sentNum.getValue() == 0) {
                     ++this.unacknowledgedBatches;
-                    connection.send(new ClientboundChunkBatchStartPacket());
+                    connection.send(ClientboundChunkBatchStartPacket.INSTANCE);
                 }
                 sentNum.increment();
                 
@@ -185,6 +185,7 @@ public class PlayerChunkLoading {
     /**
      * {@link PlayerChunkSender#sendChunk(ServerGamePacketListenerImpl, ServerLevel, LevelChunk)}
      */
+    @SuppressWarnings("JavadocReference")
     @IPVanillaCopy
     private static void sendChunkPacket(
         ServerGamePacketListenerImpl serverGamePacketListenerImpl,

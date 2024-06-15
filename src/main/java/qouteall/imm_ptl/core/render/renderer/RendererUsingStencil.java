@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.compat.IPPortingLibCompat;
@@ -47,7 +48,7 @@ public class RendererUsingStencil extends PortalRenderer {
     }
     
     @Override
-    public void onBeforeTranslucentRendering(PoseStack matrixStack) {
+    public void onBeforeTranslucentRendering(Matrix4f modelView) {
         doPortalRendering(matrixStack);
     }
     
@@ -80,12 +81,12 @@ public class RendererUsingStencil extends PortalRenderer {
     }
     
     @Override
-    public void onAfterTranslucentRendering(PoseStack matrixStack) {
+    public void onAfterTranslucentRendering(Matrix4f modelView) {
     
     }
     
     @Override
-    public void onHandRenderingEnded(PoseStack matrixStack) {
+    public void onHandRenderingEnded() {
         //nothing
     }
     

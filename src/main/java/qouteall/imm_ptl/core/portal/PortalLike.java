@@ -19,6 +19,8 @@ import java.util.UUID;
  * The PortalLike interface is introduced for the merge portal rendering optimization.
  * (A portal or a portal rendering group is a PortalLike)
  * You probably need to manipulate portal entities, not PortalLike
+ *
+ * TODO remove in 1.21
  */
 public interface PortalLike {
     @Deprecated

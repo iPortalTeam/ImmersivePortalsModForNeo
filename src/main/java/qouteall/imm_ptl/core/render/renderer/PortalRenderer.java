@@ -76,15 +76,15 @@ public abstract class PortalRenderer {
     
     public static final Minecraft client = Minecraft.getInstance();
     
-    public abstract void onBeforeTranslucentRendering(PoseStack matrixStack);
+    public abstract void onBeforeTranslucentRendering(Matrix4f modelView);
     
-    public abstract void onAfterTranslucentRendering(PoseStack matrixStack);
-    
-    // will be called when rendering portal
-    public abstract void onHandRenderingEnded(PoseStack matrixStack);
+    public abstract void onAfterTranslucentRendering(Matrix4f modelView);
     
     // will be called when rendering portal
-    public void onBeforeHandRendering(PoseStack matrixStack) {}
+    public abstract void onHandRenderingEnded();
+    
+    // will be called when rendering portal
+    public void onBeforeHandRendering(Matrix4f modelView) {}
     
     // this will NOT be called when rendering portal
     public abstract void prepareRendering();
@@ -99,10 +99,10 @@ public abstract class PortalRenderer {
     // this will also be called in outer world rendering
     public abstract boolean replaceFrameBufferClearing();
     
-    protected List<PortalRenderable> getPortalsToRender(PoseStack matrixStack) {
+    protected List<PortalRenderable> getPortalsToRender(Matrix4f modelView) {
         Supplier<Frustum> frustumSupplier = Helper.cached(() -> {
             Frustum frustum = new Frustum(
-                matrixStack.last().pose(),
+                modelView,
                 RenderSystem.getProjectionMatrix()
             );
             
@@ -114,7 +114,9 @@ public abstract class PortalRenderer {
         
         ObjectArrayList<PortalRenderable> renderables = new ObjectArrayList<>();
         
-        List<Portal> globalPortals = GlobalPortalStorage.getGlobalPortals(client.level);
+        ClientLevel world = client.level;
+        assert world != null;
+        List<Portal> globalPortals = GlobalPortalStorage.getGlobalPortals(world);
         for (Portal globalPortal : globalPortals) {
             if (!shouldSkipRenderingPortal(globalPortal, frustumSupplier)) {
                 renderables.add(globalPortal);
@@ -124,9 +126,8 @@ public abstract class PortalRenderer {
         Object2ObjectOpenHashMap<PortalGroup, PortalGroupToRender> groupToRenderable =
             new Object2ObjectOpenHashMap<>();
         
-        client.level.entitiesForRendering().forEach(e -> {
-            if (e instanceof Portal) {
-                Portal portal = (Portal) e;
+        world.entitiesForRendering().forEach(e -> {
+            if (e instanceof Portal portal) {
                 if (!shouldSkipRenderingPortal(portal, frustumSupplier)) {
                     PortalLike renderingDelegate = portal.getRenderingDelegate();
                     

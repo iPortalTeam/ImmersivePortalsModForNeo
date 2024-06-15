@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.peripheral.dim_stack;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
@@ -38,7 +39,6 @@ public class DimListWidget extends AbstractSelectionList<DimEntryWidget> {
         this.parent = parent;
         this.type = type;
         this.draggingCallback = draggingCallback;
-        setRenderBackground(false);
     }
     
     @Override
@@ -80,5 +80,10 @@ public class DimListWidget extends AbstractSelectionList<DimEntryWidget> {
     @Override
     protected int getScrollbarPosition() {
         return (width - ROW_WIDTH) / 2 + ROW_WIDTH;
+    }
+    
+    @Override
+    protected void renderListBackground(GuiGraphics guiGraphics) {
+        // don't render background
     }
 }

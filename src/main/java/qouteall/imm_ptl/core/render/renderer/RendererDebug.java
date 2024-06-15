@@ -2,9 +2,9 @@ package qouteall.imm_ptl.core.render.renderer;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.render.PortalRenderable;
@@ -17,17 +17,17 @@ import java.util.List;
 
 public class RendererDebug extends PortalRenderer {
     @Override
-    public void onBeforeTranslucentRendering(PoseStack matrixStack) {
-        renderPortals(matrixStack);
+    public void onBeforeTranslucentRendering(Matrix4f modelView) {
+        renderPortals(modelView);
     }
     
     @Override
-    public void onAfterTranslucentRendering(PoseStack matrixStack) {
+    public void onAfterTranslucentRendering(Matrix4f modelView) {
     
     }
     
     @Override
-    public void onHandRenderingEnded(PoseStack matrixStack) {
+    public void onHandRenderingEnded() {
     
     }
     
@@ -51,12 +51,12 @@ public class RendererDebug extends PortalRenderer {
         return false;
     }
     
-    protected void doRenderPortal(PortalRenderable portal, PoseStack matrixStack) {
+    protected void doRenderPortal(PortalRenderable portal, Matrix4f modelView) {
         if (RenderStates.getRenderedPortalNum() != 0) {
             return;
         }
         
-        if (!testShouldRenderPortal(portal, matrixStack)) {
+        if (!testShouldRenderPortal(portal, modelView)) {
             return;
         }
     
@@ -77,23 +77,23 @@ public class RendererDebug extends PortalRenderer {
     
     private boolean testShouldRenderPortal(
         PortalRenderable portal,
-        PoseStack matrixStack
+        Matrix4f modelView
     ) {
         return QueryManager.renderAndGetDoesAnySamplePass(() -> {
             ViewAreaRenderer.renderPortalArea(
                 portal, Vec3.ZERO,
-                matrixStack.last().pose(),
+                modelView,
                 RenderSystem.getProjectionMatrix(),
                 true, true,
                 true, true);
         });
     }
     
-    protected void renderPortals(PoseStack matrixStack) {
-        List<PortalRenderable> portalsToRender = getPortalsToRender(matrixStack);
+    protected void renderPortals(Matrix4f modelView) {
+        List<PortalRenderable> portalsToRender = getPortalsToRender(modelView);
     
         for (PortalRenderable portal : portalsToRender) {
-            doRenderPortal(portal, matrixStack);
+            doRenderPortal(portal, modelView);
         }
     }
 }

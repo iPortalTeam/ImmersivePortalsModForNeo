@@ -1,5 +1,6 @@
 package qouteall.imm_ptl.core.mixin.client.render;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -139,14 +140,11 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void onAfterCutoutRendering(
-        PoseStack matrices, float tickDelta, long limitTime,
-        boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer,
-        LightTexture lightmapTextureManager, Matrix4f matrix4f,
-        CallbackInfo ci
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
 //        IPCGlobal.renderer.onBeforeTranslucentRendering(matrices);
         
-        CrossPortalEntityRenderer.onBeginRenderingEntitiesAndBlockEntities(matrices);
+        CrossPortalEntityRenderer.onBeginRenderingEntitiesAndBlockEntities(modelView);
     }
     
     @Inject(
@@ -157,22 +155,14 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void onMyBeforeTranslucentRendering(
-        PoseStack matrices,
-        float tickDelta,
-        long limitTime,
-        boolean renderBlockOutline,
-        Camera camera,
-        GameRenderer gameRenderer,
-        LightTexture lightmapTextureManager,
-        Matrix4f matrix4f,
-        CallbackInfo ci
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
-        IPCGlobal.renderer.onBeforeTranslucentRendering(matrices);
+        IPCGlobal.renderer.onBeforeTranslucentRendering(modelView);
         
         MyGameRenderer.updateFogColor();
         MyGameRenderer.resetFogState();
         
-        MyGameRenderer.resetDiffuseLighting(matrices);
+        MyGameRenderer.resetDiffuseLighting();
         
         FrontClipping.disableClipping();
     }
@@ -187,7 +177,11 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
             shift = At.Shift.AFTER
         )
     )
-    private void onEndRenderingEntities(PoseStack poseStack, float partialTick, long finishNanoTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f projectionMatrix, CallbackInfo ci) {
+    private void onEndRenderingEntities(
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer,
+        LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2,
+        CallbackInfo ci, @Local PoseStack poseStack
+    ) {
         CrossPortalEntityRenderer.onEndRenderingEntitiesAndBlockEntities(poseStack);
     }
     
@@ -196,40 +190,28 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         at = @At("RETURN")
     )
     private void onAfterTranslucentRendering(
-        PoseStack matrices,
-        float tickDelta,
-        long limitTime,
-        boolean renderBlockOutline,
-        Camera camera,
-        GameRenderer gameRenderer,
-        LightTexture lightmapTextureManager,
-        Matrix4f matrix4f,
-        CallbackInfo ci
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
+        IPCGlobal.renderer.onAfterTranslucentRendering(modelView);
         
-        IPCGlobal.renderer.onAfterTranslucentRendering(matrices);
-        
-        //make hand rendering normal
-        Lighting.setupLevel(matrices.last().pose());
+        // make hand rendering normal
+        Lighting.setupLevel();
     }
     
     @Inject(
         method = "renderLevel",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderSectionLayer(Lnet/minecraft/client/renderer/RenderType;Lcom/mojang/blaze3d/vertex/PoseStack;DDDLorg/joml/Matrix4f;)V"
+            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderSectionLayer(Lnet/minecraft/client/renderer/RenderType;DDDLorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V"
         )
     )
     private void onBeforeRenderingLayer(
-        PoseStack matrices, float tickDelta, long limitTime,
-        boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer,
-        LightTexture lightmapTextureManager, Matrix4f matrix4f,
-        CallbackInfo ci
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.setupInnerClipping(
                 PortalRendering.getActiveClippingPlane(),
-                matrices.last().pose(),
+                modelView,
                 -FrontClipping.ADJUSTMENT
                 // move the clipping plane a little back, to make world wrapping portal not z-fight
             );
@@ -248,15 +230,12 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         method = "renderLevel",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderSectionLayer(Lnet/minecraft/client/renderer/RenderType;Lcom/mojang/blaze3d/vertex/PoseStack;DDDLorg/joml/Matrix4f;)V",
+            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderSectionLayer(Lnet/minecraft/client/renderer/RenderType;DDDLorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V",
             shift = At.Shift.AFTER
         )
     )
     private void onAfterRenderingLayer(
-        PoseStack matrices, float tickDelta, long limitTime,
-        boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer,
-        LightTexture lightmapTextureManager, Matrix4f matrix4f,
-        CallbackInfo ci
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.disableClipping();
@@ -418,20 +397,12 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void beforeRenderingWeather(
-        PoseStack matrices,
-        float tickDelta,
-        long limitTime,
-        boolean renderBlockOutline,
-        Camera camera,
-        GameRenderer gameRenderer,
-        LightTexture lightmapTextureManager,
-        Matrix4f matrix4f,
-        CallbackInfo ci
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.setupInnerClipping(
                 PortalRendering.getActiveClippingPlane(),
-                matrices.last().pose(), 0
+                modelView, 0
             );
             RenderStates.isRenderingPortalWeather = true;
         }
@@ -446,15 +417,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void afterRenderingWeather(
-        PoseStack matrices,
-        float tickDelta,
-        long limitTime,
-        boolean renderBlockOutline,
-        Camera camera,
-        GameRenderer gameRenderer,
-        LightTexture lightmapTextureManager,
-        Matrix4f matrix4f,
-        CallbackInfo ci
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.disableClipping();

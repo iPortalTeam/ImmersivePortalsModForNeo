@@ -11,7 +11,6 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.FogRenderer;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.PostChain;
@@ -283,7 +282,7 @@ public class MyGameRenderer {
     }
     
     /**
-     * {@link LevelRenderer#renderLevel(PoseStack, float, long, boolean, Camera, GameRenderer, LightTexture, Matrix4f)}
+     * {@link LevelRenderer#renderLevel}
      */
     @IPVanillaCopy
     public static void resetFogState() {
@@ -315,15 +314,17 @@ public class MyGameRenderer {
     }
     
     /**
-     * {@link LevelRenderer#renderLevel(PoseStack, float, long, boolean, Camera, GameRenderer, LightTexture, Matrix4f)}
+     * {@link LevelRenderer#renderLevel}
      */
     @IPVanillaCopy
-    public static void resetDiffuseLighting(PoseStack matrixStack) {
-        if (client.level.effects().constantAmbientLight()) {
-            Lighting.setupNetherLevel(matrixStack.last().pose());
+    public static void resetDiffuseLighting() {
+        ClientLevel world = client.level;
+        assert world != null;
+        if (world.effects().constantAmbientLight()) {
+            Lighting.setupNetherLevel();
         }
         else {
-            Lighting.setupLevel(matrixStack.last().pose());
+            Lighting.setupLevel();
         }
     }
     
