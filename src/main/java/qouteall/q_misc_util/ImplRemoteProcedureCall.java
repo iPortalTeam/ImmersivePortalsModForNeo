@@ -10,7 +10,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import de.nick1st.q_misc_util.networking.ImplRPCPayload;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -42,6 +41,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+
+import static qouteall.q_misc_util.ImplRemoteProcedureCallClient.clientTellFailure;
 
 public class ImplRemoteProcedureCall {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -219,11 +220,12 @@ public class ImplRemoteProcedureCall {
     }
     
     //@OnlyIn(Dist.CLIENT)
-    private static void clientTellFailure() {
-        Minecraft.getInstance().gui.getChat().addMessage(Component.literal(
-            "The client failed to process a packet from server. See the log for details."
-        ).withStyle(ChatFormatting.RED));
-    }
+    // @Nick1st - Moved to client class
+//    private static void clientTellFailure() {
+//        Minecraft.getInstance().gui.getChat().addMessage(Component.literal(
+//            "The client failed to process a packet from server. See the log for details."
+//        ).withStyle(ChatFormatting.RED));
+//    }
 
     // @Nick1st split into two methods on Neo Port (serverReadPacket(), handleServerPayload())
 //    public static ImplRPCPayload serverReadPacketAndGetHandler(ServerPlayer player, FriendlyByteBuf buf) {
