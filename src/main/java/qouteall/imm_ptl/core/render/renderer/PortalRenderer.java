@@ -3,7 +3,6 @@ package qouteall.imm_ptl.core.render.renderer;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.fabricmc.fabric.api.event.Event;
@@ -345,7 +344,7 @@ public abstract class PortalRenderer {
         return portal.hasScaling() && portal.isFuseView();
     }
     
-    public void onBeginIrisTranslucentRendering(PoseStack matrixStack) {}
+    public void onBeginIrisTranslucentRendering(Matrix4f modelView) {}
     
     private static boolean fabulousWarned = false;
     

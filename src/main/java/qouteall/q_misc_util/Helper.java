@@ -609,11 +609,6 @@ public class Helper {
         LOGGER.error(str);
     }
     
-    @Deprecated
-    public static void dbg(Object str) {
-        LOGGER.debug(str);
-    }
-    
     public static Vec3[] eightVerticesOf(AABB box) {
         return new Vec3[]{
             new Vec3(box.minX, box.minY, box.minZ),

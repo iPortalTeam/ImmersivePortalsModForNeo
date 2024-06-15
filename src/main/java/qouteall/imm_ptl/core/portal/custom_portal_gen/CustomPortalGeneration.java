@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.ListCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -43,15 +42,15 @@ public class CustomPortalGeneration {
     );
     
     public static final Codec<List<ResourceKey<Level>>> DIMENSION_LIST_CODEC =
-        new ListCodec<>(Level.RESOURCE_KEY_CODEC);
+        Level.RESOURCE_KEY_CODEC.listOf();
     
     public static final Codec<List<String>> STRING_LIST_CODEC =
-        new ListCodec<>(Codec.STRING);
+        Codec.STRING.listOf();
     
     public static final Codec<List<List<String>>> STRING_LIST_LIST_CODEC =
-        new ListCodec<>(STRING_LIST_CODEC);
+        STRING_LIST_CODEC.listOf();
     
-    public static final ResourceKey<Registry<Codec<CustomPortalGeneration>>> SCHEMA_KEY = ResourceKey.createRegistryKey(
+    public static final ResourceKey<Registry<MapCodec<CustomPortalGeneration>>> SCHEMA_KEY = ResourceKey.createRegistryKey(
         new ResourceLocation("imm_ptl:custom_portal_gen_schema")
     );
     
@@ -63,15 +62,15 @@ public class CustomPortalGeneration {
     public static final ResourceKey<Registry<CustomPortalGeneration>> LEGACY_REGISTRY_KEY =
         ResourceKey.createRegistryKey(new ResourceLocation("custom_portal_generation"));
     
-    public static final Codec<CustomPortalGeneration> codecV1 =
-        RecordCodecBuilder.create(instance -> {
+    public static final MapCodec<CustomPortalGeneration> codecV1 =
+        RecordCodecBuilder.mapCodec(instance -> {
             return instance.group(
                 DIMENSION_LIST_CODEC.fieldOf("from").forGetter(o -> o.fromDimensions),
                 Level.RESOURCE_KEY_CODEC.fieldOf("to").forGetter(o -> o.toDimension),
                 Codec.INT.optionalFieldOf("space_ratio_from", 1).forGetter(o -> o.spaceRatioFrom),
                 Codec.INT.optionalFieldOf("space_ratio_to", 1).forGetter(o -> o.spaceRatioTo),
                 Codec.BOOL.optionalFieldOf("reversible", true).forGetter(o -> o.reversible),
-                PortalGenForm.codec.fieldOf("form").forGetter(o -> o.form),
+                PortalGenForm.GENERAL_CODEC.fieldOf("form").forGetter(o -> o.form),
                 PortalGenTrigger.triggerCodec.fieldOf("trigger").forGetter(o -> o.trigger),
                 STRING_LIST_CODEC.optionalFieldOf("post_invoke_commands", Collections.emptyList())
                     .forGetter(o -> o.postInvokeCommands),
@@ -80,9 +79,9 @@ public class CustomPortalGeneration {
             ).apply(instance, instance.stable(CustomPortalGeneration::new));
         });
     
-    public static MappedRegistry<Codec<CustomPortalGeneration>> schemaRegistry =
+    private static final MappedRegistry<MapCodec<CustomPortalGeneration>> SCHEMA_REGISTRY =
         Util.make(() -> {
-            MappedRegistry<Codec<CustomPortalGeneration>> registry = new MappedRegistry<>(
+            MappedRegistry<MapCodec<CustomPortalGeneration>> registry = new MappedRegistry<>(
                 SCHEMA_KEY, Lifecycle.stable()
             );
             Registry.register(
@@ -92,7 +91,7 @@ public class CustomPortalGeneration {
         });
     
     public static final MapCodec<CustomPortalGeneration> MAP_CODEC =
-        schemaRegistry.byNameCodec().dispatchMap(
+        SCHEMA_REGISTRY.byNameCodec().dispatchMap(
             "schema_version", e -> codecV1, Function.identity()
         );
     

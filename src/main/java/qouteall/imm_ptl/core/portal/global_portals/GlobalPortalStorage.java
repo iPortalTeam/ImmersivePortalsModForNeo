@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -93,7 +94,7 @@ public class GlobalPortalStorage extends SavedData {
                     Helper.log("Global portal storage initialized " + world.dimension().location());
                     return new GlobalPortalStorage(world);
                 },
-                (nbt) -> {
+                (nbt, holderLookup) -> {
                     GlobalPortalStorage globalPortalStorage = new GlobalPortalStorage(world);
                     globalPortalStorage.fromNbt(nbt);
                     return globalPortalStorage;
@@ -256,7 +257,7 @@ public class GlobalPortalStorage extends SavedData {
     }
     
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
         if (data == null) {
             return tag;
         }

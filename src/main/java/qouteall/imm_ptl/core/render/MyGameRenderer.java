@@ -2,7 +2,6 @@ package qouteall.imm_ptl.core.render;
 
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -227,8 +226,7 @@ public class MyGameRenderer {
             client.getProfiler().push("render_portal_content");
             client.gameRenderer.renderLevel(
                 tickDelta,
-                Util.getNanos(),
-                new PoseStack()
+                Util.getNanos()
             );
             client.getProfiler().pop();
         });

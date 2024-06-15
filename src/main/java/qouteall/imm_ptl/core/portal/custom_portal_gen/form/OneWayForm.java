@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.portal.custom_portal_gen.form;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,7 +19,7 @@ import qouteall.imm_ptl.core.portal.nether_portal.GeneralBreakablePortal;
 import qouteall.imm_ptl.core.portal.nether_portal.NetherPortalGeneration;
 
 public class OneWayForm extends PortalGenForm {
-    public static final Codec<OneWayForm> codec = RecordCodecBuilder.create(instance -> {
+    public static final MapCodec<OneWayForm> CODEC = RecordCodecBuilder.mapCodec(instance -> {
         return instance.group(
             SimpleBlockPredicate.CODEC.fieldOf("frame_block").forGetter(o -> o.frameBlock),
             SimpleBlockPredicate.CODEC.fieldOf("area_block").forGetter(o -> o.areaBlock),
@@ -43,8 +44,8 @@ public class OneWayForm extends PortalGenForm {
     }
     
     @Override
-    public Codec<? extends PortalGenForm> getCodec() {
-        return codec;
+    public MapCodec<? extends PortalGenForm> getCodec() {
+        return CODEC;
     }
     
     @Override

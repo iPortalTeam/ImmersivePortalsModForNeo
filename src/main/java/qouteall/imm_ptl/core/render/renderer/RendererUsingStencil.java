@@ -2,7 +2,6 @@ package qouteall.imm_ptl.core.render.renderer;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
@@ -49,10 +48,10 @@ public class RendererUsingStencil extends PortalRenderer {
     
     @Override
     public void onBeforeTranslucentRendering(Matrix4f modelView) {
-        doPortalRendering(matrixStack);
+        doPortalRendering(modelView);
     }
     
-    protected void doPortalRendering(PoseStack matrixStack) {
+    protected void doPortalRendering(Matrix4f modelView) {
         // NOTE do not use glDisable(GL_DEPTH_TEST),
         // use GlStateManager.disableDepthTest() instead
         // because GlStateManager will cache its state.
@@ -61,7 +60,7 @@ public class RendererUsingStencil extends PortalRenderer {
         RenderSystem.depthMask(true);
         
         client.getProfiler().popPush("render_portal_total");
-        renderPortals(matrixStack);
+        renderPortals(modelView);
         if (PortalRendering.isRendering()) {
             setStencilStateForWorldRendering();
         }
@@ -72,11 +71,11 @@ public class RendererUsingStencil extends PortalRenderer {
         }
     }
     
-    protected void renderPortals(PoseStack matrixStack) {
-        List<PortalRenderable> portalsToRender = getPortalsToRender(matrixStack);
+    protected void renderPortals(Matrix4f modelView) {
+        List<PortalRenderable> portalsToRender = getPortalsToRender(modelView);
         
         for (PortalRenderable portal : portalsToRender) {
-            doRenderPortal(portal, matrixStack);
+            doRenderPortal(portal, modelView);
         }
     }
     
@@ -125,7 +124,7 @@ public class RendererUsingStencil extends PortalRenderer {
     
     protected void doRenderPortal(
         PortalRenderable portal,
-        PoseStack matrixStack
+        Matrix4f modelView
     ) {
         PortalLike portalLike = portal.getPortalLike();
         
@@ -138,7 +137,7 @@ public class RendererUsingStencil extends PortalRenderer {
         client.getProfiler().push("render_view_area");
         
         boolean anySamplePassed = PortalRenderInfo.renderAndDecideVisibility(portalLike, () -> {
-            renderPortalViewAreaToStencil(portal, matrixStack);
+            renderPortalViewAreaToStencil(portal, modelView);
         });
         
         client.getProfiler().pop();
@@ -166,7 +165,7 @@ public class RendererUsingStencil extends PortalRenderer {
         // pop portal layer before restoring depth, for clipping, see ViewAreaRenderer
         
         if (!portalLike.isFuseView()) {
-            restoreDepthOfPortalViewArea(portal, matrixStack, thisPortalStencilValue);
+            restoreDepthOfPortalViewArea(portal, modelView, thisPortalStencilValue);
         }
         
         clampStencilValue(outerPortalStencilValue);
@@ -178,7 +177,7 @@ public class RendererUsingStencil extends PortalRenderer {
     }
     
     private void renderPortalViewAreaToStencil(
-        PortalRenderable portal, PoseStack matrixStack
+        PortalRenderable portal, Matrix4f modelView
     ) {
         int outerPortalStencilValue = PortalRendering.getPortalLayer();
         
@@ -194,11 +193,11 @@ public class RendererUsingStencil extends PortalRenderer {
         GL11.glStencilMask(0xFF);
         
         // update it before pushing
-        FrontClipping.updateInnerClipping(matrixStack);
+        FrontClipping.updateInnerClipping(modelView);
         
         ViewAreaRenderer.renderPortalArea(
             portal, Vec3.ZERO,
-            matrixStack.last().pose(),
+            modelView,
             RenderSystem.getProjectionMatrix(),
             true, true,
             true, true
@@ -234,7 +233,7 @@ public class RendererUsingStencil extends PortalRenderer {
     }
     
     protected void restoreDepthOfPortalViewArea(
-        PortalRenderable portal, PoseStack matrixStack,
+        PortalRenderable portal, Matrix4f modelView,
         int portalStencilValue
     ) {
         setStencilLimitation(portalStencilValue);
@@ -245,7 +244,7 @@ public class RendererUsingStencil extends PortalRenderer {
         
         ViewAreaRenderer.renderPortalArea(
             portal, Vec3.ZERO,
-            matrixStack.last().pose(),
+            modelView,
             RenderSystem.getProjectionMatrix(),
             false, false,
             true,

@@ -5,8 +5,6 @@ import org.joml.Matrix4f;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.render.PortalRenderable;
 
-import java.util.List;
-
 public class RendererDummy extends PortalRenderer {
     @Override
     public boolean replaceFrameBufferClearing() {
@@ -48,13 +46,5 @@ public class RendererDummy extends PortalRenderer {
     @Override
     public void renderPortalInEntityRenderer(Portal portal) {
     
-    }
-    
-    protected void renderPortals(PoseStack matrixStack) {
-        List<PortalRenderable> portalsToRender = getPortalsToRender(matrixStack);
-    
-        for (PortalRenderable portal : portalsToRender) {
-            doRenderPortal(portal, matrixStack);
-        }
     }
 }

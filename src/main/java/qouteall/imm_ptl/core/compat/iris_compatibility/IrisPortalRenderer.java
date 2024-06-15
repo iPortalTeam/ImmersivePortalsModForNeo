@@ -3,7 +3,6 @@ package qouteall.imm_ptl.core.compat.iris_compatibility;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.Validate;
 import org.joml.Matrix4f;
@@ -113,12 +112,10 @@ public class IrisPortalRenderer extends PortalRenderer {
     
     @Override
     public void onBeforeHandRendering(Matrix4f modelView) {
-        PoseStack poseStack = new PoseStack();
-        poseStack.mulPose(modelView);
-        doMainRenderings(poseStack);
+        doMainRenderings(modelView);
     }
     
-    private void doMainRenderings(PoseStack matrixStack) {
+    private void doMainRenderings(Matrix4f modelView) {
         CHelper.checkGlError();
         
         RenderTarget mcFrameBuffer = client.getMainRenderTarget();
@@ -162,7 +159,7 @@ public class IrisPortalRenderer extends PortalRenderer {
             mcFrameBuffer.bindWrite(false);
         }
         
-        renderPortals(matrixStack);
+        renderPortals(modelView);
         
         if (portalLayer == 0) {
             finish();
@@ -233,7 +230,7 @@ public class IrisPortalRenderer extends PortalRenderer {
         CHelper.checkGlError();
     }
     
-    protected void doRenderPortal(PortalRenderable portal, PoseStack matrixStack) {
+    protected void doRenderPortal(PortalRenderable portal, Matrix4f modelView) {
         nextFramePortalRenderingNeeded = true;
         
         if (!portalRenderingNeeded) {
@@ -244,7 +241,7 @@ public class IrisPortalRenderer extends PortalRenderer {
 //        client.gameRenderer.loadProjectionMatrix(RenderStates.basicProjectionMatrix);
         
         //write to deferred buffer
-        if (!tryRenderViewAreaInDeferredBufferAndIncreaseStencil(portal, matrixStack)) {
+        if (!tryRenderViewAreaInDeferredBufferAndIncreaseStencil(portal, modelView)) {
             return;
         }
         
@@ -283,7 +280,7 @@ public class IrisPortalRenderer extends PortalRenderer {
     }
     
     private boolean tryRenderViewAreaInDeferredBufferAndIncreaseStencil(
-        PortalRenderable portal, PoseStack matrixStack
+        PortalRenderable portal, Matrix4f modelView
     ) {
         
         int portalLayer = PortalRendering.getPortalLayer();
@@ -301,7 +298,7 @@ public class IrisPortalRenderer extends PortalRenderer {
         boolean result = PortalRenderInfo.renderAndDecideVisibility(portal.getPortalLike(), () -> {
             ViewAreaRenderer.renderPortalArea(
                 portal, Vec3.ZERO,
-                matrixStack.last().pose(),
+                modelView,
                 RenderSystem.getProjectionMatrix(),
                 true, true, true, true
             );
@@ -327,11 +324,11 @@ public class IrisPortalRenderer extends PortalRenderer {
     
     }
     
-    protected void renderPortals(PoseStack matrixStack) {
-        List<PortalRenderable> portalsToRender = getPortalsToRender(matrixStack);
+    protected void renderPortals(Matrix4f modelView) {
+        List<PortalRenderable> portalsToRender = getPortalsToRender(modelView);
     
         for (PortalRenderable portal : portalsToRender) {
-            doRenderPortal(portal, matrixStack);
+            doRenderPortal(portal, modelView);
         }
     }
 }

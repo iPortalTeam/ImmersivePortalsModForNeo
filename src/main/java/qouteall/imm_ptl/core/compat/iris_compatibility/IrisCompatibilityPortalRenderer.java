@@ -2,7 +2,6 @@ package qouteall.imm_ptl.core.compat.iris_compatibility;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
@@ -31,7 +30,9 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
         new IrisCompatibilityPortalRenderer(true);
     
     private SecondaryFrameBuffer deferredBuffer = new SecondaryFrameBuffer();
-    private PoseStack modelView = new PoseStack();
+    
+    // TODO figure out why this field existed in old versions
+    private Matrix4f passingModelView = new Matrix4f();
     
     public boolean isDebugMode;
     
@@ -52,10 +53,7 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
             return;
         }
         
-        modelView = new PoseStack();
-        modelView.pushPose();
-        modelView.last().pose().mul(matrixStack.last().pose());
-        modelView.last().normal().mul(matrixStack.last().normal());
+        passingModelView = modelView;
         
         GL11.glDisable(GL_STENCIL_TEST);
     }
@@ -85,13 +83,13 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
         client.getMainRenderTarget().bindWrite(false);
     }
     
-    protected void doRenderPortal(PortalRenderable portal, PoseStack matrixStack) {
+    protected void doRenderPortal(PortalRenderable portal, Matrix4f modelView) {
         if (PortalRendering.isRendering()) {
             // this renderer only supports one-layer portal
             return;
         }
         
-        if (!testShouldRenderPortal(portal, matrixStack)) {
+        if (!testShouldRenderPortal(portal, modelView)) {
             return;
         }
         
@@ -111,7 +109,7 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
             MyRenderHelper.drawPortalAreaWithFramebuffer(
                 portal,
                 client.getMainRenderTarget(),
-                matrixStack.last().pose(),
+                modelView,
                 RenderSystem.getProjectionMatrix()
             );
         }
@@ -145,7 +143,7 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
     
     }
     
-    private boolean testShouldRenderPortal(PortalRenderable portal, PoseStack matrixStack) {
+    private boolean testShouldRenderPortal(PortalRenderable portal, Matrix4f modelView) {
         
         //reset projection matrix
 //        client.gameRenderer.loadProjectionMatrix(RenderStates.basicProjectionMatrix);
@@ -156,7 +154,7 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
             
             ViewAreaRenderer.renderPortalArea(
                 portal, Vec3.ZERO,
-                matrixStack.last().pose(),
+                modelView,
                 RenderSystem.getProjectionMatrix(),
                 true, false, false, true
             );
@@ -191,9 +189,7 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
         
         CHelper.checkGlError();
         
-        PoseStack poseStack = new PoseStack();
-        poseStack.mulPose(modelView);
-        renderPortals(poseStack);
+        renderPortals(passingModelView);
         
         RenderTarget mainFrameBuffer = client.getMainRenderTarget();
         mainFrameBuffer.bindWrite(true);
@@ -210,11 +206,11 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
     
     }
     
-    protected void renderPortals(PoseStack matrixStack) {
-        List<PortalRenderable> portalsToRender = getPortalsToRender(matrixStack);
+    protected void renderPortals(Matrix4f modelView) {
+        List<PortalRenderable> portalsToRender = getPortalsToRender(modelView);
         
         for (PortalRenderable portal : portalsToRender) {
-            doRenderPortal(portal, matrixStack);
+            doRenderPortal(portal, modelView);
         }
     }
 }

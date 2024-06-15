@@ -1,6 +1,5 @@
 package qouteall.imm_ptl.core.mixin.client.render;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -17,11 +16,8 @@ public class MixinLevelRenderer_BeforeIris {
     // inject it after Iris, run before Iris
     @Inject(method = "renderLevel", at = @At(value = "CONSTANT", args = "stringValue=translucent"))
     private void iris$beginTranslucents(
-        PoseStack poseStack, float tickDelta, long limitTime,
-        boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer,
-        LightTexture lightTexture, Matrix4f projection,
-        CallbackInfo ci
+        float partialTick, long nanoTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f frustrumMatrix, CallbackInfo ci
     ) {
-        IPCGlobal.renderer.onBeginIrisTranslucentRendering(poseStack);
+        IPCGlobal.renderer.onBeginIrisTranslucentRendering(modelView);
     }
 }

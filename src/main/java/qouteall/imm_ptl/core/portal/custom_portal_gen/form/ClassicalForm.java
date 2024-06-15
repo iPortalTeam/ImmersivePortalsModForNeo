@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.portal.custom_portal_gen.form;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
@@ -12,7 +13,7 @@ import qouteall.imm_ptl.core.portal.nether_portal.NetherPortalGeneration;
 import java.util.function.Predicate;
 
 public class ClassicalForm extends NetherPortalLikeForm {
-    public static final Codec<ClassicalForm> codec = RecordCodecBuilder.create(instance -> {
+    public static final MapCodec<ClassicalForm> CODEC = RecordCodecBuilder.mapCodec(instance -> {
         return instance.group(
             BuiltInRegistries.BLOCK.byNameCodec().fieldOf("from_frame_block").forGetter(o -> o.fromFrameBlock),
             BuiltInRegistries.BLOCK.byNameCodec().fieldOf("area_block").forGetter(o -> o.areaBlock),
@@ -35,8 +36,8 @@ public class ClassicalForm extends NetherPortalLikeForm {
     }
     
     @Override
-    public Codec<? extends PortalGenForm> getCodec() {
-        return codec;
+    public MapCodec<? extends PortalGenForm> getCodec() {
+        return CODEC;
     }
     
     @Override
