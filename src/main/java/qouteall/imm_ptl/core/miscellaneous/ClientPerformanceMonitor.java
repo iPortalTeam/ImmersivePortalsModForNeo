@@ -6,6 +6,7 @@ import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.chunk_loading.PerformanceLevel;
 import qouteall.imm_ptl.core.commands.PortalDebugCommands;
 import qouteall.q_misc_util.api.McRemoteProcedureCall;
+import qouteall.q_misc_util.api.McRemoteProcedureCallClient;
 
 import java.util.ArrayDeque;
 
@@ -87,7 +88,7 @@ public class ClientPerformanceMonitor {
             level = PerformanceLevel.getClientPerformanceLevel(averageFps, averageFreeMemoryMB);
         }
         
-        McRemoteProcedureCall.tellServerToInvoke(
+        McRemoteProcedureCallClient.tellServerToInvoke(
             "qouteall.imm_ptl.core.chunk_loading.ImmPtlChunkTracking.RemoteCallables.acceptClientPerformanceInfo",
             level
         );

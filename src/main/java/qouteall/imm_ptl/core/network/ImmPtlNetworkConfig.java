@@ -272,9 +272,7 @@ public class ImmPtlNetworkConfig {
     
     // should be called from client
     public static boolean doesServerHaveImmPtl() {
-        // TODO @Nick1st - This must be changed again!
-        return true;
-        //return serverVersion != null;
+        return serverVersion != null;
     }
     
     private static void warnServerMissingImmPtl() {

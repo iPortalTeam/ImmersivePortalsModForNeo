@@ -23,6 +23,7 @@ import qouteall.imm_ptl.core.render.GuiPortalRendering;
 import qouteall.imm_ptl.core.render.MyRenderHelper;
 import qouteall.imm_ptl.core.render.context_management.WorldRenderInfo;
 import qouteall.q_misc_util.api.McRemoteProcedureCall;
+import qouteall.q_misc_util.api.McRemoteProcedureCallClient;
 import qouteall.q_misc_util.my_util.DQuaternion;
 
 import java.util.WeakHashMap;
@@ -136,7 +137,7 @@ public class ExampleGuiPortalRendering {
             super.onClose();
             
             // Tell the server to remove the additional chunk loader
-            McRemoteProcedureCall.tellServerToInvoke(
+            McRemoteProcedureCallClient.tellServerToInvoke(
                 "qouteall.imm_ptl.core.api.example.ExampleGuiPortalRendering.RemoteCallables.serverRemoveChunkLoader"
             );
         }

@@ -24,6 +24,7 @@ import qouteall.imm_ptl.core.render.context_management.RenderStates;
 import qouteall.q_misc_util.CustomTextOverlay;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.api.McRemoteProcedureCall;
+import qouteall.q_misc_util.api.McRemoteProcedureCallClient;
 import qouteall.q_misc_util.my_util.Circle;
 import qouteall.q_misc_util.my_util.Plane;
 import qouteall.q_misc_util.my_util.WithDim;
@@ -191,7 +192,7 @@ public class ClientPortalWandPortalCreation {
             return;
         }
         
-        McRemoteProcedureCall.tellServerToInvoke(
+        McRemoteProcedureCallClient.tellServerToInvoke(
             "qouteall.imm_ptl.peripheral.wand.PortalWandInteraction.RemoteCallables.finishPortalCreation",
             protoPortal
         );

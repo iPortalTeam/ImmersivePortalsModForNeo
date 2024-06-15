@@ -66,6 +66,7 @@ import qouteall.imm_ptl.core.teleportation.ClientTeleportationManager;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.MiscHelper;
 import qouteall.q_misc_util.api.McRemoteProcedureCall;
+import qouteall.q_misc_util.api.McRemoteProcedureCallClient;
 import qouteall.q_misc_util.my_util.MyTaskList;
 
 import java.lang.ref.WeakReference;
@@ -725,7 +726,7 @@ public class ClientDebugCommand {
         builder.then(Commands
             .literal("test_invalid_rpc")
             .executes(context -> {
-                McRemoteProcedureCall.tellServerToInvoke(
+                McRemoteProcedureCallClient.tellServerToInvoke(
                     "aaa.bbb.WrongClassRemoteCallable.method"
                 );
                 return 0;
@@ -905,7 +906,7 @@ public class ClientDebugCommand {
         Minecraft.getInstance().execute(() -> {
             CompoundTag compoundTag = new CompoundTag();
             compoundTag.put("test", IntTag.valueOf(7));
-            McRemoteProcedureCall.tellServerToInvoke(
+            McRemoteProcedureCallClient.tellServerToInvoke(
                 "qouteall.imm_ptl.core.commands.ClientDebugCommand.TestRemoteCallable.clientToServer",
                 new UUID(3, 3),
                 Blocks.ACACIA_PLANKS,

@@ -33,6 +33,7 @@ import qouteall.imm_ptl.core.render.context_management.RenderStates;
 import qouteall.q_misc_util.CustomTextOverlay;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.api.McRemoteProcedureCall;
+import qouteall.q_misc_util.api.McRemoteProcedureCallClient;
 import qouteall.q_misc_util.my_util.Circle;
 import qouteall.q_misc_util.my_util.DQuaternion;
 import qouteall.q_misc_util.my_util.Plane;
@@ -695,13 +696,13 @@ public class ClientPortalWandPortalDrag {
         renderedPlane.clearTarget();
         renderedRect.clearTarget();
         
-        McRemoteProcedureCall.tellServerToInvoke(
+        McRemoteProcedureCallClient.tellServerToInvoke(
             "qouteall.imm_ptl.peripheral.wand.PortalWandInteraction.RemoteCallables.finishDragging"
         );
     }
     
     private static void undoDragging() {
-        McRemoteProcedureCall.tellServerToInvoke(
+        McRemoteProcedureCallClient.tellServerToInvoke(
             "qouteall.imm_ptl.peripheral.wand.PortalWandInteraction.RemoteCallables.undoDrag"
         );
         
@@ -741,7 +742,7 @@ public class ClientPortalWandPortalDrag {
         
         // only send request for valid draggings (the server side will also check)
         if (isValid) {
-            McRemoteProcedureCall.tellServerToInvoke(
+            McRemoteProcedureCallClient.tellServerToInvoke(
                 "qouteall.imm_ptl.peripheral.wand.PortalWandInteraction.RemoteCallables.requestApplyDrag",
                 selectedPortalId, cursorPos, draggingInfo
             );

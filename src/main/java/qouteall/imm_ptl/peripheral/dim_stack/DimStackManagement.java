@@ -25,6 +25,7 @@ import qouteall.imm_ptl.core.portal.global_portals.GlobalPortalStorage;
 import qouteall.imm_ptl.core.portal.global_portals.VerticalConnectingPortal;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.api.McRemoteProcedureCall;
+import qouteall.q_misc_util.api.McRemoteProcedureCallClient;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -194,13 +195,13 @@ public class DimStackManagement {
                 () -> dimensionList,
                 dimStackInfo -> {
                     if (dimStackInfo != null) {
-                        McRemoteProcedureCall.tellServerToInvoke(
+                        McRemoteProcedureCallClient.tellServerToInvoke(
                             "qouteall.imm_ptl.peripheral.dim_stack.DimStackManagement.RemoteCallables.serverSetupDimStack",
                             dimStackInfo
                         );
                     }
                     else {
-                        McRemoteProcedureCall.tellServerToInvoke(
+                        McRemoteProcedureCallClient.tellServerToInvoke(
                             "qouteall.imm_ptl.peripheral.dim_stack.DimStackManagement.RemoteCallables.serverRemoveDimStack"
                         );
                     }

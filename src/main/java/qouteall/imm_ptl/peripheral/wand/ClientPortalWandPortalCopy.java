@@ -28,6 +28,7 @@ import qouteall.imm_ptl.core.render.context_management.RenderStates;
 import qouteall.q_misc_util.CustomTextOverlay;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.api.McRemoteProcedureCall;
+import qouteall.q_misc_util.api.McRemoteProcedureCallClient;
 import qouteall.q_misc_util.my_util.AARotation;
 import qouteall.q_misc_util.my_util.DQuaternion;
 import qouteall.q_misc_util.my_util.RayTraceResult;
@@ -226,7 +227,7 @@ public class ClientPortalWandPortalCopy {
                         new PlacementRequirement(portal.getWidth(), portal.getHeight()),
                         true
                     );
-                    McRemoteProcedureCall.tellServerToInvoke(
+                    McRemoteProcedureCallClient.tellServerToInvoke(
                         "qouteall.imm_ptl.peripheral.wand.PortalWandInteraction.RemoteCallables.copyCutPortal",
                         statusSelectPortal.selectedPortalId,
                         true
@@ -236,7 +237,7 @@ public class ClientPortalWandPortalCopy {
         }
         else if (status instanceof Status_PlacingPortal statusPlacingPortal) {
             // discard
-            McRemoteProcedureCall.tellServerToInvoke(
+            McRemoteProcedureCallClient.tellServerToInvoke(
                 "qouteall.imm_ptl.peripheral.wand.PortalWandInteraction.RemoteCallables.clearPortalClipboard"
             );
             status = new Status_SelectPortal();
@@ -253,7 +254,7 @@ public class ClientPortalWandPortalCopy {
                         new PlacementRequirement(portal.getWidth(), portal.getHeight()),
                         false
                     );
-                    McRemoteProcedureCall.tellServerToInvoke(
+                    McRemoteProcedureCallClient.tellServerToInvoke(
                         "qouteall.imm_ptl.peripheral.wand.PortalWandInteraction.RemoteCallables.copyCutPortal",
                         statusSelectPortal.selectedPortalId,
                         false
@@ -264,7 +265,7 @@ public class ClientPortalWandPortalCopy {
         else if (status instanceof Status_PlacingPortal statusPlacingPortal) {
             // confirm placing
             if (statusPlacingPortal.pendingPlacement != null) {
-                McRemoteProcedureCall.tellServerToInvoke(
+                McRemoteProcedureCallClient.tellServerToInvoke(
                     "qouteall.imm_ptl.peripheral.wand.PortalWandInteraction.RemoteCallables.confirmCopyCut",
                     statusPlacingPortal.pendingPlacement.position(),
                     statusPlacingPortal.pendingPlacement.orientation()

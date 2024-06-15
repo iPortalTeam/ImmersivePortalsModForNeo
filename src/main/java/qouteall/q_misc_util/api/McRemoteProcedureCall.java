@@ -1,7 +1,6 @@
 package qouteall.q_misc_util.api;
 
 import de.nick1st.q_misc_util.networking.ImplRPCPayload;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import qouteall.q_misc_util.MiscNetworking;
@@ -147,12 +146,13 @@ public class McRemoteProcedureCall {
      *                  The remote method's first argument must be the player that's sending the packet.
      */
     //@OnlyIn(Dist.CLIENT)
-    public static void tellServerToInvoke(
-        String methodPath, Object... arguments
-    ) {
-        var packet = createPacketToSendToServer(methodPath, arguments);
-        Minecraft.getInstance().getConnection().send(packet);
-    }
+    // @Nick1st - Moved to client class
+//    public static void tellServerToInvoke(
+//        String methodPath, Object... arguments
+//    ) {
+//        var packet = createPacketToSendToServer(methodPath, arguments);
+//        Minecraft.getInstance().getConnection().send(packet);
+//    }
     
     public static ImplRPCPayload createPacketToSendToServer(
         String methodPath, Object... arguments
@@ -161,7 +161,7 @@ public class McRemoteProcedureCall {
 
             @Override
             public ResourceLocation id() {
-                return MiscNetworking.id_stcRemote;
+                return MiscNetworking.id_ctsRemote;
             }
         };
     }
