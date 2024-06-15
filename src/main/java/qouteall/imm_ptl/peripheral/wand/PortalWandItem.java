@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.peripheral.wand;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.serialization.Codec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -9,6 +10,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -22,7 +24,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.imm_ptl.core.IPMcHelper;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer;
@@ -69,15 +70,15 @@ public class PortalWandItem extends Item {
     
     public static void addIntoCreativeTag(CreativeModeTab.Output entries) {
         ItemStack w1 = new ItemStack(instance);
-        w1.setTag(Mode.CREATE_PORTAL.toTag());
+        w1.set(MODE_COMP_TYPE, Mode.CREATE_PORTAL);
         entries.accept(w1);
         
         ItemStack w2 = new ItemStack(instance);
-        w2.setTag(Mode.DRAG_PORTAL.toTag());
+        w2.set(MODE_COMP_TYPE, Mode.DRAG_PORTAL);
         entries.accept(w2);
         
         ItemStack w3 = new ItemStack(instance);
-        w3.setTag(Mode.COPY_PORTAL.toTag());
+        w3.set(MODE_COMP_TYPE, Mode.COPY_PORTAL);
         entries.accept(w3);
     }
     
@@ -86,14 +87,20 @@ public class PortalWandItem extends Item {
         DRAG_PORTAL,
         COPY_PORTAL;
         
+        public static final Mode FALLBACK = CREATE_PORTAL;
+        
         public static Mode fromTag(CompoundTag tag) {
             String mode = tag.getString("mode");
             
+            return fromStr(mode);
+        }
+        
+        public static Mode fromStr(String mode) {
             return switch (mode) {
                 case "create_portal" -> CREATE_PORTAL;
                 case "drag_portal" -> DRAG_PORTAL;
                 case "copy_portal" -> COPY_PORTAL;
-                default -> CREATE_PORTAL;
+                default -> FALLBACK;
             };
         }
         
@@ -107,13 +114,17 @@ public class PortalWandItem extends Item {
         
         public CompoundTag toTag() {
             CompoundTag tag = new CompoundTag();
-            String modeString = switch (this) {
+            String modeString = toStr();
+            tag.putString("mode", modeString);
+            return tag;
+        }
+        
+        public String toStr() {
+            return switch (this) {
                 case CREATE_PORTAL -> "create_portal";
                 case DRAG_PORTAL -> "drag_portal";
                 case COPY_PORTAL -> "copy_portal";
             };
-            tag.putString("mode", modeString);
-            return tag;
         }
         
         public MutableComponent getText() {
@@ -126,6 +137,13 @@ public class PortalWandItem extends Item {
         
     }
     
+    public static final Codec<Mode> MODE_CODEC = Codec.STRING.xmap(Mode::fromStr, Mode::toStr);
+    
+    public static final DataComponentType<Mode> MODE_COMP_TYPE =
+        DataComponentType.<Mode>builder()
+            .persistent(MODE_CODEC)
+            .build();
+    
     public PortalWandItem(Properties properties) {
         super(properties);
     }
@@ -136,7 +154,7 @@ public class PortalWandItem extends Item {
             showSettings(player);
         }
         else {
-            Mode mode = Mode.fromTag(itemStack.getOrCreateTag());
+            Mode mode = itemStack.getOrDefault(MODE_COMP_TYPE, Mode.FALLBACK);
             
             switch (mode) {
                 case CREATE_PORTAL -> {
@@ -155,13 +173,13 @@ public class PortalWandItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
-        Mode mode = Mode.fromTag(itemStack.getOrCreateTag());
+        Mode mode = itemStack.getOrDefault(MODE_COMP_TYPE, Mode.FALLBACK);
         
         if (player.isShiftKeyDown()) {
             if (!world.isClientSide()) {
                 if (!PortalWandInteraction.isDragging(((ServerPlayer) player))) {
                     Mode nextMode = mode.next();
-                    itemStack.setTag(nextMode.toTag());
+                    itemStack.set(MODE_COMP_TYPE, nextMode);
                     return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStack);
                 }
             }
@@ -193,8 +211,11 @@ public class PortalWandItem extends Item {
     
     @Environment(EnvType.CLIENT)
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
-        super.appendHoverText(stack, world, tooltip, context);
+    public void appendHoverText(
+        ItemStack stack, Item.TooltipContext tooltipContext,
+        List<Component> tooltip, TooltipFlag tooltipFlag
+    ) {
+        super.appendHoverText(stack, tooltipContext, tooltip, tooltipFlag);
         
         tooltip.add(Component.translatable(
             "imm_ptl.wand.item_desc_1",
@@ -210,7 +231,7 @@ public class PortalWandItem extends Item {
     
     @Override
     public Component getName(ItemStack stack) {
-        Mode mode = Mode.fromTag(stack.getOrCreateTag());
+        Mode mode = stack.getOrDefault(MODE_COMP_TYPE, Mode.FALLBACK);
         
         MutableComponent baseText = Component.translatable("item.immersive_portals.portal_wand");
         
@@ -252,7 +273,7 @@ public class PortalWandItem extends Item {
     
     @Environment(EnvType.CLIENT)
     private static void updateDisplay(ItemStack itemStack) {
-        Mode mode = Mode.fromTag(itemStack.getOrCreateTag());
+        Mode mode = itemStack.getOrDefault(MODE_COMP_TYPE, Mode.FALLBACK);
         
         switch (mode) {
             case CREATE_PORTAL -> ClientPortalWandPortalCreation.updateDisplay();
@@ -268,16 +289,9 @@ public class PortalWandItem extends Item {
     ) {
         if (!instructionInformed) {
             instructionInformed = true;
-//            player.sendSystemMessage(
-//                IPMcHelper.getTextWithCommand(
-//                    Component.translatable("imm_ptl.show_portal_wand_instruction"),
-//                    "/imm_ptl_client_debug wand show_instruction"
-//                )
-//            );
         }
         
-        CompoundTag tag = itemStack.getOrCreateTag();
-        Mode mode = Mode.fromTag(tag);
+        Mode mode = itemStack.getOrDefault(MODE_COMP_TYPE, Mode.FALLBACK);
         
         switch (mode) {
             case CREATE_PORTAL -> ClientPortalWandPortalCreation.render(

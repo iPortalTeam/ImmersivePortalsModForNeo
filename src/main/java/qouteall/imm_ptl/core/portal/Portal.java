@@ -14,6 +14,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -24,7 +25,6 @@ import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.level.ChunkPos;
@@ -101,7 +101,8 @@ public class Portal extends Entity implements
                 MobCategory.MISC,
                 constructor
             ).dimensions(
-                new EntityDimensions(1, 1, true)
+                // eye height should be 0
+                EntityDimensions.fixed(0, 0)
             ).fireImmune()
             .trackRangeBlocks(96)
             .trackedUpdateRate(20)
@@ -224,6 +225,11 @@ public class Portal extends Entity implements
         EntityType<?> entityType, Level world
     ) {
         super(entityType, world);
+    }
+    
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        // nothing
     }
     
     @Override
@@ -1597,28 +1603,16 @@ public class Portal extends Entity implements
         }
     }
     
-    
     @Override
     public void refreshDimensions() {
         boundingBoxCache = null;
     }
-    
-    @Override
-    protected float getEyeHeight(Pose pose, EntityDimensions dimensions) {
-        return 0;
-    }
-    
     
     // Scaling does not interfere camera transformation
     @Override
     @Nullable
     public Matrix4f getAdditionalCameraTransformation() {
         return PortalRenderer.getPortalTransformation(this);
-    }
-    
-    @Override
-    protected void defineSynchedData() {
-        // nothing
     }
     
     public boolean canDoOuterFrustumCulling() {
