@@ -10,6 +10,7 @@ import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.handling.IPacketHandler;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.mixin.client.sync.MixinMinecraft_RedirectedPacket;
 import qouteall.q_misc_util.my_util.LimitedLogger;

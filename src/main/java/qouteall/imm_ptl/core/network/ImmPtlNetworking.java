@@ -97,8 +97,7 @@ public class ImmPtlNetworking {
         //@OnlyIn(Dist.CLIENT)
         public void handle(PlayPayloadContext playPayloadContext) {
             ResourceKey<Level> dim = PortalAPI.clientIntToDimKey(dimensionId);
-            
-            GlobalPortalStorageClient.receiveGlobalPortalSync(dim, data);
+            playPayloadContext.workHandler().execute(() -> GlobalPortalStorageClient.receiveGlobalPortalSync(dim, data));
         }
     }
     

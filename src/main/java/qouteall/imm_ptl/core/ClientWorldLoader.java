@@ -581,6 +581,9 @@ public class ClientWorldLoader {
     
     public static void withSwitchedWorldFailSoft(ResourceKey<Level> dim, Runnable runnable) {
         ClientLevel world = getOptionalWorld(dim);
+
+        if (runnable == null)
+            LOGGER.error("Breakpoint");
         
         if (world == null) {
             LOGGER.error(

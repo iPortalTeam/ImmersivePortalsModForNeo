@@ -20,6 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -123,18 +124,19 @@ public class PacketRedirection {
     public static void validateForceRedirecting() {
         Validate.isTrue(getForceRedirectDimension() != null);
     }
-    
-    /**
-     * This can be called both in networking thread (for normal packets) or in render thread (for bundle packet).
-     * avoid ClassNotFound in dedicated server
-     */
-    public static void do_handleRedirectedPacket(
-        ResourceKey<Level> dimension,
-        Packet<ClientGamePacketListener> packet,
-        ClientGamePacketListener handler
-    ) {
-        PacketRedirectionClient.handleRedirectedPacket(dimension, packet, handler);
-    }
+
+    // TODO @Nick1st Check that this really isn't needed and remove
+//    /**
+//     * This can be called both in networking thread (for normal packets) or in render thread (for bundle packet).
+//     * avoid ClassNotFound in dedicated server
+//     */
+//    public static void do_handleRedirectedPacket(
+//        ResourceKey<Level> dimension,
+//        Packet<ClientGamePacketListener> packet,
+//        ClientGamePacketListener handler
+//    ) {
+//        PacketRedirectionClient.handleRedirectedPacket(dimension, packet, handler);
+//    }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Packet<ClientGamePacketListener> createRedirectedMessage(
@@ -169,7 +171,7 @@ public class PacketRedirection {
             // the generic parameter is contravariant (it's used as argument),
             // which means changing it to subtype is fine
             
-            return (Packet<ClientGamePacketListener>) (Packet)
+            return (Packet)
                 new ClientboundCustomPayloadPacket(payload);
         }
     }
@@ -179,7 +181,7 @@ public class PacketRedirection {
         ResourceKey<Level> dimension,
         Packet<ClientGamePacketListener> packet
     ) {
-        player.connection.send(createRedirectedMessage(player.server, dimension, packet));
+        PacketDistributor.PLAYER.with(player).send(createRedirectedMessage(player.server, dimension, packet));
     }
     
     private static final ConnectionProtocol.CodecData<?> clientPlayCodecData =
@@ -286,12 +288,14 @@ public class PacketRedirection {
         public void handle(PlayPayloadContext context) {
             // ClientGamePacketListener listener
             ResourceKey<Level> dim = PortalAPI.clientIntToDimKey(dimensionIntId);
-            PacketRedirectionClient.handleRedirectedPacket(
-                dim, (Packet) packet, Minecraft.getInstance().getConnection() // TODO @Nick1st the third thing is null
-                    // TODO @Nick1st this is probably fine, as this gets never actually called. The mixin takes care of it.
-            );
+            System.out.println("This shouldn't be here");
+//            PacketRedirectionClient.handleRedirectedPacket(
+//                dim, (Packet) packet, context.packetHandler() // TODO @Nick1st the third thing is null
+//                    // TODO @Nick1st this is probably fine, as this gets never actually called. The mixin takes care of it.
+//            );
         }
 
+        // TODO @Nick1st remove
         public void handle(ClientGamePacketListener listener) {
             ResourceKey<Level> dim = PortalAPI.clientIntToDimKey(dimensionIntId);
             PacketRedirectionClient.handleRedirectedPacket(

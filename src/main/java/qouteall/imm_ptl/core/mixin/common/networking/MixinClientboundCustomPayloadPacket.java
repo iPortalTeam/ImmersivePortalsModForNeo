@@ -1,5 +1,7 @@
 package qouteall.imm_ptl.core.mixin.common.networking;
 
+import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
@@ -30,7 +32,24 @@ public class MixinClientboundCustomPayloadPacket implements IECustomPayloadPacke
     )
     private static void onReadPayload(
         ResourceLocation resourceLocation, FriendlyByteBuf friendlyByteBuf,
+        ChannelHandlerContext context, ConnectionProtocol protocol,
         CallbackInfoReturnable<CustomPacketPayload> cir
+    ) {
+        if (resourceLocation.equals(PacketRedirection.payloadId)) {
+            PacketRedirection.Payload p = PacketRedirection.Payload.read(friendlyByteBuf);
+            cir.setReturnValue(p);
+            cir.cancel();
+        }
+    }
+
+    @Inject(
+            method = "Lnet/minecraft/network/protocol/common/ClientboundCustomPayloadPacket;readPayload(Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/network/FriendlyByteBuf;)Lnet/minecraft/network/protocol/common/custom/CustomPacketPayload;",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    private static void onReadPayload2(
+            ResourceLocation resourceLocation, FriendlyByteBuf friendlyByteBuf,
+            CallbackInfoReturnable<CustomPacketPayload> cir
     ) {
         if (resourceLocation.equals(PacketRedirection.payloadId)) {
             PacketRedirection.Payload p = PacketRedirection.Payload.read(friendlyByteBuf);
@@ -47,8 +66,9 @@ public class MixinClientboundCustomPayloadPacket implements IECustomPayloadPacke
     )
     private void onHandle(ClientCommonPacketListener clientCommonPacketListener, CallbackInfo ci) {
         if (payload instanceof PacketRedirection.Payload redirectPayload) {
+            // TODO @Nick1st this instanceof check might always fail
             if (clientCommonPacketListener instanceof ClientGamePacketListener clientGamePacketListener) {
-                redirectPayload.handle(clientGamePacketListener);
+               redirectPayload.handle(clientGamePacketListener); // TODO @Nick1st this might be required and disabling might be a severe bug
             }
             
             ci.cancel();
