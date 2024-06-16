@@ -316,7 +316,17 @@ public class ImplRemoteProcedureCall {
         try {
             Method method = getMethodByPath(payload.methodPath);
 
-            Object[] arguments = payload.arguments;
+            Object[] arguments;
+
+            // @Nick1st: This is a fix, as Neo does not serialize/deserialize in single player games
+            if (payload.arguments[0] != null) {
+                // We need to move all indices back by one.
+                Object[] fixedArguments = new Object[payload.arguments.length + 1];
+                System.arraycopy(payload.arguments, 0, fixedArguments, 1, payload.arguments.length);
+                arguments = fixedArguments;
+            } else {
+                arguments = payload.arguments;
+            }
 
             arguments[0] = player;
 
@@ -327,6 +337,7 @@ public class ImplRemoteProcedureCall {
                 catch (Exception e) {
                     LIMITED_LOGGER.invoke(() -> {
                         LOGGER.error("Processing remote procedure call {}", player, e);
+                        LOGGER.error(method.getName());
                         serverTellFailure((ServerPlayer) player);
                     });
                 }
