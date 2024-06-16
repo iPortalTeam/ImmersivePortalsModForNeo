@@ -36,7 +36,7 @@ public class MixinClientboundCustomPayloadPacket implements IECustomPayloadPacke
         CallbackInfoReturnable<CustomPacketPayload> cir
     ) {
         if (resourceLocation.equals(PacketRedirection.payloadId)) {
-            PacketRedirection.Payload p = PacketRedirection.Payload.read(friendlyByteBuf);
+            PacketRedirection.Payload p = PacketRedirection.Payload.read(friendlyByteBuf, context);
             cir.setReturnValue(p);
             cir.cancel();
         }

@@ -1,5 +1,6 @@
 package qouteall.imm_ptl.core.network;
 
+import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
@@ -199,6 +200,11 @@ public class PacketRedirection {
     public static Packet<?> readPacketById(int messageType, FriendlyByteBuf buf) {
         return clientPlayCodecData.createPacket(messageType, buf);
     }
+
+    // @Nick1st Neo overload
+    public static Packet<?> readPacketById(int messageType, FriendlyByteBuf buf, ChannelHandlerContext context) {
+        return clientPlayCodecData.createPacket(messageType, buf, context);
+    }
     
     // Note this doesn't consider bundle packet
     public static boolean isRedirectPacket(Packet<?> packet) {
@@ -274,6 +280,17 @@ public class PacketRedirection {
             Packet<ClientGamePacketListener> packet =
                 (Packet<ClientGamePacketListener>) readPacketById(packetId, buf);
             
+            return new Payload(dimensionIntId, packet);
+        }
+
+        // @Nick1st Neo Overload
+        public static Payload read(FriendlyByteBuf buf, ChannelHandlerContext context) {
+            int dimensionIntId = buf.readVarInt();
+
+            int packetId = buf.readVarInt();
+            Packet<ClientGamePacketListener> packet =
+                    (Packet<ClientGamePacketListener>) readPacketById(packetId, buf, context);
+
             return new Payload(dimensionIntId, packet);
         }
         
