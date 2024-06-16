@@ -75,6 +75,6 @@ allprojects {
 
         compileOnly "com.jozufozu.flywheel:flywheel-forge-1.20.1:1.0.0-alpha-83" // No current version available yet
 
-        compileOnly "maven.modrinth:pehkui:3.8.0+1.20.4-neoforge"// No current version available yet
+        implementation "maven.modrinth:pehkui:3.8.2+1.20.4-neoforge"// No current version available yet
     }
 }
