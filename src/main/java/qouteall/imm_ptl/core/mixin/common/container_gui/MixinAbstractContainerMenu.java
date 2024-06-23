@@ -17,24 +17,19 @@ public class MixinAbstractContainerMenu {
         method = "method_17696",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/world/entity/player/Player;distanceToSqr(DDD)D"
+            target = "Lnet/minecraft/world/entity/player/Player;canInteractWithBlock(Lnet/minecraft/core/BlockPos;D)Z"
         )
     )
-    private static double wrapDistanceToSqr(
-        Player player, double x, double y, double z,
-        Operation<Double> operation,
-        @Local(argsOnly = true) Level world, @Local(argsOnly = true) BlockPos blockPos
+    private static boolean wrapDistanceToSqr(
+        Player player, BlockPos blockPos, double distance,
+        Operation<Boolean> operation,
+        @Local(argsOnly = true) Level world
     ) {
-        double dist = operation.call(player, x, y, z);
-        if (dist < 64) {
-            return dist;
+        boolean canInteract = operation.call(player, blockPos, distance);
+        if (canInteract) {
+            return true;
         }
         
-        if (BlockManipulationServer.validateReach(player, world, blockPos)) {
-            return 0;
-        }
-        else {
-            return dist;
-        }
+        return BlockManipulationServer.validateReach(player, world, blockPos);
     }
 }
