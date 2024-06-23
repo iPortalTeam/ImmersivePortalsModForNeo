@@ -52,7 +52,6 @@ import qouteall.imm_ptl.core.render.FrontClipping;
 import qouteall.imm_ptl.core.render.ImmPtlViewArea;
 import qouteall.imm_ptl.core.render.MyGameRenderer;
 import qouteall.imm_ptl.core.render.MyRenderHelper;
-import qouteall.imm_ptl.core.render.TransformationManager;
 import qouteall.imm_ptl.core.render.VisibleSectionDiscovery;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
@@ -467,7 +466,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         method = "renderSky", at = @At("HEAD"), cancellable = true
     )
     private void onRenderSkyBegin(
-        PoseStack poseStack, Matrix4f matrix4f, float partialTick, Camera camera,
+        Matrix4f modelView, Matrix4f matrix4f, float partialTick, Camera camera,
         boolean isFoggy, Runnable runnable, CallbackInfo ci
     ) {
         if (WorldRenderInfo.isRendering()) {
@@ -487,7 +486,10 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         method = "renderSky",
         at = @At("RETURN")
     )
-    private void onRenderSkyEnd(PoseStack poseStack, Matrix4f matrix4f, float f, Camera camera, boolean bl, Runnable runnable, CallbackInfo ci) {
+    private void onRenderSkyEnd(
+        Matrix4f modelView, Matrix4f matrix4f, float f, Camera camera,
+        boolean bl, Runnable runnable, CallbackInfo ci
+    ) {
         MyRenderHelper.recoverFaceCulling();
     }
     
@@ -504,13 +506,6 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
             return WorldRenderInfo.getCameraPos();
         }
         return player.getEyePosition(partialTicks);
-    }
-    
-    @Inject(
-        method = "prepareCullFrustum", at = @At("HEAD")
-    )
-    private void onSetupFrustum(PoseStack matrices, Vec3 pos, Matrix4f projectionMatrix, CallbackInfo ci) {
-        TransformationManager.processTransformation(minecraft.gameRenderer.getMainCamera(), matrices);
     }
     
     // vanilla clears translucentFramebuffer even when transparencyShader is null

@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import qouteall.imm_ptl.core.IPGlobal;
+import qouteall.imm_ptl.core.miscellaneous.IPVanillaCopy;
 import qouteall.imm_ptl.core.render.context_management.CloudContext;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
 
@@ -50,15 +51,14 @@ public abstract class MixinLevelRenderer_Clouds {
         at = @At("HEAD")
     )
     private void onBeginRenderClouds(
-        PoseStack matrices, Matrix4f matrix4f,
-        float tickDelta, double cameraX, double cameraY, double cameraZ, CallbackInfo ci
+        PoseStack poseStack, Matrix4f projectionMatrix, Matrix4f frustrumMatrix, float partialTick, double camX, double camY, double camZ, CallbackInfo ci
     ) {
         if (RenderStates.getRenderedPortalNum() == 0) {
             return;
         }
         
         if (IPGlobal.cloudOptimization) {
-            portal_onBeginCloudRendering(tickDelta, cameraX, cameraY, cameraZ);
+            portal_onBeginCloudRendering(partialTick, camX, camY, camZ);
         }
     }
     
@@ -66,7 +66,7 @@ public abstract class MixinLevelRenderer_Clouds {
         method = "renderClouds",
         at = @At("RETURN")
     )
-    private void onEndRenderClouds(PoseStack matrices, Matrix4f matrix4f, float f, double d, double e, double g, CallbackInfo ci) {
+    private void onEndRenderClouds(PoseStack poseStack, Matrix4f projectionMatrix, Matrix4f frustrumMatrix, float partialTick, double camX, double camY, double camZ, CallbackInfo ci) {
         if (RenderStates.getRenderedPortalNum() == 0) {
             return;
         }
@@ -101,6 +101,10 @@ public abstract class MixinLevelRenderer_Clouds {
         generateClouds = false;
     }
     
+    /**
+     * {@link LevelRenderer#renderClouds}
+     */
+    @IPVanillaCopy
     private void portal_onBeginCloudRendering(
         float tickDelta, double cameraX, double cameraY, double cameraZ
     ) {

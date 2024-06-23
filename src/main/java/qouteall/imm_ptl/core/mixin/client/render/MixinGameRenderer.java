@@ -27,6 +27,7 @@ import qouteall.imm_ptl.core.portal.animation.StableClientTimer;
 import qouteall.imm_ptl.core.render.CrossPortalViewRendering;
 import qouteall.imm_ptl.core.render.GuiPortalRendering;
 import qouteall.imm_ptl.core.render.MyRenderHelper;
+import qouteall.imm_ptl.core.render.TransformationManager;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
 import qouteall.imm_ptl.core.render.renderer.PortalRenderer;
@@ -309,6 +310,22 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
         RenderStates.basicProjectionMatrix = result;
         
         return result;
+    }
+    
+    @WrapOperation(
+        method = "renderLevel",
+        at = @At(
+            value = "INVOKE",
+            target = "Lorg/joml/Matrix4f;rotationXYZ(FFF)Lorg/joml/Matrix4f;"
+        )
+    )
+    private Matrix4f wrapCameraTransformation(
+        Matrix4f instance,
+        float angleX, float angleY, float angleZ,
+        Operation<Matrix4f> original
+    ) {
+        Matrix4f r = original.call(instance, angleX, angleY, angleZ);
+        return TransformationManager.processTransformation(mainCamera, r);
     }
     
     @Override

@@ -92,7 +92,13 @@ public class TransformationManager {
         }
         
         WorldRenderInfo.applyAdditionalTransformations(matrixStack);
-        
+    }
+    
+    public static Matrix4f processTransformation(Camera camera, Matrix4f matrix4f) {
+        PoseStack poseStack = new PoseStack();
+        poseStack.last().pose().set(matrix4f);
+        processTransformation(camera, poseStack);
+        return poseStack.last().pose();
     }
     
     public static boolean isAnimationRunning() {
