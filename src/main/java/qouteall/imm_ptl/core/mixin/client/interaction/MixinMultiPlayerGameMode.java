@@ -1,9 +1,11 @@
 package qouteall.imm_ptl.core.mixin.client.interaction;
 
+import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
@@ -115,18 +117,24 @@ public abstract class MixinMultiPlayerGameMode implements IEClientPlayerInteract
             ResourceKey<Level> dimension = Minecraft.getInstance().level.dimension();
             if (packet instanceof ServerboundPlayerActionPacket playerActionPacket) {
                 if (BlockManipulationServer.isAttackingAction(playerActionPacket.getAction())) {
+                    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                    ServerboundPlayerActionPacket.STREAM_CODEC.encode(buf, playerActionPacket);
+                    
                     return McRemoteProcedureCall.createPacketToSendToServer(
                         "qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer.RemoteCallables.processPlayerActionPacket",
                         dimension,
-                        IPMcHelper.packetToBytes(playerActionPacket)
+                        IPMcHelper.bufToBytes(buf)
                     );
                 }
             }
             else if (packet instanceof ServerboundUseItemOnPacket useItemOnPacket) {
+                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                ServerboundUseItemOnPacket.STREAM_CODEC.encode(buf, useItemOnPacket);
+                
                 return McRemoteProcedureCall.createPacketToSendToServer(
                     "qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer.RemoteCallables.processUseItemOnPacket",
                     dimension,
-                    IPMcHelper.packetToBytes(useItemOnPacket)
+                    IPMcHelper.bufToBytes(buf)
                 );
             }
             // ServerboundUseItemPacket is not redirected

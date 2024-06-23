@@ -28,7 +28,7 @@ public class LoadingIndicatorEntity extends Entity {
             MobCategory.MISC,
             (EntityType.EntityFactory<LoadingIndicatorEntity>) LoadingIndicatorEntity::new
         ).dimensions(
-            new EntityDimensions(1, 1, true)
+            EntityDimensions.fixed(1, 1)
         ).fireImmune().trackable(96, 20).build();
     
     private static final EntityDataAccessor<Component> TEXT = SynchedEntityData.defineId(

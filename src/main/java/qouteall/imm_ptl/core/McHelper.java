@@ -2,7 +2,6 @@ package qouteall.imm_ptl.core;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -13,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.ClickEvent;
@@ -230,6 +228,7 @@ public class McHelper {
     /**
      * {@link ChunkMap#getPlayerViewDistance(ServerPlayer)}
      */
+    @SuppressWarnings("JavadocReference")
     @IPVanillaCopy
     public static int getPlayerLoadDistance(ServerPlayer player) {
         assert player.getServer() != null;
@@ -287,13 +286,12 @@ public class McHelper {
     
     /**
      * {@link Entity#positionRider(Entity)}
+     * TODO fix for non-default gravity
      */
     public static Vec3 getVehicleOffsetFromPassenger(Entity vehicle, Entity passenger) {
-        double ridingOffset = passenger.getMyRidingOffset(vehicle);
-        Direction gravity = GravityChangerInterface.invoker.getGravityDirection(passenger);
-        Vec3 gravityVec = Vec3.atLowerCornerOf(gravity.getNormal());
-        Vec3 vehicleOffset = gravityVec.scale(ridingOffset);
-        return vehicleOffset;
+        Vec3 vehicleAttachmentPoint = passenger.getVehicleAttachmentPoint(vehicle);
+        
+        return vehicleAttachmentPoint;
     }
     
     public static void adjustVehicle(Entity entity) {
@@ -740,13 +738,8 @@ public class McHelper {
     
     public static <T> String serializeToJson(T object, Codec<T> codec) {
         DataResult<JsonElement> r = codec.encode(object, JsonOps.INSTANCE, new JsonObject());
-        Either<JsonElement, DataResult.PartialResult<JsonElement>> either = r.get();
-        JsonElement result = either.left().orElse(null);
-        if (result != null) {
-            return IPGlobal.gson.toJson(result);
-        }
-        
-        return either.right().map(DataResult.PartialResult::toString).orElse("");
+        JsonElement result = r.getOrThrow();
+        return IPGlobal.gson.toJson(result);
     }
     
     public static class MyDecodeException extends RuntimeException {
@@ -762,7 +755,7 @@ public class McHelper {
         Serialized target
     ) {
         return codec.decode(ops, target)
-            .getOrThrow(false, s -> {
+            .getOrThrow(s -> {
                 throw new MyDecodeException("Cannot decode" + s + target);
             }).getFirst();
     }
@@ -772,7 +765,7 @@ public class McHelper {
         Serialized target,
         String key
     ) {
-        return ops.get(target, key).getOrThrow(false, s -> {
+        return ops.get(target, key).getOrThrow(s -> {
             throw new MyDecodeException("Cannot find" + key + s + target);
         });
     }

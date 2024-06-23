@@ -491,8 +491,6 @@ public class ClientTeleportationManager {
             ClientWorldLoader.getWorldRenderer(toDimension)
         );
         
-        toWorld.setScoreboard(fromWorld.getScoreboard());
-        
         if (client.particleEngine != null) {
             // avoid clearing all particles
             ((IEParticleManager) client.particleEngine).ip_setWorld(toWorld);

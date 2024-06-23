@@ -135,8 +135,9 @@ public class BlockManipulationServer {
     
     public static class RemoteCallables {
         /**
-         * {@link qouteall.imm_ptl.core.mixin.client.interaction.MixinMultiPlayerGameMode}
+         * {@link qouteall.imm_ptl.core.mixin.client.interaction.MixinMultiPlayerGameMode#ip_redirectPacket}
          */
+        @SuppressWarnings("JavadocReference")
         public static void processPlayerActionPacket(
             ServerPlayer player,
             ResourceKey<Level> dimension,
@@ -156,6 +157,10 @@ public class BlockManipulationServer {
             );
         }
         
+        /**
+         * {@link qouteall.imm_ptl.core.mixin.client.interaction.MixinMultiPlayerGameMode#ip_redirectPacket}
+         */
+        @SuppressWarnings("JavadocReference")
         public static void processUseItemOnPacket(
             ServerPlayer player,
             ResourceKey<Level> dimension,
