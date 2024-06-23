@@ -157,11 +157,13 @@ public class PortalAPI {
         ImmPtlChunkTracking.syncBlockUpdateToClientImmediately(world, box);
     }
     
+    // NOTE this should not be used in networking thread
     @Environment(EnvType.CLIENT)
     public static int clientDimKeyToInt(ResourceKey<Level> dimension) {
         return DimensionIntId.getClientMap().toIntegerId(dimension);
     }
     
+    // NOTE this should not be used in networking thread
     @Environment(EnvType.CLIENT)
     public static ResourceKey<Level> clientIntToDimKey(int integerId) {
         return DimensionIntId.getClientMap().fromIntegerId(integerId);

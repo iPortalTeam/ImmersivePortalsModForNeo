@@ -130,18 +130,6 @@ public class PacketRedirection {
         Validate.isTrue(getForceRedirectDimension() != null);
     }
     
-    /**
-     * This can be called both in networking thread (for normal packets) or in render thread (for bundle packet).
-     * avoid ClassNotFound in dedicated server
-     */
-    public static void do_handleRedirectedPacket(
-        ResourceKey<Level> dimension,
-        Packet<ClientGamePacketListener> packet,
-        ClientGamePacketListener handler
-    ) {
-        PacketRedirectionClient.handleRedirectedPacket(dimension, packet, handler);
-    }
-    
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Packet<ClientGamePacketListener> createRedirectedMessage(
         MinecraftServer server,
@@ -288,9 +276,8 @@ public class PacketRedirection {
         @SuppressWarnings({"unchecked", "rawtypes"})
         @Environment(EnvType.CLIENT)
         public void handle(ClientGamePacketListener listener) {
-            ResourceKey<Level> dim = PortalAPI.clientIntToDimKey(dimensionIntId);
             PacketRedirectionClient.handleRedirectedPacket(
-                dim, (Packet) packet, listener
+                dimensionIntId, (Packet) packet, listener
             );
         }
         

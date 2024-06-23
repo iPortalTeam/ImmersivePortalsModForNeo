@@ -193,9 +193,21 @@ public class ImmPtlChunkTickets {
                 return true;
             }
             
-            ChunkResult<LevelChunk> resultNow = chunkHolder.getEntityTickingChunkFuture().getNow(null);
+            ChunkResult<LevelChunk> resultNow = chunkHolder.getEntityTickingChunkFuture()
+                .getNow(null);
             
-            return resultNow.isSuccess();
+            if (resultNow == null) {
+                return false;
+            }
+            
+            if (!resultNow.isSuccess()) {
+                LOGGER.error(
+                    "Chunk loading failure {} {} {}",
+                    world, new ChunkPos(chunkPos)
+                );
+            }
+            
+            return true;
         });
         
         // flush the pending-add-ticket queues

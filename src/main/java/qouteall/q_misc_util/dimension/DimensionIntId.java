@@ -52,9 +52,14 @@ public class DimensionIntId {
         clientRecord = null;
     }
     
+    /**
+     * Note this should not be used in networking thread.
+     */
     @Environment(EnvType.CLIENT)
     public static @NotNull DimIntIdMap getClientMap() {
-        Validate.notNull(clientRecord, "Client dim id record is not yet synced");
+        Validate.notNull(clientRecord,
+            "Client dim id record is not yet synced. This should not be used in networking thread."
+        );
         return clientRecord;
     }
     

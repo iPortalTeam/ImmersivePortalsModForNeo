@@ -14,6 +14,7 @@ import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.level.Level;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.mixin.client.sync.MixinMinecraft_RedirectedPacket;
+import qouteall.q_misc_util.dimension.DimensionIntId;
 import qouteall.q_misc_util.my_util.LimitedLogger;
 
 @Environment(EnvType.CLIENT)
@@ -36,6 +37,46 @@ public class PacketRedirectionClient {
     }
     
     /**
+     * This is intended to be called in networking thread.
+     * The dimension id is passed as integer,
+     * because the dimension id map is only stable in client thread
+     * (reading dimension id map in networking thread is not guaranteed to work).
+     */
+    public static void handleRedirectedPacket(
+        int dimensionIntId,
+        Packet<ClientGamePacketListener> packet,
+        ClientGamePacketListener handler
+    ) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.isSameThread()) {
+            ResourceKey<Level> dimension = DimensionIntId.getClientMap()
+                .fromIntegerId(dimensionIntId);
+            
+            ResourceKey<Level> oldTaskRedirection = clientTaskRedirection.get();
+            clientTaskRedirection.set(dimension);
+            
+            try {
+                ClientWorldLoader.withSwitchedWorldFailSoft(
+                    dimension,
+                    () -> {
+                        packet.handle(handler);
+                    }
+                );
+            }
+            finally {
+                clientTaskRedirection.set(oldTaskRedirection);
+            }
+        }
+        else {
+            minecraft.execute(() -> {
+                handleRedirectedPacket(
+                    dimensionIntId, packet, handler
+                );
+            });
+        }
+    }
+    
+    /**
      * For vanilla packets, in {@link PacketUtils#ensureRunningOnSameThread(Packet, PacketListener, BlockableEventLoop)}
      * it will resubmit the task,
      * and the task will be redirected in {@link MixinMinecraft_RedirectedPacket},
@@ -44,7 +85,8 @@ public class PacketRedirectionClient {
      * For mod packets ({@link ClientboundCustomPayloadPacket}),
      * the mod will also handle the packet using {@link Minecraft#execute(Runnable)} (If not, that mod has the bug)
      */
-    public static void handleRedirectedPacket(
+    @Deprecated
+    public static void old_handleRedirectedPacket(
         ResourceKey<Level> dimension,
         Packet<ClientGamePacketListener> packet,
         ClientGamePacketListener handler

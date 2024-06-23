@@ -10,7 +10,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -35,6 +37,12 @@ public class PortalWandItem extends Item {
     public static final PortalWandItem instance = new PortalWandItem(new Properties());
     
     public static void init() {
+        Registry.register(
+            BuiltInRegistries.DATA_COMPONENT_TYPE,
+            "iportal:portal_wand_data",
+            COMPONENT_TYPE
+        );
+        
         AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
             if (player.getMainHandItem().getItem() == instance) {
                 // cannot break block using the wand
@@ -70,15 +78,15 @@ public class PortalWandItem extends Item {
     
     public static void addIntoCreativeTag(CreativeModeTab.Output entries) {
         ItemStack w1 = new ItemStack(instance);
-        w1.set(MODE_COMP_TYPE, Mode.CREATE_PORTAL);
+        w1.set(COMPONENT_TYPE, Mode.CREATE_PORTAL);
         entries.accept(w1);
         
         ItemStack w2 = new ItemStack(instance);
-        w2.set(MODE_COMP_TYPE, Mode.DRAG_PORTAL);
+        w2.set(COMPONENT_TYPE, Mode.DRAG_PORTAL);
         entries.accept(w2);
         
         ItemStack w3 = new ItemStack(instance);
-        w3.set(MODE_COMP_TYPE, Mode.COPY_PORTAL);
+        w3.set(COMPONENT_TYPE, Mode.COPY_PORTAL);
         entries.accept(w3);
     }
     
@@ -139,7 +147,7 @@ public class PortalWandItem extends Item {
     
     public static final Codec<Mode> MODE_CODEC = Codec.STRING.xmap(Mode::fromStr, Mode::toStr);
     
-    public static final DataComponentType<Mode> MODE_COMP_TYPE =
+    public static final DataComponentType<Mode> COMPONENT_TYPE =
         DataComponentType.<Mode>builder()
             .persistent(MODE_CODEC)
             .build();
@@ -154,7 +162,7 @@ public class PortalWandItem extends Item {
             showSettings(player);
         }
         else {
-            Mode mode = itemStack.getOrDefault(MODE_COMP_TYPE, Mode.FALLBACK);
+            Mode mode = itemStack.getOrDefault(COMPONENT_TYPE, Mode.FALLBACK);
             
             switch (mode) {
                 case CREATE_PORTAL -> {
@@ -173,13 +181,13 @@ public class PortalWandItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
-        Mode mode = itemStack.getOrDefault(MODE_COMP_TYPE, Mode.FALLBACK);
+        Mode mode = itemStack.getOrDefault(COMPONENT_TYPE, Mode.FALLBACK);
         
         if (player.isShiftKeyDown()) {
             if (!world.isClientSide()) {
                 if (!PortalWandInteraction.isDragging(((ServerPlayer) player))) {
                     Mode nextMode = mode.next();
-                    itemStack.set(MODE_COMP_TYPE, nextMode);
+                    itemStack.set(COMPONENT_TYPE, nextMode);
                     return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStack);
                 }
             }
@@ -231,7 +239,7 @@ public class PortalWandItem extends Item {
     
     @Override
     public Component getName(ItemStack stack) {
-        Mode mode = stack.getOrDefault(MODE_COMP_TYPE, Mode.FALLBACK);
+        Mode mode = stack.getOrDefault(COMPONENT_TYPE, Mode.FALLBACK);
         
         MutableComponent baseText = Component.translatable("item.immersive_portals.portal_wand");
         
@@ -273,7 +281,7 @@ public class PortalWandItem extends Item {
     
     @Environment(EnvType.CLIENT)
     private static void updateDisplay(ItemStack itemStack) {
-        Mode mode = itemStack.getOrDefault(MODE_COMP_TYPE, Mode.FALLBACK);
+        Mode mode = itemStack.getOrDefault(COMPONENT_TYPE, Mode.FALLBACK);
         
         switch (mode) {
             case CREATE_PORTAL -> ClientPortalWandPortalCreation.updateDisplay();
@@ -291,7 +299,7 @@ public class PortalWandItem extends Item {
             instructionInformed = true;
         }
         
-        Mode mode = itemStack.getOrDefault(MODE_COMP_TYPE, Mode.FALLBACK);
+        Mode mode = itemStack.getOrDefault(COMPONENT_TYPE, Mode.FALLBACK);
         
         switch (mode) {
             case CREATE_PORTAL -> ClientPortalWandPortalCreation.render(

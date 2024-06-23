@@ -60,7 +60,7 @@ public class ClientPortalWandPortalCreation {
     public static ProtoPortal protoPortal = new ProtoPortal();
     
     public static void reset() {
-        protoPortal.reset();
+        protoPortal = new ProtoPortal();
         renderedPlane.clearTarget();
     }
     
@@ -195,7 +195,7 @@ public class ClientPortalWandPortalCreation {
         
         McRemoteProcedureCall.tellServerToInvoke(
             "qouteall.imm_ptl.peripheral.wand.PortalWandInteraction.RemoteCallables.finishPortalCreation",
-            protoPortal
+            protoPortal.copy()
         );
         
         reset();

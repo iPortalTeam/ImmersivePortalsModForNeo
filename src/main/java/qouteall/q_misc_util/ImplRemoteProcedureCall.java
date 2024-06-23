@@ -216,6 +216,7 @@ public class ImplRemoteProcedureCall {
                     LOGGER.error(
                         "Failed to invoke remote procedure call {} {}", methodPath, player, e
                     );
+                    serverTellFailure(c.player());
                 }
             }
         }
@@ -297,6 +298,7 @@ public class ImplRemoteProcedureCall {
             catch (Exception e) {
                 if (LOGGING_LIMIT.tryDecrement()) {
                     LOGGER.error("Failed to invoke remote procedure call {}", methodPath, e);
+                    clientTellFailure();
                 }
             }
         }
