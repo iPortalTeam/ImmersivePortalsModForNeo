@@ -194,7 +194,7 @@ public class ClientPortalWandPortalCreation {
         
         McRemoteProcedureCallClient.tellServerToInvoke(
             "qouteall.imm_ptl.peripheral.wand.PortalWandInteraction.RemoteCallables.finishPortalCreation",
-            protoPortal
+            protoPortal.copy() // Copy required as Neo does no serializing in client only game
         );
         
         reset();
