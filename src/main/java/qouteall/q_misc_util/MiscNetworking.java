@@ -104,12 +104,12 @@ public class MiscNetworking {
             for (String key : dimTypeTag.getAllKeys()) {
                 ResourceKey<Level> dimId = ResourceKey.create(
                     Registries.DIMENSION,
-                    new ResourceLocation(key)
+                    McHelper.newResourceLocation(key)
                 );
                 String dimTypeId = dimTypeTag.getString(key);
                 ResourceKey<DimensionType> dimType = ResourceKey.create(
                     Registries.DIMENSION_TYPE,
-                    new ResourceLocation(dimTypeId)
+                    McHelper.newResourceLocation(dimTypeId)
                 );
                 builder.put(dimId, dimType);
             }

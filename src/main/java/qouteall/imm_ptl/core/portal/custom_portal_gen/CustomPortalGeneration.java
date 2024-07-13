@@ -33,12 +33,12 @@ import java.util.stream.Collectors;
 public class CustomPortalGeneration {
     public static final ResourceKey<Level> THE_SAME_DIMENSION = ResourceKey.create(
         Registries.DIMENSION,
-        new ResourceLocation("imm_ptl:the_same_dimension")
+        McHelper.newResourceLocation("imm_ptl:the_same_dimension")
     );
     
     public static final ResourceKey<Level> ANY_DIMENSION = ResourceKey.create(
         Registries.DIMENSION,
-        new ResourceLocation("imm_ptl:any_dimension")
+        McHelper.newResourceLocation("imm_ptl:any_dimension")
     );
     
     public static final Codec<List<ResourceKey<Level>>> DIMENSION_LIST_CODEC =
@@ -51,16 +51,16 @@ public class CustomPortalGeneration {
         STRING_LIST_CODEC.listOf();
     
     public static final ResourceKey<Registry<MapCodec<CustomPortalGeneration>>> SCHEMA_KEY = ResourceKey.createRegistryKey(
-        new ResourceLocation("imm_ptl:custom_portal_gen_schema")
+        McHelper.newResourceLocation("imm_ptl:custom_portal_gen_schema")
     );
     
     // the contents are in /data/<namespace>/immersive_portals/custom_portal_generation/
     public static final ResourceKey<Registry<CustomPortalGeneration>> REGISTRY_KEY =
-        ResourceKey.createRegistryKey(new ResourceLocation("immersive_portals:custom_portal_generation"));
+        ResourceKey.createRegistryKey(McHelper.newResourceLocation("immersive_portals:custom_portal_generation"));
     
     // for old datapacks, the contents are in /data/<namespace>/custom_portal_generation/
     public static final ResourceKey<Registry<CustomPortalGeneration>> LEGACY_REGISTRY_KEY =
-        ResourceKey.createRegistryKey(new ResourceLocation("custom_portal_generation"));
+        ResourceKey.createRegistryKey(McHelper.newResourceLocation("custom_portal_generation"));
     
     public static final MapCodec<CustomPortalGeneration> codecV1 =
         RecordCodecBuilder.mapCodec(instance -> {
@@ -85,7 +85,7 @@ public class CustomPortalGeneration {
                 SCHEMA_KEY, Lifecycle.stable()
             );
             Registry.register(
-                registry, new ResourceLocation("imm_ptl:v1"), codecV1
+                registry, McHelper.newResourceLocation("imm_ptl:v1"), codecV1
             );
             return registry;
         });

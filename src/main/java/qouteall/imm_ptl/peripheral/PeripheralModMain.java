@@ -81,24 +81,24 @@ public class PeripheralModMain {
     
     public static void registerItems(BiConsumer<ResourceLocation, Item> regFunc) {
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "portal_helper"),
+            McHelper.newResourceLocation("immersive_portals", "portal_helper"),
             portalHelperBlockItem
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals:command_stick"),
+            McHelper.newResourceLocation("immersive_portals:command_stick"),
             CommandStickItem.instance
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals:portal_wand"),
+            McHelper.newResourceLocation("immersive_portals:portal_wand"),
             PortalWandItem.instance
         );
     }
     
     public static void registerBlocks(BiConsumer<ResourceLocation, Block> regFunc) {
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "portal_helper"),
+            McHelper.newResourceLocation("immersive_portals", "portal_helper"),
             portalHelperBlock
         );
     }
@@ -107,11 +107,11 @@ public class PeripheralModMain {
         BiConsumer<ResourceLocation, MapCodec<? extends ChunkGenerator>> regFunc
     ) {
         regFunc.accept(
-            new ResourceLocation("immersive_portals:error_terrain_generator"),
+            McHelper.newResourceLocation("immersive_portals:error_terrain_generator"),
             ErrorTerrainGenerator.MAP_CODEC
         );
         regFunc.accept(
-            new ResourceLocation("immersive_portals:normal_skyland_generator"),
+            McHelper.newResourceLocation("immersive_portals:normal_skyland_generator"),
             NormalSkylandGenerator.MAP_CODEC
         );
     }
@@ -120,7 +120,7 @@ public class PeripheralModMain {
         BiConsumer<ResourceLocation, MapCodec<? extends BiomeSource>> regFunc
     ) {
         regFunc.accept(
-            new ResourceLocation("immersive_portals:chaos_biome_source"),
+            McHelper.newResourceLocation("immersive_portals:chaos_biome_source"),
             ChaosBiomeSource.MAP_CODEC
         );
     }
@@ -129,7 +129,7 @@ public class PeripheralModMain {
         BiConsumer<ResourceLocation, CreativeModeTab> regFunc
     ) {
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "general"),
+            McHelper.newResourceLocation("immersive_portals", "general"),
             TAB
         );
     }

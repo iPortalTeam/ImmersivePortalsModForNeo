@@ -2,7 +2,6 @@ package qouteall.imm_ptl.core.portal.animation;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +22,7 @@ public record OscillationAnimation(
     // it's currently not called
     public static void init() {
         PortalAnimationDriver.registerDeserializer(
-            new ResourceLocation("imm_ptl:oscillation"),
+            McHelper.newResourceLocation("imm_ptl:oscillation"),
             OscillationAnimation::fromTag
         );
     }

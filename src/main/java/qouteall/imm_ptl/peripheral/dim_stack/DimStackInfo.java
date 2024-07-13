@@ -5,7 +5,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -270,7 +269,7 @@ public class DimStackInfo {
         }
         
         try {
-            Optional<Block> block = BuiltInRegistries.BLOCK.getOptional(new ResourceLocation(str));
+            Optional<Block> block = BuiltInRegistries.BLOCK.getOptional(McHelper.newResourceLocation(str));
             return block.map(Block::defaultBlockState).orElse(null);
         }
         catch (Exception e) {

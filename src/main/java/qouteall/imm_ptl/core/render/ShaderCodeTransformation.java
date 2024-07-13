@@ -2,7 +2,6 @@ package qouteall.imm_ptl.core.render;
 
 import com.mojang.blaze3d.shaders.Program;
 import me.shedaniel.cloth.clothconfig.shadowed.org.yaml.snakeyaml.Yaml;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.McHelper;
@@ -56,7 +55,7 @@ public class ShaderCodeTransformation {
         if (IPGlobal.enableClippingMechanism) {
             Yaml yaml = new Yaml();
             
-            String yamlStr = McHelper.readTextResource(new ResourceLocation(
+            String yamlStr = McHelper.readTextResource(McHelper.newResourceLocation(
                 "immersive_portals:shaders/shader_transformation.yaml"
             ));
             ConfigsObj configsObj = yaml.loadAs(yamlStr, ConfigsObj.class);

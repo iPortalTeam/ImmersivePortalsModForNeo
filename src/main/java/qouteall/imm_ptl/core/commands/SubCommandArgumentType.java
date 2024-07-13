@@ -14,7 +14,6 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
-import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
 import java.util.List;
@@ -76,7 +75,7 @@ public class SubCommandArgumentType implements ArgumentType<String> {
     
     public static void init() {
         ArgumentTypeRegistry.registerArgumentType(
-            new ResourceLocation("imm_ptl:sub_command_argument_type"),
+            McHelper.newResourceLocation("imm_ptl:sub_command_argument_type"),
             SubCommandArgumentType.class,
             SingletonArgumentInfo.contextFree(() -> instance)
         );

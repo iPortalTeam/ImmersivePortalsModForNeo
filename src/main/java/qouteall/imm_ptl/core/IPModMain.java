@@ -154,7 +154,7 @@ public class IPModMain {
     
     public static void registerBlocks(BiConsumer<ResourceLocation, PortalPlaceholderBlock> regFunc) {
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "nether_portal_block"),
+            McHelper.newResourceLocation("immersive_portals", "nether_portal_block"),
             PortalPlaceholderBlock.instance
         );
     }
@@ -162,52 +162,52 @@ public class IPModMain {
     public static void registerEntityTypes(BiConsumer<ResourceLocation, EntityType<?>> regFunc) {
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "portal"),
+            McHelper.newResourceLocation("immersive_portals", "portal"),
             Portal.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "nether_portal_new"),
+            McHelper.newResourceLocation("immersive_portals", "nether_portal_new"),
             NetherPortalEntity.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "end_portal"),
+            McHelper.newResourceLocation("immersive_portals", "end_portal"),
             EndPortalEntity.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "mirror"),
+            McHelper.newResourceLocation("immersive_portals", "mirror"),
             Mirror.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "breakable_mirror"),
+            McHelper.newResourceLocation("immersive_portals", "breakable_mirror"),
             BreakableMirror.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "global_tracked_portal"),
+            McHelper.newResourceLocation("immersive_portals", "global_tracked_portal"),
             GlobalTrackedPortal.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "border_portal"),
+            McHelper.newResourceLocation("immersive_portals", "border_portal"),
             WorldWrappingPortal.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "end_floor_portal"),
+            McHelper.newResourceLocation("immersive_portals", "end_floor_portal"),
             VerticalConnectingPortal.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "general_breakable_portal"),
+            McHelper.newResourceLocation("immersive_portals", "general_breakable_portal"),
             GeneralBreakablePortal.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "loading_indicator"),
+            McHelper.newResourceLocation("immersive_portals", "loading_indicator"),
             LoadingIndicatorEntity.entityType
         );
     }

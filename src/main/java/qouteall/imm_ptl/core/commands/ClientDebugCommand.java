@@ -516,7 +516,7 @@ public class ClientDebugCommand {
                                     
                                     ResourceKey<Level> dimKey = ResourceKey.create(
                                         Registries.DIMENSION,
-                                        new ResourceLocation(dimId)
+                                        McHelper.newResourceLocation(dimId)
                                     );
                                     Vec3 pos = new Vec3(x, y, z);
                                     
@@ -923,7 +923,7 @@ public class ClientDebugCommand {
             McRemoteProcedureCall.tellClientToInvoke(
                 player,
                 "qouteall.imm_ptl.core.commands.ClientDebugCommand.TestRemoteCallable.serverToClient",
-                "string", 2, 3.5, new ResourceLocation("imm_ptl:oops"),
+                "string", 2, 3.5, McHelper.newResourceLocation("imm_ptl:oops"),
                 Level.NETHER, Biomes.JUNGLE,
                 new BlockPos(3, 5, 4),
                 new Vec3(7, 4, 1)

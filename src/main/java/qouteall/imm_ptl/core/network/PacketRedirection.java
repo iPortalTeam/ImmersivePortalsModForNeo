@@ -44,7 +44,7 @@ public class PacketRedirection {
     // most game packets sent are redirected, so that payload id will be used very frequently
     // use a short id to reduce packet size
     public static final ResourceLocation payloadId =
-        new ResourceLocation("i:r");
+        McHelper.newResourceLocation("i:r");
     
     private static final ThreadLocal<ResourceKey<Level>> serverPacketRedirection =
         ThreadLocal.withInitial(() -> null);

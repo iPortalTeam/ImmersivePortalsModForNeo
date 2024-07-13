@@ -505,7 +505,7 @@ public class Helper {
     }
     
     public static ResourceKey<Level> dimIdToKey(String str) {
-        return dimIdToKey(new ResourceLocation(str));
+        return dimIdToKey(McHelper.newResourceLocation(str));
     }
     
     public static void putWorldId(CompoundTag tag, String tagName, ResourceKey<Level> dim) {

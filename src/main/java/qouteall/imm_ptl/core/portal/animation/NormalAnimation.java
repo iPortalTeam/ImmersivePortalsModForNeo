@@ -3,7 +3,6 @@ package qouteall.imm_ptl.core.portal.animation;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +20,7 @@ public class NormalAnimation implements PortalAnimationDriver {
     
     public static void init() {
         PortalAnimationDriver.registerDeserializer(
-            new ResourceLocation("imm_ptl:normal"),
+            McHelper.newResourceLocation("imm_ptl:normal"),
             NormalAnimation::deserialize
         );
     }

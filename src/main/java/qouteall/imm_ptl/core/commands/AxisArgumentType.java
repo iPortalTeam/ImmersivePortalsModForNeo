@@ -12,7 +12,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import qouteall.imm_ptl.core.McHelper;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -61,7 +61,7 @@ public class AxisArgumentType implements ArgumentType<Direction.Axis> {
     
     public static void init() {
         ArgumentTypeRegistry.registerArgumentType(
-            new ResourceLocation("imm_ptl:axis"),
+            McHelper.newResourceLocation("imm_ptl:axis"),
             AxisArgumentType.class,
             SingletonArgumentInfo.contextFree(() -> AxisArgumentType.instance)
         );

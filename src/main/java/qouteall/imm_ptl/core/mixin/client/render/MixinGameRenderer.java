@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -61,12 +62,9 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
     @Shadow
     protected abstract void bobView(PoseStack matrices, float f);
     
-    @Inject(method = "Lnet/minecraft/client/renderer/GameRenderer;render(FJZ)V", at = @At("HEAD"))
+    @Inject(method = "render", at = @At("HEAD"))
     private void onFarBeforeRendering(
-        float tickDelta,
-        long nanoTime,
-        boolean renderWorldIn,
-        CallbackInfo ci
+        DeltaTracker deltaTracker, boolean renderWorldIn, CallbackInfo ci
     ) {
         minecraft.getProfiler().push("ip_pre_total_render");
         IPGlobal.PRE_TOTAL_RENDER_TASK_LIST.processTasks();
@@ -78,8 +76,10 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
             return;
         }
         minecraft.getProfiler().push("ip_pre_render");
-        RenderStates.updatePreRenderInfo(tickDelta);
-        StableClientTimer.update(minecraft.level.getGameTime(), tickDelta);
+        RenderStates.updatePreRenderInfo(deltaTracker.getGameTimeDeltaTicks());
+        StableClientTimer.update(
+            minecraft.level.getGameTime(), deltaTracker.getGameTimeDeltaTicks()
+        );
         ClientPortalAnimationManagement.update(); // must update before teleportation
         ClientTeleportationManager.manageTeleportation(false);
         IPGlobal.PRE_GAME_RENDER_EVENT.invoker().run();
@@ -93,17 +93,14 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
     
     //before rendering world (not triggered when rendering portal)
     @Inject(
-        method = "Lnet/minecraft/client/renderer/GameRenderer;render(FJZ)V",
+        method = "render",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/GameRenderer;renderLevel(FJ)V"
+            target = "Lnet/minecraft/client/renderer/GameRenderer;renderLevel(Lnet/minecraft/client/DeltaTracker;)V"
         )
     )
     private void onBeforeRenderingCenter(
-        float float_1,
-        long long_1,
-        boolean boolean_1,
-        CallbackInfo ci
+        DeltaTracker deltaTracker, boolean bl, CallbackInfo ci
     ) {
         PortalRenderer.switchToCorrectRenderer();
         
@@ -112,18 +109,15 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
     
     //after rendering world (not triggered when rendering portal)
     @Inject(
-        method = "Lnet/minecraft/client/renderer/GameRenderer;render(FJZ)V",
+        method = "render",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/GameRenderer;renderLevel(FJ)V",
+            target = "Lnet/minecraft/client/renderer/GameRenderer;renderLevel(Lnet/minecraft/client/DeltaTracker;)V",
             shift = At.Shift.AFTER
         )
     )
     private void onAfterRenderingCenter(
-        float float_1,
-        long long_1,
-        boolean boolean_1,
-        CallbackInfo ci
+        DeltaTracker deltaTracker, boolean bl, CallbackInfo ci
     ) {
         IPCGlobal.renderer.finishRendering();
         
@@ -140,25 +134,25 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
     
     //special rendering in third person view
     @Redirect(
-        method = "Lnet/minecraft/client/renderer/GameRenderer;render(FJZ)V",
+        method = "render",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/GameRenderer;renderLevel(FJ)V"
+            target = "Lnet/minecraft/client/renderer/GameRenderer;renderLevel(Lnet/minecraft/client/DeltaTracker;)V"
         )
     )
     private void redirectRenderingWorld(
-        GameRenderer gameRenderer, float tickDelta, long limitTime
+        GameRenderer gameRenderer, DeltaTracker deltaTracker
     ) {
         if (CrossPortalViewRendering.renderCrossPortalView()) {
             return;
         }
         
-        gameRenderer.renderLevel(tickDelta, limitTime);
+        gameRenderer.renderLevel(deltaTracker);
     }
     
     @Inject(method = "renderLevel", at = @At("TAIL"))
     private void onRenderCenterEnded(
-        float f, long l, CallbackInfo ci
+        DeltaTracker deltaTracker, CallbackInfo ci
     ) {
         IPCGlobal.renderer.onHandRenderingEnded();
     }
@@ -167,18 +161,14 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
         method = "renderLevel",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V"
+            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V"
         )
     )
     private void wrapRenderLevel(
-        LevelRenderer instance,
-        float f, long l, boolean bl,
-        Camera camera, GameRenderer gameRenderer, LightTexture lightTexture,
-        Matrix4f modelView, Matrix4f projection,
-        Operation<Void> original
+        LevelRenderer instance, DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f projection, Operation<Void> original
     ) {
         original.call(
-            instance, f, l, bl, camera, gameRenderer, lightTexture, modelView, projection
+            instance, deltaTracker, bl, camera, gameRenderer, lightTexture, modelView, projection
         );
         
         IPCGlobal.renderer.onBeforeHandRendering(modelView);

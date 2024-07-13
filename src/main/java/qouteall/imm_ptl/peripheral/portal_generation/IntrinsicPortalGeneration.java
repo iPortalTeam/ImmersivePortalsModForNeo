@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -54,13 +53,13 @@ public class IntrinsicPortalGeneration {
     );
     
     public static void init() {
-        intrinsicToNether.identifier = new ResourceLocation("imm_ptl:intrinsic_nether_portal");
-        intrinsicFromNether.identifier = new ResourceLocation("imm_ptl:intrinsic_nether_portal");
+        intrinsicToNether.identifier = McHelper.newResourceLocation("imm_ptl:intrinsic_nether_portal");
+        intrinsicFromNether.identifier = McHelper.newResourceLocation("imm_ptl:intrinsic_nether_portal");
         
-        diligentFromNether.identifier = new ResourceLocation("imm_ptl:intrinsic_diligent_nether_portal");
-        diligentToNether.identifier = new ResourceLocation("imm_ptl:intrinsic_diligent_nether_portal");
+        diligentFromNether.identifier = McHelper.newResourceLocation("imm_ptl:intrinsic_diligent_nether_portal");
+        diligentToNether.identifier = McHelper.newResourceLocation("imm_ptl:intrinsic_diligent_nether_portal");
         
-        portalHelper.identifier = new ResourceLocation("imm_ptl:intrinsic_portal_helper");
+        portalHelper.identifier = McHelper.newResourceLocation("imm_ptl:intrinsic_portal_helper");
     }
     
     /**

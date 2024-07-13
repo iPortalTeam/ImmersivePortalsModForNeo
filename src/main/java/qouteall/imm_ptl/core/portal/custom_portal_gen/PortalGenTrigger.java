@@ -8,7 +8,6 @@ import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
@@ -94,18 +93,18 @@ public abstract class PortalGenTrigger {
     
     static {
         codecRegistry = new MappedRegistry<>(
-            ResourceKey.createRegistryKey(new ResourceLocation("imm_ptl:custom_portal_gen_trigger")),
+            ResourceKey.createRegistryKey(McHelper.newResourceLocation("imm_ptl:custom_portal_gen_trigger")),
             Lifecycle.stable()
         );
         
         Registry.register(
-            codecRegistry, new ResourceLocation("imm_ptl:use_item"), useItemTriggerCodec
+            codecRegistry, McHelper.newResourceLocation("imm_ptl:use_item"), useItemTriggerCodec
         );
         Registry.register(
-            codecRegistry, new ResourceLocation("imm_ptl:throw_item"), throwItemTriggerCodec
+            codecRegistry, McHelper.newResourceLocation("imm_ptl:throw_item"), throwItemTriggerCodec
         );
         Registry.register(
-            codecRegistry, new ResourceLocation("imm_ptl:conventional_dimension_change"),
+            codecRegistry, McHelper.newResourceLocation("imm_ptl:conventional_dimension_change"),
             ConventionalDimensionChangeTrigger.conventionalDimensionChangeCodec
         );
         

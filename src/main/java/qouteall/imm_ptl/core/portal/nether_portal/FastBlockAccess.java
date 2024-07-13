@@ -35,6 +35,16 @@ public record FastBlockAccess(
         int upperCY = world.getMaxSection();
         int upperCZ = centerChunkPos.z + radiusChunks;
         
+        return from(world, lowerCX, upperCX, lowerCY, upperCY, lowerCZ, upperCZ);
+    }
+    
+    @NotNull
+    public static FastBlockAccess from(
+        Level world,
+        int lowerCX, int upperCX,
+        int lowerCY, int upperCY,
+        int lowerCZ, int upperCZ
+    ) {
         int lX = upperCX - lowerCX + 1;
         int lY = upperCY - lowerCY + 1;
         int lZ = upperCZ - lowerCZ + 1;

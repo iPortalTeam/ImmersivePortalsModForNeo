@@ -86,6 +86,14 @@ public class McHelper {
     
     public static final Placeholder placeholder = new Placeholder();
     
+    public static ResourceLocation newResourceLocation(String a, String b) {
+        return ResourceLocation.fromNamespaceAndPath(a, b);
+    }
+    
+    public static ResourceLocation newResourceLocation(String a) {
+        return ResourceLocation.parse(a);
+    }
+    
     @Deprecated
     public static IEChunkMap getIEChunkMap(ResourceKey<Level> dimension) {
         return (IEChunkMap) (

@@ -23,7 +23,7 @@ import java.util.HashSet;
 public class DimensionIntId {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final ResourceLocation DYNAMIC_UPDATE_EVENT_EARLY_PHASE =
-        new ResourceLocation("iportal:early_phase");
+        McHelper.newResourceLocation("iportal:early_phase");
     
     public static DimIntIdMap clientRecord;
     
