@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.network.chat.Component;
+import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.portal.animation.TimingFunction;
 
 import java.util.Arrays;

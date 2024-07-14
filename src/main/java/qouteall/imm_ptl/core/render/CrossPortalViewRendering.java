@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPCGlobal;
@@ -106,11 +107,13 @@ public class CrossPortalViewRendering {
     }
     
     /**
-     * {@link Camera#getMaxZoom(double)}
+     * {@link Camera#getMaxZoom}
      */
+    @SuppressWarnings("JavadocReference")
     private static Vec3 getThirdPersonCameraPos(Vec3 endPos, Portal portal, Vec3 startPos) {
         Vec3 rtStart = portal.transformPoint(startPos);
         Vec3 rtEnd = portal.transformPoint(endPos);
+        assert client.cameraEntity != null;
         BlockHitResult blockHitResult = portal.getDestinationWorld().clip(
             new ClipContext(
                 rtStart,
@@ -121,7 +124,7 @@ public class CrossPortalViewRendering {
             )
         );
         
-        if (blockHitResult == null) {
+        if (blockHitResult.getType() == HitResult.Type.BLOCK) {
             return rtStart.add(rtEnd.subtract(rtStart).normalize().scale(
                 getThirdPersonMaxDistance()
             ));
@@ -131,7 +134,9 @@ public class CrossPortalViewRendering {
     }
     
     private static double getThirdPersonMaxDistance() {
-        return 4.0d * PehkuiInterface.invoker.computeThirdPersonScale(client.player, client.getFrameTime());
+        return 4.0d * PehkuiInterface.invoker.computeThirdPersonScale(
+            client.player, client.getTimer().getGameTimeDeltaTicks()
+        );
     }
     
     //    private static Vec3d getThirdPersonCameraPos(Portal portalHit, Camera resuableCamera) {

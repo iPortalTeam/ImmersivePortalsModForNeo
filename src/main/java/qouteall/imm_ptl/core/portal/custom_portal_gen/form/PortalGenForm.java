@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
+import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.portal.custom_portal_gen.CustomPortalGeneration;
 
 import java.util.function.Function;

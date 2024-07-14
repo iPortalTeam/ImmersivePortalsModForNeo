@@ -14,6 +14,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
+import qouteall.imm_ptl.core.McHelper;
 
 import java.util.Collection;
 import java.util.List;

@@ -102,6 +102,10 @@ public final record ChunkLoader(
     public FastBlockAccess createFastBlockAccess(MinecraftServer server) {
         ServerLevel world = McHelper.getServerWorld(server, dimension);
         
+        return createFastBlockAccess(world);
+    }
+    
+    public FastBlockAccess createFastBlockAccess(ServerLevel world) {
         return FastBlockAccess.from(
             world, new ChunkPos(x, z), radius
         );

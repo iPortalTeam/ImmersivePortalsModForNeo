@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import org.joml.Matrix4f;
+import org.joml.Quaternionfc;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -174,18 +175,6 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
         IPCGlobal.renderer.onBeforeHandRendering(modelView);
     }
     
-    @Inject(
-        method = "Lnet/minecraft/client/renderer/GameRenderer;renderLevel(FJ)V",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V",
-            shift = At.Shift.AFTER
-        )
-    )
-    private void onRightBeforeHandRendering(float f, long l, CallbackInfo ci) {
-    
-    }
-    
     //resize all world renderers when resizing window
     @Inject(method = "Lnet/minecraft/client/renderer/GameRenderer;resize(II)V", at = @At("RETURN"))
     private void onOnResized(int int_1, int int_2, CallbackInfo ci) {
@@ -306,15 +295,13 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
         method = "renderLevel",
         at = @At(
             value = "INVOKE",
-            target = "Lorg/joml/Matrix4f;rotationXYZ(FFF)Lorg/joml/Matrix4f;"
+            target = "Lorg/joml/Matrix4f;rotation(Lorg/joml/Quaternionfc;)Lorg/joml/Matrix4f;"
         )
     )
     private Matrix4f wrapCameraTransformation(
-        Matrix4f instance,
-        float angleX, float angleY, float angleZ,
-        Operation<Matrix4f> original
+        Matrix4f instance, Quaternionfc quat, Operation<Matrix4f> original
     ) {
-        Matrix4f r = original.call(instance, angleX, angleY, angleZ);
+        Matrix4f r = original.call(instance, quat);
         return TransformationManager.processTransformation(mainCamera, r);
     }
     

@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.api.PortalAPI;
 import qouteall.imm_ptl.core.ducks.IEWorld;
 import qouteall.imm_ptl.core.mixin.common.entity_sync.MixinServerGamePacketListenerImpl_Redirect;
@@ -235,7 +236,7 @@ public class PacketRedirection {
         // it's a pre-processor
         // that ProtocolInfo will be used by passing RegistryFriendlyByteBuf
         // so only a casting is needed
-        GameProtocols.CLIENTBOUND.bind(
+        GameProtocols.CLIENTBOUND_TEMPLATE.bind(
             argBuf -> ((RegistryFriendlyByteBuf) argBuf)
         );
     
