@@ -1,1 +1,1 @@
-Possibly fix https://github.com/iPortalTeam/MiniScaledMod/issues/35
+Move Iris compat to 1.7.0. Change default nether portal mode to adaptive. Maybe fix issue with bobby.
