@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.peripheral;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -11,7 +12,10 @@ import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import qouteall.imm_ptl.peripheral.alternate_dimension.*;
+import qouteall.imm_ptl.peripheral.alternate_dimension.ChaosBiomeSource;
+import qouteall.imm_ptl.peripheral.alternate_dimension.ErrorTerrainGenerator;
+import qouteall.imm_ptl.peripheral.alternate_dimension.FormulaGenerator;
+import qouteall.imm_ptl.peripheral.alternate_dimension.NormalSkylandGenerator;
 import qouteall.imm_ptl.peripheral.dim_stack.DimStackManagement;
 import qouteall.imm_ptl.peripheral.portal_generation.IntrinsicPortalGeneration;
 import qouteall.imm_ptl.peripheral.wand.ClientPortalWandPortalDrag;
@@ -99,24 +103,24 @@ public class PeripheralModMain {
     }
 
     public static void registerChunkGenerators(
-        BiConsumer<ResourceLocation, Codec<? extends ChunkGenerator>> regFunc
+        BiConsumer<ResourceLocation, MapCodec<? extends ChunkGenerator>> regFunc
     ) {
         regFunc.accept(
             new ResourceLocation("immersive_portals:error_terrain_generator"),
-            ErrorTerrainGenerator.codec
+            ErrorTerrainGenerator.MAP_CODEC
         );
         regFunc.accept(
             new ResourceLocation("immersive_portals:normal_skyland_generator"),
-            NormalSkylandGenerator.codec
+            NormalSkylandGenerator.MAP_CODEC
         );
     }
 
     public static void registerBiomeSources(
-        BiConsumer<ResourceLocation, Codec<? extends BiomeSource>> regFunc
+        BiConsumer<ResourceLocation, MapCodec<? extends BiomeSource>> regFunc
     ) {
         regFunc.accept(
             new ResourceLocation("immersive_portals:chaos_biome_source"),
-            ChaosBiomeSource.CODEC
+            ChaosBiomeSource.MAP_CODEC
         );
     }
 

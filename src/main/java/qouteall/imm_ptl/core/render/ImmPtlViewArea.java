@@ -1,7 +1,6 @@
 package qouteall.imm_ptl.core.render;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -28,7 +27,6 @@ import qouteall.q_misc_util.Helper;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Queue;
 import java.util.Set;
 import java.util.function.LongConsumer;
 
@@ -133,7 +131,6 @@ public class ImmPtlViewArea extends ViewArea {
     /**
      * It will only be called during vanilla outer world rendering
      * Won't be called in portal rendering
-     * In {@link net.minecraft.client.renderer.SectionOcclusionGraph#initializeQueueForFullUpdate(Camera, Queue)} it reads the RenderChunks in another thread.
      */
     @Override
     public void repositionCamera(double playerX, double playerZ) {

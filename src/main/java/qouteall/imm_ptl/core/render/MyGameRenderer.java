@@ -2,7 +2,6 @@ package qouteall.imm_ptl.core.render;
 
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.Util;
@@ -216,9 +215,8 @@ public class MyGameRenderer {
         invokeWrapper.accept(() -> {
             client.getProfiler().push("render_portal_content");
             client.gameRenderer.renderLevel(
-                tickDelta,
-                Util.getNanos(),
-                new PoseStack()
+                    tickDelta,
+                    Util.getNanos()
             );
             client.getProfiler().pop();
         });
@@ -272,7 +270,6 @@ public class MyGameRenderer {
     }
     
     /**
-     * {@link LevelRenderer#renderLevel(PoseStack, float, long, boolean, Camera, GameRenderer, LightTexture, Matrix4f)}
      */
     @IPVanillaCopy
     public static void resetFogState() {
@@ -304,15 +301,16 @@ public class MyGameRenderer {
     }
     
     /**
-     * {@link LevelRenderer#renderLevel(PoseStack, float, long, boolean, Camera, GameRenderer, LightTexture, Matrix4f)}
      */
     @IPVanillaCopy
-    public static void resetDiffuseLighting(PoseStack matrixStack) {
-        if (client.level.effects().constantAmbientLight()) {
-            Lighting.setupNetherLevel(matrixStack.last().pose());
+    public static void resetDiffuseLighting() {
+        ClientLevel world = client.level;
+        assert world != null;
+        if (world.effects().constantAmbientLight()) {
+            Lighting.setupNetherLevel();
         }
         else {
-            Lighting.setupLevel(matrixStack.last().pose());
+            Lighting.setupLevel();
         }
     }
     

@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.portal.custom_portal_gen.form;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,7 +19,7 @@ import qouteall.q_misc_util.my_util.DQuaternion;
 import qouteall.q_misc_util.my_util.IntBox;
 
 public class FlippingFloorSquareNewForm extends HeterogeneousForm {
-    public static final Codec<FlippingFloorSquareNewForm> codec = RecordCodecBuilder.create(instance -> {
+    public static final MapCodec<FlippingFloorSquareNewForm> CODEC = RecordCodecBuilder.mapCodec(instance -> {
         return instance.group(
             Codec.BOOL.fieldOf("generate_frame_if_not_found").forGetter(o -> o.generateFrameIfNotFound),
             SimpleBlockPredicate.CODEC.fieldOf("area_block").forGetter(o -> o.areaBlock),
@@ -86,8 +87,8 @@ public class FlippingFloorSquareNewForm extends HeterogeneousForm {
     }
     
     @Override
-    public Codec<? extends PortalGenForm> getCodec() {
-        return codec;
+    public MapCodec<? extends PortalGenForm> getCodec() {
+        return CODEC;
     }
     
     @Override

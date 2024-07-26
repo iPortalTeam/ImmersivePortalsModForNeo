@@ -1,6 +1,5 @@
 package qouteall.imm_ptl.core.mixin.client.render;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.SectionBufferBuilderPool;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
@@ -40,9 +39,7 @@ public class MixinSectionRenderDispatcher {
             && !SodiumInterface.invoker.isSodiumPresent()
         ) {
             int processors = Runtime.getRuntime().availableProcessors();
-            int bufferCount = Minecraft.getInstance().is64Bit() ?
-                processors : Math.min(processors, 4);
-            return SectionBufferBuilderPool.allocate(bufferCount);
+            return SectionBufferBuilderPool.allocate(processors);
         }
         
         return instance.sectionBufferPool();

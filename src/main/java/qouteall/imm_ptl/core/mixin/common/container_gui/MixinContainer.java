@@ -15,12 +15,13 @@ import qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer;
 @Mixin(Container.class)
 public interface MixinContainer {
     @Inject(
-        method = "stillValidBlockEntity(Lnet/minecraft/world/level/block/entity/BlockEntity;Lnet/minecraft/world/entity/player/Player;I)Z",
+        method = "stillValidBlockEntity(Lnet/minecraft/world/level/block/entity/BlockEntity;Lnet/minecraft/world/entity/player/Player;F)Z",
         at = @At("RETURN"),
+        remap = false,
         cancellable = true
     )
     private static void onStillValidBlockEntity(
-        BlockEntity blockEntity, Player player, int distance, CallbackInfoReturnable<Boolean> cir
+        BlockEntity blockEntity, Player player, float distance, CallbackInfoReturnable<Boolean> cir
     ) {
         if (!cir.getReturnValue()) {
             BlockPos targetPos = blockEntity.getBlockPos();

@@ -10,6 +10,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.animation.StableClientTimer;
@@ -355,17 +356,22 @@ public class WireRenderingHelper {
         int color, Vec3 normal, Matrix4f matrix, Matrix3f normalMatrix,
         Vec3 lineStart, Vec3 lineEnd
     ) {
+        Vector3f normalTemp = new Vector3f();
+
+        normalTemp.set(normal.x(), normal.y(), normal.z());
+        normalMatrix.transform(normalTemp);
+
         vertexConsumer
-            .vertex(matrix, (float) (lineStart.x), (float) (lineStart.y), (float) (lineStart.z))
-            .color(color)
-            .normal(normalMatrix, (float) normal.x, (float) normal.y, (float) normal.z)
-            .endVertex();
-        
+                .vertex(matrix, (float) (lineStart.x), (float) (lineStart.y), (float) (lineStart.z))
+                .color(color)
+                .normal(normalTemp.x(), normalTemp.y(), normalTemp.z())
+                .endVertex();
+
         vertexConsumer
-            .vertex(matrix, (float) (lineEnd.x), (float) (lineEnd.y), (float) (lineEnd.z))
-            .color(color)
-            .normal(normalMatrix, (float) normal.x, (float) normal.y, (float) normal.z)
-            .endVertex();
+                .vertex(matrix, (float) (lineEnd.x), (float) (lineEnd.y), (float) (lineEnd.z))
+                .color(color)
+                .normal(normalTemp.x(), normalTemp.y(), normalTemp.z())
+                .endVertex();
     }
     
     private static void putLineToLineStrip(

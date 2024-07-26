@@ -9,7 +9,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
@@ -323,11 +322,5 @@ public class IPMcHelper {
         byte[] packetBytes = new byte[buf.readableBytes()];
         buf.readBytes(packetBytes);
         return packetBytes;
-    }
-    
-    public static byte[] packetToBytes(Packet<?> packet) {
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        packet.write(buf);
-        return bufToBytes(buf);
     }
 }

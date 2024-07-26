@@ -3,6 +3,7 @@ package qouteall.imm_ptl.peripheral.alternate_dimension;
 import com.google.common.base.Suppliers;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -50,17 +51,17 @@ import java.util.stream.Stream;
  * it uses instanceof to initialize random source.
  */
 public class NormalSkylandGenerator extends NoiseBasedChunkGenerator {
-    
-    public static final Codec<NormalSkylandGenerator> codec = RecordCodecBuilder.create(
-        instance -> instance.group(
-                RegistryOps.retrieveGetter(Registries.BIOME),
-                RegistryOps.retrieveGetter(Registries.DENSITY_FUNCTION),
-                RegistryOps.retrieveGetter(Registries.NOISE),
-                RegistryOps.retrieveGetter(Registries.NOISE_SETTINGS),
-                RegistryOps.retrieveGetter(Registries.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST),
-                Codec.LONG.optionalFieldOf("seed", 0L).forGetter(g -> g.seed)
-            )
-            .apply(instance, NormalSkylandGenerator::create)
+
+    public static final MapCodec<NormalSkylandGenerator> MAP_CODEC = RecordCodecBuilder.mapCodec(
+            instance -> instance.group(
+                            RegistryOps.retrieveGetter(Registries.BIOME),
+                            RegistryOps.retrieveGetter(Registries.DENSITY_FUNCTION),
+                            RegistryOps.retrieveGetter(Registries.NOISE),
+                            RegistryOps.retrieveGetter(Registries.NOISE_SETTINGS),
+                            RegistryOps.retrieveGetter(Registries.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST),
+                            Codec.LONG.optionalFieldOf("seed", 0L).forGetter(g -> g.seed)
+                    )
+                    .apply(instance, NormalSkylandGenerator::create)
     );
     
     private final RandomState delegatedRandomState;
@@ -174,8 +175,8 @@ public class NormalSkylandGenerator extends NoiseBasedChunkGenerator {
     private final NoiseBasedChunkGenerator delegate;
     
     @Override
-    protected Codec<? extends ChunkGenerator> codec() {
-        return codec;
+    protected MapCodec<? extends ChunkGenerator> codec() {
+        return MAP_CODEC;
     }
     
     @Override

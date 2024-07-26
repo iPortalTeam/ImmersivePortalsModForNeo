@@ -50,24 +50,20 @@ public abstract class MixinLevelRenderer_Clouds {
         at = @At("HEAD")
     )
     private void onBeginRenderClouds(
-        PoseStack matrices, Matrix4f matrix4f,
-        float tickDelta, double cameraX, double cameraY, double cameraZ, CallbackInfo ci
-    ) {
+            PoseStack poseStack, Matrix4f projectionMatrix, Matrix4f frustrumMatrix, float partialTick, double camX, double camY, double camZ, CallbackInfo ci    ) {
         if (RenderStates.getRenderedPortalNum() == 0) {
             return;
         }
         
         if (IPGlobal.cloudOptimization) {
-            portal_onBeginCloudRendering(tickDelta, cameraX, cameraY, cameraZ);
-        }
+            portal_onBeginCloudRendering(partialTick, camX, camY, camZ);        }
     }
     
     @Inject(
         method = "renderClouds",
         at = @At("RETURN")
     )
-    private void onEndRenderClouds(PoseStack matrices, Matrix4f matrix4f, float f, double d, double e, double g, CallbackInfo ci) {
-        if (RenderStates.getRenderedPortalNum() == 0) {
+    private void onEndRenderClouds(PoseStack poseStack, Matrix4f projectionMatrix, Matrix4f frustrumMatrix, float partialTick, double camX, double camY, double camZ, CallbackInfo ci) {        if (RenderStates.getRenderedPortalNum() == 0) {
             return;
         }
         

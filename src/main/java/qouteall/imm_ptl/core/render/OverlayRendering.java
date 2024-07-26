@@ -167,7 +167,6 @@ public class OverlayRendering {
     }
     
     /**
-     * {@link VertexConsumer#putBulkData(PoseStack.Pose, BakedQuad, float, float, float, int, int)}
      * it hardcoded alpha to 1. change it to my customized alpha
      */
     @IPVanillaCopy

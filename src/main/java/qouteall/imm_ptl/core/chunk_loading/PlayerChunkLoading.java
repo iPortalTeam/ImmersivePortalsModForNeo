@@ -159,7 +159,7 @@ public class PlayerChunkLoading {
                 
                 if (sentNum.getValue() == 0) {
                     ++this.unacknowledgedBatches;
-                    connection.send(new ClientboundChunkBatchStartPacket());
+                    connection.send(ClientboundChunkBatchStartPacket.INSTANCE);
                 }
                 sentNum.increment();
                 

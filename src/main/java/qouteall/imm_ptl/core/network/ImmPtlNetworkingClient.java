@@ -23,7 +23,7 @@ public abstract class ImmPtlNetworkingClient {
         ResourceKey<Level> dimension = PortalAPI.clientIntToDimKey(syncPacket.dimensionId());
         ClientLevel world = ClientWorldLoader.getWorld(dimension);
 
-        Entity existing = world.getEntity(syncPacket.intId());
+        Entity existing = world.getEntity(syncPacket.id());
 
         if (existing instanceof Portal existingPortal) {
             // update existing portal (handles default animation)
@@ -32,7 +32,7 @@ public abstract class ImmPtlNetworkingClient {
                 return;
             }
 
-            if (existingPortal.getType() != syncPacket.type()) {
+            if (existingPortal.getType() != syncPacket.entityType()) {
                 LOGGER.error("Entity type mismatch when syncing portal {} {}", existingPortal, syncPacket.type());
                 return;
             }
@@ -41,7 +41,7 @@ public abstract class ImmPtlNetworkingClient {
         }
         else {
             // spawn new portal
-            Entity entity = syncPacket.type().create(world);
+            Entity entity = syncPacket.entityType().create(world);
             Validate.notNull(entity, "Entity type is null");
 
             if (!(entity instanceof Portal portal)) {
@@ -49,7 +49,7 @@ public abstract class ImmPtlNetworkingClient {
                 return;
             }
 
-            entity.setId(syncPacket.intId());
+            entity.setId(syncPacket.id());
             entity.setUUID(syncPacket.uuid());
             entity.syncPacketPositionCodec(syncPacket.x(), syncPacket.y(), syncPacket.z());
             entity.moveTo(syncPacket.x(), syncPacket.y(), syncPacket.z());

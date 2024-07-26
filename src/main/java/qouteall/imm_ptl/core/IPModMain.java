@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer;
@@ -65,7 +65,7 @@ public class IPModMain {
         
         Helper.LOGGER.info("Immersive Portals Mod Initializing");
 
-        eventBus.addListener(RegisterPayloadHandlerEvent.class, Payloads::register);
+        eventBus.addListener(RegisterPayloadHandlersEvent.class, Payloads::register);
         ImmPtlNetworkConfig.init(eventBus);
 
         NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> IPGlobal.CLIENT_TASK_LIST.processTasks());
@@ -101,7 +101,7 @@ public class IPModMain {
         BlockManipulationServer.init();
 
         NeoForge.EVENT_BUS.addListener(RegisterCommandsEvent.class, event -> {
-            PortalCommand.register(event.getDispatcher());
+            PortalCommand.register(event.getDispatcher(), event.getBuildContext());
         });
 
         // @Nick1st moved to IPModEntry (those are registry functions)

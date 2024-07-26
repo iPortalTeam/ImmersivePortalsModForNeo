@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.portal.custom_portal_gen.form;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -19,7 +20,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class ScalingSquareForm extends NetherPortalLikeForm {
-    public static final Codec<ScalingSquareForm> codec = RecordCodecBuilder.create(instance -> {
+    public static final MapCodec<ScalingSquareForm> CODEC = RecordCodecBuilder.mapCodec(instance -> {
         return instance.group(
             BuiltInRegistries.BLOCK.byNameCodec().fieldOf("from_frame_block").forGetter(o -> o.fromFrameBlock),
             BuiltInRegistries.BLOCK.byNameCodec().fieldOf("area_block").forGetter(o -> o.areaBlock),
@@ -49,8 +50,8 @@ public class ScalingSquareForm extends NetherPortalLikeForm {
     }
     
     @Override
-    public Codec<? extends PortalGenForm> getCodec() {
-        return codec;
+    public MapCodec<? extends PortalGenForm> getCodec() {
+        return CODEC;
     }
     
     @Override
