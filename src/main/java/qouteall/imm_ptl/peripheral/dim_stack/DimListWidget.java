@@ -38,7 +38,6 @@ public class DimListWidget extends AbstractSelectionList<DimEntryWidget> {
         this.parent = parent;
         this.type = type;
         this.draggingCallback = draggingCallback;
-        setRenderBackground(false);
     }
     
     @Override

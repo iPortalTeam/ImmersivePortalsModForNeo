@@ -7,6 +7,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.mc_utils.ServerTaskList;
+import qouteall.imm_ptl.core.portal.nether_portal.FastBlockAccess;
 import qouteall.q_misc_util.my_util.MyTaskList;
 
 public final record ChunkLoader(
@@ -97,11 +98,11 @@ public final record ChunkLoader(
             }
         }
     }
-    
-    public LenientChunkRegion createChunkRegion(MinecraftServer server) {
-        ServerLevel world = server.getLevel(dimension);
-        
-        return LenientChunkRegion.createLenientChunkRegion(getCenter(), radius, world);
+
+    public FastBlockAccess createFastBlockAccess(ServerLevel world) {
+        return FastBlockAccess.from(
+                world, new ChunkPos(x, z), radius
+        );
     }
     
     /**

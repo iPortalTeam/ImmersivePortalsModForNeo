@@ -3,7 +3,6 @@ package qouteall.imm_ptl.core.render.renderer;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.GraphicsStatus;
@@ -30,11 +29,7 @@ import qouteall.imm_ptl.core.portal.Mirror;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.imm_ptl.core.portal.global_portals.GlobalPortalStorage;
-import qouteall.imm_ptl.core.render.MyGameRenderer;
-import qouteall.imm_ptl.core.render.MyRenderHelper;
-import qouteall.imm_ptl.core.render.PortalGroup;
-import qouteall.imm_ptl.core.render.PortalRenderable;
-import qouteall.imm_ptl.core.render.TransformationManager;
+import qouteall.imm_ptl.core.render.*;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
 import qouteall.imm_ptl.core.render.context_management.WorldRenderInfo;
@@ -45,11 +40,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public abstract class PortalRenderer {
-    
-    /**
-     * An event for filtering whether a portal should render.
-     * All listeners' results are ANDed.
-     */
+
     public static class PortalRenderingPredicateEvent extends Event {
         public final Portal portal;
 
@@ -67,7 +58,7 @@ public abstract class PortalRenderer {
             return canRender;
         }
     }
-    
+
     public static record PortalGroupToRender(
         PortalGroup group,
         List<Portal> portals
@@ -80,15 +71,15 @@ public abstract class PortalRenderer {
     
     public static final Minecraft client = Minecraft.getInstance();
     
-    public abstract void onBeforeTranslucentRendering(PoseStack matrixStack);
+    public abstract void onBeforeTranslucentRendering(Matrix4f modelView);
     
-    public abstract void onAfterTranslucentRendering(PoseStack matrixStack);
-    
-    // will be called when rendering portal
-    public abstract void onHandRenderingEnded(PoseStack matrixStack);
+    public abstract void onAfterTranslucentRendering(Matrix4f modelView);
     
     // will be called when rendering portal
-    public void onBeforeHandRendering(PoseStack matrixStack) {}
+    public abstract void onHandRenderingEnded();
+    
+    // will be called when rendering portal
+    public void onBeforeHandRendering(Matrix4f modelView) {}
     
     // this will NOT be called when rendering portal
     public abstract void prepareRendering();
@@ -103,10 +94,10 @@ public abstract class PortalRenderer {
     // this will also be called in outer world rendering
     public abstract boolean replaceFrameBufferClearing();
     
-    protected List<PortalRenderable> getPortalsToRender(PoseStack matrixStack) {
+    protected List<PortalRenderable> getPortalsToRender(Matrix4f modelView) {
         Supplier<Frustum> frustumSupplier = Helper.cached(() -> {
             Frustum frustum = new Frustum(
-                matrixStack.last().pose(),
+                modelView,
                 RenderSystem.getProjectionMatrix()
             );
             
@@ -118,7 +109,9 @@ public abstract class PortalRenderer {
         
         ObjectArrayList<PortalRenderable> renderables = new ObjectArrayList<>();
         
-        List<Portal> globalPortals = GlobalPortalStorage.getGlobalPortals(client.level);
+        ClientLevel world = client.level;
+        assert world != null;
+        List<Portal> globalPortals = GlobalPortalStorage.getGlobalPortals(world);
         for (Portal globalPortal : globalPortals) {
             if (!shouldSkipRenderingPortal(globalPortal, frustumSupplier)) {
                 renderables.add(globalPortal);
@@ -128,9 +121,8 @@ public abstract class PortalRenderer {
         Object2ObjectOpenHashMap<PortalGroup, PortalGroupToRender> groupToRenderable =
             new Object2ObjectOpenHashMap<>();
         
-        client.level.entitiesForRendering().forEach(e -> {
-            if (e instanceof Portal) {
-                Portal portal = (Portal) e;
+        world.entitiesForRendering().forEach(e -> {
+            if (e instanceof Portal portal) {
                 if (!shouldSkipRenderingPortal(portal, frustumSupplier)) {
                     PortalLike renderingDelegate = portal.getRenderingDelegate();
                     
@@ -205,13 +197,17 @@ public abstract class PortalRenderer {
                 }
             }
         }
-
+        
         if (PortalRendering.isInvalidRecursionRendering(portal)) {
             return true;
         }
-        
+
         boolean predicateTest = NeoForge.EVENT_BUS.post(new PortalRenderingPredicateEvent(portal)).canRender();
-        return !predicateTest;
+        if (!predicateTest) {
+            return true;
+        }
+        
+        return false;
     }
     
     public static double getRenderRange() {
@@ -344,7 +340,7 @@ public abstract class PortalRenderer {
         return portal.hasScaling() && portal.isFuseView();
     }
     
-    public void onBeginIrisTranslucentRendering(PoseStack matrixStack) {}
+    public void onBeginIrisTranslucentRendering(Matrix4f modelView) {}
     
     private static boolean fabulousWarned = false;
     
@@ -362,14 +358,14 @@ public abstract class PortalRenderer {
         }
         
         IPModInfoChecking.checkShaderpack();
-
+        
         if (IrisInterface.invoker.isIrisPresent()) {
             if (IrisInterface.invoker.isShaders()) {
                 if (IPCGlobal.experimentalIrisPortalRenderer) {
                     switchRenderer(ExperimentalIrisPortalRenderer.instance);
                     return;
                 }
-
+                
                 switch (IPGlobal.renderMode) {
                     case normal -> switchRenderer(IrisPortalRenderer.instance);
                     case compatibility -> switchRenderer(IrisCompatibilityPortalRenderer.instance);
@@ -392,7 +388,7 @@ public abstract class PortalRenderer {
         if (IPCGlobal.renderer != renderer) {
             Helper.log("switched to renderer " + renderer.getClass());
             IPCGlobal.renderer = renderer;
-
+            
             if (IrisInterface.invoker.isShaders()) {
                 IrisInterface.invoker.reloadPipelines();
             }

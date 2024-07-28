@@ -1,6 +1,6 @@
 package qouteall.imm_ptl.peripheral;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -11,7 +11,10 @@ import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import qouteall.imm_ptl.peripheral.alternate_dimension.*;
+import qouteall.imm_ptl.peripheral.alternate_dimension.ChaosBiomeSource;
+import qouteall.imm_ptl.peripheral.alternate_dimension.ErrorTerrainGenerator;
+import qouteall.imm_ptl.peripheral.alternate_dimension.FormulaGenerator;
+import qouteall.imm_ptl.peripheral.alternate_dimension.NormalSkylandGenerator;
 import qouteall.imm_ptl.peripheral.dim_stack.DimStackManagement;
 import qouteall.imm_ptl.peripheral.portal_generation.IntrinsicPortalGeneration;
 import qouteall.imm_ptl.peripheral.wand.ClientPortalWandPortalDrag;
@@ -33,7 +36,7 @@ public class PeripheralModMain {
                 
                 CommandStickItem.addIntoCreativeTag(entries);
                 
-                entries.accept(BuiltInRegistries.ITEM.get(new ResourceLocation("immersive_portals", "portal_helper")));
+                entries.accept(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("immersive_portals", "portal_helper")));
             })
             .build();
     
@@ -70,20 +73,20 @@ public class PeripheralModMain {
     
     public static void registerItems(BiConsumer<ResourceLocation, Item> regFunc) {
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "portal_helper"),
+            ResourceLocation.fromNamespaceAndPath("immersive_portals", "portal_helper"),
             new PortalHelperItem(PeripheralModMain.portalHelperBlock, new Item.Properties())
         );
 
         CommandStickItem commandStickItem = new CommandStickItem(new Item.Properties());
         regFunc.accept(
-            new ResourceLocation("immersive_portals:command_stick"),
+                ResourceLocation.parse("immersive_portals:command_stick"),
             commandStickItem
         );
         CommandStickItem.instance = commandStickItem;
 
         PortalWandItem portalWandItem = new PortalWandItem(new Item.Properties());
         regFunc.accept(
-            new ResourceLocation("immersive_portals:portal_wand"),
+            ResourceLocation.parse("immersive_portals:portal_wand"),
                 portalWandItem
         );
         PortalWandItem.instance = portalWandItem;
@@ -92,31 +95,31 @@ public class PeripheralModMain {
     public static void registerBlocks(BiConsumer<ResourceLocation, Block> regFunc) {
         Block block = new Block(BlockBehaviour.Properties.of().noOcclusion().isRedstoneConductor((a, b, c) -> false));
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "portal_helper"),
+                ResourceLocation.fromNamespaceAndPath("immersive_portals", "portal_helper"),
             block
         );
         portalHelperBlock = block;
     }
 
     public static void registerChunkGenerators(
-        BiConsumer<ResourceLocation, Codec<? extends ChunkGenerator>> regFunc
+        BiConsumer<ResourceLocation, MapCodec<? extends ChunkGenerator>> regFunc
     ) {
         regFunc.accept(
-            new ResourceLocation("immersive_portals:error_terrain_generator"),
-            ErrorTerrainGenerator.codec
+                ResourceLocation.parse("immersive_portals:error_terrain_generator"),
+            ErrorTerrainGenerator.MAP_CODEC
         );
         regFunc.accept(
-            new ResourceLocation("immersive_portals:normal_skyland_generator"),
-            NormalSkylandGenerator.codec
+                ResourceLocation.parse("immersive_portals:normal_skyland_generator"),
+            NormalSkylandGenerator.MAP_CODEC
         );
     }
 
     public static void registerBiomeSources(
-        BiConsumer<ResourceLocation, Codec<? extends BiomeSource>> regFunc
+        BiConsumer<ResourceLocation, MapCodec<? extends BiomeSource>> regFunc
     ) {
         regFunc.accept(
-            new ResourceLocation("immersive_portals:chaos_biome_source"),
-            ChaosBiomeSource.CODEC
+                ResourceLocation.parse("immersive_portals:chaos_biome_source"),
+            ChaosBiomeSource.MAP_CODEC
         );
     }
 
@@ -124,7 +127,7 @@ public class PeripheralModMain {
         BiConsumer<ResourceLocation, CreativeModeTab> regFunc
     ) {
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "general"),
+                ResourceLocation.fromNamespaceAndPath("immersive_portals", "general"),
             TAB
         );
     }

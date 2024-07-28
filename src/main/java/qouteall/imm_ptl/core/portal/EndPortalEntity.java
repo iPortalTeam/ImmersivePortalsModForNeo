@@ -17,6 +17,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
+import net.minecraft.world.level.levelgen.feature.EndPlatformFeature;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.Validate;
@@ -81,8 +82,7 @@ public class EndPortalEntity extends Portal {
         
         // for toObsidianPlatform mode, if the platform does not get generated before
         // going through portal, the player may fall into void
-        ServerLevel.makeObsidianPlatform(world);
-        
+        EndPlatformFeature.createEndPlatform(world, ServerLevel.END_SPAWN_POINT, false);
         // update dragon fight info
         EndDragonFight dragonFight = world.getDragonFight();
         if (dragonFight == null) {
@@ -253,7 +253,7 @@ public class EndPortalEntity extends Portal {
         assert server != null;
         ServerLevel endWorld = server.getLevel(Level.END);
         if (endWorld != null) {
-            ServerLevel.makeObsidianPlatform(endWorld);
+            EndPlatformFeature.createEndPlatform(endWorld, ServerLevel.END_SPAWN_POINT, false);
         }
     }
     
@@ -330,7 +330,7 @@ public class EndPortalEntity extends Portal {
                     assert server != null;
                     ServerLevel endWorld = server.getLevel(Level.END);
                     if (endWorld != null) {
-                        ServerLevel.makeObsidianPlatform(endWorld);
+                        EndPlatformFeature.createEndPlatform(endWorld, ServerLevel.END_SPAWN_POINT, false);
                     }
                 }
             }

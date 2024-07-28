@@ -18,7 +18,6 @@ public class MixinBlockStatePredictionHandler {
     /**
      * Each dimension has its own BlockStatePredictionHandler, because its internal map does not discriminate dimensions.
      * So all the handlers should have synchronized sequence number.
-     * See also {@link MixinClientPacketListener#redirectHandleBlockChangedAck(ClientLevel, int)}
      */
     @Inject(
         method = "startPredicting",

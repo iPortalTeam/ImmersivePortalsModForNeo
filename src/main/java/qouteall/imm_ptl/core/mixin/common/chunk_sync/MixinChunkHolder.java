@@ -25,10 +25,6 @@ public class MixinChunkHolder implements IEChunkHolder {
     
     @Shadow
     @Final
-    private ChunkPos pos;
-    
-    @Shadow
-    @Final
     private ChunkHolder.PlayerProvider playerProvider;
     
     @Shadow

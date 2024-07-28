@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer;
@@ -57,51 +57,51 @@ import java.nio.file.Path;
 import java.util.function.BiConsumer;
 
 public class IPModMain {
-    
+
     private static final Logger LOGGER = LogUtils.getLogger();
-    
+
     public static void init(IEventBus eventBus) {
         loadConfig();
-        
+
         Helper.LOGGER.info("Immersive Portals Mod Initializing");
 
-        eventBus.addListener(RegisterPayloadHandlerEvent.class, Payloads::register);
+        eventBus.addListener(RegisterPayloadHandlersEvent.class, Payloads::register);
         ImmPtlNetworkConfig.init(eventBus);
 
         NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> IPGlobal.CLIENT_TASK_LIST.processTasks());
 
         NeoForge.EVENT_BUS.addListener(IPGlobal.PreGameRenderEvent.class, preGameRenderEvent -> IPGlobal.PRE_GAME_RENDER_TASK_LIST.processTasks());
-        
+
         RectangularPortalShape.init();
         SpecialFlatPortalShape.init();
         BoxPortalShape.init();
-        
+
         ImmPtlChunkTracking.init();
-        
+
         WorldInfoSender.init();
-        
+
         GlobalPortalStorage.init();
-        
+
         EntitySync.init();
-        
+
         ServerTeleportationManager.init();
-        
+
         CollisionHelper.init();
-        
+
         PortalExtension.init();
-        
+
         GcMonitor.initCommon();
-        
+
         ServerPerformanceMonitor.init();
-        
+
         ImmPtlChunkTickets.init();
-        
+
         IPPortingLibCompat.init();
-        
+
         BlockManipulationServer.init();
 
         NeoForge.EVENT_BUS.addListener(RegisterCommandsEvent.class, event -> {
-            PortalCommand.register(event.getDispatcher());
+            PortalCommand.register(event.getDispatcher(), event.getBuildContext());
         });
 
         // @Nick1st moved to IPModEntry (those are registry functions)
@@ -110,7 +110,7 @@ public class IPModMain {
 //        AxisArgumentType.init();
 
         DebugUtil.init();
-        
+
         ServerTaskList.init();
 
         CustomPortalGenManager.init(eventBus);
@@ -122,13 +122,13 @@ public class IPModMain {
 
         if (!IPFeatureControl.enableVanillaBehaviorChangingByDefault()) {
             LOGGER.info("""
-                iPortal is provided by jar-in-jar.
-                The default value of 'nether portal mode', 'end portal mode' and 'enable mirror creation' in config will be respectively vanilla, vanilla and false.
-                (The default value is only used when config file is not present of missing fields. This does not change existing config.)
-                """);
+                    iPortal is provided by jar-in-jar.
+                    The default value of 'nether portal mode', 'end portal mode' and 'enable mirror creation' in config will be respectively vanilla, vanilla and false.
+                    (The default value is only used when config file is not present of missing fields. This does not change existing config.)
+                    """);
         }
     }
-    
+
     private static void loadConfig() {
         // upgrade old config
         Path gameDir = O_O.getGameDir();
@@ -138,12 +138,11 @@ public class IPModMain {
             boolean succeeded = oldConfigFile.renameTo(dest);
             if (succeeded) {
                 Helper.log("Upgraded old config file");
-            }
-            else {
+            } else {
                 Helper.err("Failed to upgrade old config file");
             }
         }
-        
+
         Helper.log("Loading Immersive Portals config");
         IPGlobal.configHolder = AutoConfig.register(IPConfig.class, GsonConfigSerializer::new);
         IPGlobal.configHolder.registerSaveListener((configHolder, ipConfig) -> {
@@ -160,8 +159,8 @@ public class IPModMain {
 
     public static void registerBlocks(BiConsumer<ResourceLocation, PortalPlaceholderBlock> regFunc) {
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "nether_portal_block"),
-            PortalPlaceholderBlock.instance
+                ResourceLocation.fromNamespaceAndPath("immersive_portals", "nether_portal_block"),
+                PortalPlaceholderBlock.instance
         );
     }
 
@@ -172,53 +171,53 @@ public class IPModMain {
     public static void registerEntityTypes(BiConsumer<ResourceLocation, EntityType<?>> regFunc) {
 
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "portal"),
-            Portal.ENTITY_TYPE
+                ResourceLocation.fromNamespaceAndPath("immersive_portals", "portal"),
+                Portal.ENTITY_TYPE
         );
-        
+
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "nether_portal_new"),
-            NetherPortalEntity.ENTITY_TYPE
+                ResourceLocation.fromNamespaceAndPath("immersive_portals", "nether_portal_new"),
+                NetherPortalEntity.ENTITY_TYPE
         );
-        
+
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "end_portal"),
-            EndPortalEntity.ENTITY_TYPE
+                ResourceLocation.fromNamespaceAndPath("immersive_portals", "end_portal"),
+                EndPortalEntity.ENTITY_TYPE
         );
-        
+
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "mirror"),
-            Mirror.ENTITY_TYPE
+                ResourceLocation.fromNamespaceAndPath("immersive_portals", "mirror"),
+                Mirror.ENTITY_TYPE
         );
-        
+
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "breakable_mirror"),
-            BreakableMirror.ENTITY_TYPE
+                ResourceLocation.fromNamespaceAndPath("immersive_portals", "breakable_mirror"),
+                BreakableMirror.ENTITY_TYPE
         );
-        
+
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "global_tracked_portal"),
-            GlobalTrackedPortal.ENTITY_TYPE
+                ResourceLocation.fromNamespaceAndPath("immersive_portals", "global_tracked_portal"),
+                GlobalTrackedPortal.ENTITY_TYPE
         );
-        
+
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "border_portal"),
-            WorldWrappingPortal.ENTITY_TYPE
+                ResourceLocation.fromNamespaceAndPath("immersive_portals", "border_portal"),
+                WorldWrappingPortal.ENTITY_TYPE
         );
-        
+
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "end_floor_portal"),
-            VerticalConnectingPortal.ENTITY_TYPE
+                ResourceLocation.fromNamespaceAndPath("immersive_portals", "end_floor_portal"),
+                VerticalConnectingPortal.ENTITY_TYPE
         );
-        
+
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "general_breakable_portal"),
-            GeneralBreakablePortal.ENTITY_TYPE
+                ResourceLocation.fromNamespaceAndPath("immersive_portals", "general_breakable_portal"),
+                GeneralBreakablePortal.ENTITY_TYPE
         );
-        
+
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "loading_indicator"),
-            LoadingIndicatorEntity.entityType
+                ResourceLocation.fromNamespaceAndPath("immersive_portals", "loading_indicator"),
+                LoadingIndicatorEntity.entityType
         );
     }
 }

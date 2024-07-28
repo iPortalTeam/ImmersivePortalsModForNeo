@@ -43,7 +43,6 @@ import net.minecraft.world.level.chunk.DataLayer;
 import net.minecraft.world.level.chunk.EmptyLevelChunk;
 import net.minecraft.world.level.entity.EntityTickList;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.ClientCommandSourceStack;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPCGlobal;
@@ -71,18 +70,14 @@ import qouteall.q_misc_util.my_util.MyTaskList;
 
 import java.lang.ref.WeakReference;
 import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 //@OnlyIn(Dist.CLIENT)
 public class ClientDebugCommand {
-    
+
     public static void register(
         CommandDispatcher<CommandSourceStack> dispatcher
     ) {
@@ -123,7 +118,7 @@ public class ClientDebugCommand {
                 )
             )
         );
-        
+
         builder = builder.then(Commands
             .literal("report_player_status")
             .executes(context -> {
@@ -177,7 +172,7 @@ public class ClientDebugCommand {
             .literal("report_resource_consumption")
             .executes(context1 -> {
                 RemoteCallables.reportResourceConsumption();
-                
+
                 return 0;
             })
         );
@@ -207,7 +202,7 @@ public class ClientDebugCommand {
                 return 0;
             })
         );
-        
+
         builder.then(Commands.literal("report_loaded_portals")
             .executes(context -> {
                 for (ClientLevel world : ClientWorldLoader.getClientWorlds()) {
@@ -221,7 +216,7 @@ public class ClientDebugCommand {
                 return 0;
             })
         );
-        
+
         builder = builder.then(Commands
             .literal("vanilla_chunk_culling_enable")
             .executes(context -> {
@@ -264,7 +259,7 @@ public class ClientDebugCommand {
                 return 0;
             })
         );
-        
+
         builder.then(Commands
             .literal("check_client_light")
             .executes(context -> {
@@ -282,21 +277,21 @@ public class ClientDebugCommand {
             .literal("report_client_entities")
             .executes(context -> {
                 ClientLevel world = Minecraft.getInstance().level;
-                
+
                 CHelper.printChat("client entity manager:");
-                
+
                 for (Entity entity : world.entitiesForRendering()) {
                     CHelper.printChat(entity.toString());
                 }
-                
+
                 CHelper.printChat("client entity list:");
-                
+
                 EntityTickList entityList = ((IEClientWorld) world).ip_getEntityList();
-                
+
                 entityList.forEach(e -> {
                     CHelper.printChat(e.toString());
                 });
-                
+
                 return 0;
             })
         );
@@ -306,7 +301,7 @@ public class ClientDebugCommand {
                 MinecraftServer server = MiscHelper.getServer();
                 server.execute(() -> {
                     ServerPlayer player = server.getPlayerList().getPlayers().get(0);
-                    
+
                     BlockPos.betweenClosedStream(
                         player.blockPosition().offset(-2, -2, -2),
                         player.blockPosition().offset(2, 2, 2)
@@ -323,7 +318,7 @@ public class ClientDebugCommand {
                     MinecraftServer server = MiscHelper.getServer();
                     server.execute(() -> {
                         ServerPlayer player = server.getPlayerList().getPlayers().get(0);
-                        
+
                         ThreadedLevelLightEngine lightingProvider = (ThreadedLevelLightEngine) player.level().getLightEngine();
                         lightingProvider.lightChunk(
                             player.level().getChunk(player.blockPosition()),
@@ -337,7 +332,7 @@ public class ClientDebugCommand {
                     return 0;
                 })
         );
-        
+
         builder.then(Commands
             .literal("report_rebuild_status")
             .executes(context -> {
@@ -351,11 +346,11 @@ public class ClientDebugCommand {
                         );
                     });
                 });
-                
+
                 return 0;
             })
         );
-        
+
         builder.then(Commands
             .literal("report_portal_groups")
             .executes(context -> {
@@ -369,7 +364,7 @@ public class ClientDebugCommand {
                             .collect(Collectors.groupingBy(
                                 p -> Optional.ofNullable(PortalRenderInfo.getGroupOf(p))
                             ));
-                    
+
                     CHelper.printChat("\n" + clientWorld.dimension().location().toString());
                     result.forEach((g, l) -> {
                         CHelper.printChat("\n" + g.toString());
@@ -391,7 +386,7 @@ public class ClientDebugCommand {
                     );
                     if (lightSection != null) {
                         boolean uninitialized = lightSection.isEmpty();
-                        
+
                         byte[] byteArray = lightSection.getData();
                         boolean allZero = true;
                         for (byte b : byteArray) {
@@ -400,7 +395,7 @@ public class ClientDebugCommand {
                                 break;
                             }
                         }
-                        
+
                         context.getSource().sendSystemMessage(
                             Component.literal(
                                 "has light section " +
@@ -418,7 +413,7 @@ public class ClientDebugCommand {
                 return 0;
             })
         );
-        
+
         builder.then(Commands
             .literal("reload_world_renderer")
             .executes(context -> {
@@ -429,20 +424,20 @@ public class ClientDebugCommand {
                 return 0;
             })
         );
-        
+
         builder.then(Commands
             .literal("config")
             .executes(context -> {
                 // works without modmenu
                 Minecraft client = Minecraft.getInstance();
-                
+
                 IPGlobal.CLIENT_TASK_LIST.addTask(MyTaskList.oneShotTask(() -> {
                     client.setScreen(IPConfigGUI.createClothConfigScreen(null));
                 }));
                 return 0;
             })
         );
-        
+
         builder.then(Commands
             .literal("disable_warning")
             .executes(context -> {
@@ -451,7 +446,7 @@ public class ClientDebugCommand {
                 return 0;
             })
         );
-        
+
         builder.then(Commands
             .literal("disable_warning_for")
             .then(Commands
@@ -463,7 +458,7 @@ public class ClientDebugCommand {
                 })
             )
         );
-        
+
         builder.then(Commands
             .literal("disable_update_check")
             .executes(context -> {
@@ -472,7 +467,7 @@ public class ClientDebugCommand {
                 return 0;
             })
         );
-        
+
         builder.then(Commands
             .literal("view_portal_data")
             .executes(context -> {
@@ -515,8 +510,7 @@ public class ClientDebugCommand {
                                     double z = DoubleArgumentType.getDouble(context, "z");
 
                                     ResourceKey<Level> dimKey = ResourceKey.create(
-                                        Registries.DIMENSION,
-                                        new ResourceLocation(dimId)
+                                        Registries.DIMENSION, ResourceLocation.parse(dimId)
                                     );
                                     Vec3 pos = new Vec3(x, y, z);
 
@@ -541,7 +535,7 @@ public class ClientDebugCommand {
                 return 0;
             })
         );
-        
+
         builder.then(Commands
             .literal("force_main_thread_chunk_rebuild")
             .then(Commands
@@ -553,11 +547,11 @@ public class ClientDebugCommand {
                 })
             )
         );
-        
+
         LiteralArgumentBuilder<CommandSourceStack> wandBuilder = Commands.literal("wand");
         registerPortalWandCommands(wandBuilder);
         builder.then(wandBuilder);
-        
+
         registerSwitchCommand(
             builder,
             "front_clipping",
@@ -568,7 +562,7 @@ public class ClientDebugCommand {
             "gl_check_error",
             cond -> IPGlobal.doCheckGlError = cond
         );
-        
+
         registerSwitchCommand(
             builder,
             "early_light_update",
@@ -722,7 +716,7 @@ public class ClientDebugCommand {
                 return 0;
             })
         );
-        
+
         builder.then(Commands
             .literal("test_invalid_rpc")
             .executes(context -> {
@@ -732,10 +726,10 @@ public class ClientDebugCommand {
                 return 0;
             })
         );
-        
+
         dispatcher.register(builder);
     }
-    
+
     private static void registerPortalWandCommands(
             LiteralArgumentBuilder<CommandSourceStack> builder
     ) {
@@ -744,19 +738,19 @@ public class ClientDebugCommand {
             .then(Commands.argument("alignment", IntegerArgumentType.integer(0))
                 .executes(context -> {
                     int alignment = IntegerArgumentType.getInteger(context, "alignment");
-                    
+
                     IPConfig config = IPConfig.getConfig();
                     config.portalWandCursorAlignment = alignment;
                     config.saveConfigFile();
-                    
+
                     context.getSource().sendSystemMessage(Component.translatable("imm_ptl.wand.alignment_updated"));
-                    
+
                     return 0;
                 })
             )
         );
     }
-    
+
     private static void printClassPath() {
         System.out.println(
             Arrays.stream(
@@ -766,7 +760,7 @@ public class ClientDebugCommand {
             ).collect(Collectors.joining(",\n"))
         );
     }
-    
+
     private static void registerSwitchCommand(
             LiteralArgumentBuilder<CommandSourceStack> builder,
             String name,
@@ -787,14 +781,14 @@ public class ClientDebugCommand {
             })
         );
     }
-    
+
     private static int isClientChunkLoaded(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         int chunkX = IntegerArgumentType.getInteger(context, "chunkX");
         int chunkZ = IntegerArgumentType.getInteger(context, "chunkZ");
         RemoteCallables.reportClientChunkLoadStatus(Minecraft.getInstance().level.dimension(), chunkX, chunkZ);
         return 0;
     }
-    
+
     public static class RemoteCallables {
         public static void reportClientChunkLoadStatus(ResourceKey<Level> dimension, int chunkX, int chunkZ) {
             ClientLevel world = ClientWorldLoader.getWorld(dimension);
@@ -804,10 +798,10 @@ public class ClientDebugCommand {
                     "client loaded" : "client not loaded"
             );
         }
-        
+
         public static void reportClientPlayerStatus() {
             LocalPlayer playerSP = Minecraft.getInstance().player;
-            
+
             CHelper.printChat(
                 String.format(
                     "On Client %s %s removal:%s added:%s age:%s",
@@ -819,10 +813,10 @@ public class ClientDebugCommand {
                 )
             );
         }
-        
+
         public static void doListPortals() {
             StringBuilder result = new StringBuilder();
-            
+
             result.append("Client Portals\n");
             ClientWorldLoader.getClientWorlds().forEach((world) -> {
                 result.append(world.dimension().location().toString() + "\n");
@@ -833,13 +827,13 @@ public class ClientDebugCommand {
                     }
                 }
             });
-            
+
             CHelper.printChat(result.toString());
         }
-        
+
         public static void reportResourceConsumption() {
             StringBuilder str = new StringBuilder();
-            
+
             str.append("Client Chunk:\n");
             ClientWorldLoader.getClientWorlds().forEach(world -> {
                 str.append(String.format(
@@ -848,8 +842,8 @@ public class ClientDebugCommand {
                     world.getChunkSource().getLoadedChunksCount()
                 ));
             });
-            
-            
+
+
             str.append("Chunk Mesh Sections:\n");
             ClientWorldLoader.WORLD_RENDERER_MAP.forEach(
                 (dimension, worldRenderer) -> {
@@ -862,23 +856,23 @@ public class ClientDebugCommand {
                     ));
                 }
             );
-            
+
             String result = str.toString();
-            
+
             CHelper.printChat(result);
         }
-        
+
         public static void setNoFog(boolean cond) {
             IPGlobal.debugDisableFog = cond;
         }
     }
-    
+
     private static int setMaxPortalLayer(int m) {
         IPGlobal.maxPortalLayer = m;
         return 0;
     }
-    
-    
+
+
     public static class TestRemoteCallable {
         public static void serverToClient(
             String str, int integer, double doubleNum, ResourceLocation identifier,
@@ -887,7 +881,7 @@ public class ClientDebugCommand {
         ) {
             Helper.log(str + integer + doubleNum + identifier + dimension + biomeKey + blockPos + vec3d);
         }
-        
+
         public static void clientToServer(
             ServerPlayer player,
             UUID uuid,
@@ -901,7 +895,7 @@ public class ClientDebugCommand {
             );
         }
     }
-    
+
     private static void testRemoteProcedureCall(ServerPlayer player) {
         Minecraft.getInstance().execute(() -> {
             CompoundTag compoundTag = new CompoundTag();
@@ -918,32 +912,32 @@ public class ClientDebugCommand {
                 new int[]{777, 765}
             );
         });
-        
+
         player.server.execute(() -> {
             McRemoteProcedureCall.tellClientToInvoke(
                 player,
                 "qouteall.imm_ptl.core.commands.ClientDebugCommand.TestRemoteCallable.serverToClient",
-                "string", 2, 3.5, new ResourceLocation("imm_ptl:oops"),
+                "string", 2, 3.5, ResourceLocation.parse("imm_ptl:oops"),
                 Level.NETHER, Biomes.JUNGLE,
                 new BlockPos(3, 5, 4),
                 new Vec3(7, 4, 1)
             );
         });
     }
-    
-    
+
+
     public static void disableWarning() {
         IPConfig ipConfig = IPConfig.getConfig();
         ipConfig.enableWarning = false;
         ipConfig.saveConfigFile();
     }
-    
+
     public static void disableWarningFor(String warningKey) {
         IPConfig ipConfig = IPConfig.getConfig();
         ipConfig.disabledWarnings.add(warningKey);
         ipConfig.saveConfigFile();
     }
-    
+
     public static void disableUpdateCheck() {
         IPConfig ipConfig = IPConfig.getConfig();
         ipConfig.enableUpdateNotification = false;

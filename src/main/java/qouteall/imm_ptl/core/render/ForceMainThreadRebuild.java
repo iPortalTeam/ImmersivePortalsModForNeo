@@ -2,13 +2,14 @@ package qouteall.imm_ptl.core.render;
 
 import com.mojang.logging.LogUtils;
 import de.nick1st.imm_ptl.events.ClientCleanupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
-import qouteall.imm_ptl.core.IPCGlobal;
 
 // Note: this is sometimes effective but not always effective
 // (maybe because of lighting or uploading delay?)
-//@OnlyIn(Dist.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ForceMainThreadRebuild {
     private static final Logger LOGGER = LogUtils.getLogger();
     

@@ -1,5 +1,6 @@
 package qouteall.q_misc_util.mixin.client;
 
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -20,9 +21,9 @@ public class MixinGui_Overlay {
     @Inject(
         method = "render", at = @At("RETURN")
     )
-    private void onRender(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci) {
+    private void onRender(GuiGraphics pGuiGraphics, DeltaTracker pDeltaTracker, CallbackInfo ci) {
         if (!this.minecraft.options.hideGui) {
-            CustomTextOverlay.render(guiGraphics, partialTick);
+            CustomTextOverlay.render(pGuiGraphics);
         }
     }
 }

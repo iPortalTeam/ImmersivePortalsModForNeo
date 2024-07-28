@@ -3,11 +3,44 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.155'
-    id 'net.neoforged.gradle.mixin' version '7.0.155'
+    id 'net.neoforged.gradle.userdev' version '7.0.145'
+    id 'net.neoforged.gradle.mixin' version '7.0.145'
 }
 
-apply from: "allProjects.gradle"
+apply plugin: 'java-library'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'maven-publish'
+apply plugin: 'net.neoforged.gradle.userdev'
+apply plugin: 'net.neoforged.gradle.mixin'
+
+version = mod_version
+group = mod_group_id
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+repositories {
+    mavenLocal()
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
+    maven {
+        name "tterrag maven"
+        url "https://maven.tterrag.com/"
+    }
+
+    flatDir {
+        dir "deps"
+    }
+}
 
 base {
     archivesName = mod_id
@@ -15,7 +48,6 @@ base {
 
 jarJar.enable()
 
-// AccessTransformers
 minecraft.accessTransformers.entry 'public net.minecraft.server.MinecraftServer storageSource'
 minecraft.accessTransformers.entry 'public net.minecraft.world.level.biome.BiomeManager biomeZoomSeed'
 minecraft.accessTransformers.entry 'public-f net.minecraft.util.profiling.ActiveProfiler WARNING_TIME_NANOS'
@@ -24,8 +56,7 @@ minecraft.accessTransformers.entry 'public net.minecraft.world.level.GameRules r
 minecraft.accessTransformers.entry 'public net.minecraft.world.level.GameRules$BooleanValue create(Z)Lnet/minecraft/world/level/GameRules$Type;'
 minecraft.accessTransformers.entry 'public com.mojang.blaze3d.shaders.Program$Type getGlType()I'
 minecraft.accessTransformers.entry 'public-f net.minecraft.world.entity.Entity getBoundingBox()Lnet/minecraft/world/phys/AABB;'
-//minecraft.accessTransformers.entry 'public net.minecraft.client.renderer.LevelRenderer$RenderChunkInfo'
-//minecraft.accessTransformers.entry 'public net.minecraft.client.renderer.LevelRenderer$RenderChunkInfo <init>(Lnet/minecraft/client/renderer/chunk/ChunkRenderDispatcher$RenderChunk;Lnet/minecraft/core/Direction;I)V'
+
 minecraft.accessTransformers.entry 'public net.minecraft.client.renderer.chunk.SectionRenderDispatcher$RenderSection$CompileTask'
 minecraft.accessTransformers.entry 'public-f net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator'
 minecraft.accessTransformers.entry 'public net.minecraft.resources.RegistryDataLoader$Loader'
@@ -35,65 +66,41 @@ minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.Clie
 minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.ClientChunkCache storage'
 minecraft.accessTransformers.entry 'public net.minecraft.client.multiplayer.ClientChunkCache level'
 
-// Neo only transformers
 minecraft.accessTransformers.entry 'public net.minecraft.world.entity.EntityType$Builder dimensions'
-//sourceSets {
-//    main {
-//        java {
-//            srcDir "q_misc_util/src/main/java"
-//            srcDir "imm_ptl_core/src/main/java"
-//            srcDir "src/main/java"
-//        }
-//    }
-//}
 
-// Default run configurations.
-// These can be tweaked, removed, or duplicated as needed.
+/*sourceSets {
+    main {
+        java {
+            srcDir "src/main/java"
+        }
+        resources {
+            srcDir "src/main/resources"
+        }
+    }
+}*/
+
 runs {
-    // applies to all the run configs below
     configureEach {
-        // Recommended logging data for a userdev environment
-        // The markers can be added/remove as needed separated by commas.
-        // "SCAN": For mods scan.
-        // "REGISTRIES": For firing of registry events.
-        // "REGISTRYDUMP": For getting the contents of all registries.
         systemProperty 'forge.logging.markers', 'REGISTRIES'
 
-        // Recommended logging level for the console
-        // You can set various levels here.
-        // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
         systemProperty 'forge.logging.console.level', 'debug'
 
-//        modSources = [
-//            project(":imm_ptl_core").sourceSets.main,
-//            project(":q_misc_util").sourceSets.main,
-//            project.sourceSets.main
-//        ]
         modSource project.sourceSets.main
     }
 
     client {
-        // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
         systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
     }
 
     server {
         systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-        //programArgument '--nogui'
     }
 
-    // This run config launches GameTestServer and runs all registered gametests, then exits.
-    // By default, the server will crash when no gametests are provided.
-    // The gametest system is also enabled by default for other run configs under the /test command.
     gameTestServer {
         systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
     }
 
     data {
-        // example of overriding the workingDirectory set in configureEach above, uncomment if you want to use it
-        // workingDirectory project.file('run-data')
-
-        // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
         programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
     }
 }
@@ -110,40 +117,15 @@ mixin {
 }
 
 dependencies {
-//    // Specify the version of Minecraft to use.
-//    // Depending on the plugin applied there are several options. We will assume you applied the userdev plugin as shown above.
-//    // The group for userdev is net.neoforged, the module name is neoforge, and the version is the same as the neoforge version.
-//    // You can however also use the vanilla plugin (net.neoforged.gradle.vanilla) to use a version of Minecraft without the neoforge loader.
-//    // And its provides the option to then use net.minecraft as the group, and one of; client, server or joined as the module name, plus the game version as version.
-//    // For all intends and purposes: You can treat this dependency as if it is a normal library you would use.
-//    implementation "net.neoforged:neoforge:${neo_version}"
-//
-//    // Example mod dependency with JEI
-//    // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
-//    // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
-//    // compileOnly "mezz.jei:jei-${mc_version}-forge-api:${jei_version}"
-//    // runtimeOnly "mezz.jei:jei-${mc_version}-forge:${jei_version}"
-//
-//    // Example mod dependency using a mod jar from ./libs with a flat dir repository
-//    // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
-//    // The group id is ignored when searching -- in this case, it is "blank"
-//    // implementation "blank:coolmod-${mc_version}:${coolmod_version}"
-//
-//    // Example mod dependency using a file as dependency
-//    // implementation files("libs/coolmod-${mc_version}-${coolmod_version}.jar")
-//
-//    // Example project dependency using a sister or child project:
-//    // implementation project(":myproject")
-//
-//    // For more info:
-//    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-//    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-//    implementation project(":imm_ptl_core")
-//    implementation project(":q_misc_util")
+    implementation "net.neoforged:neoforge:${neo_version}"
+    /*implementation "maven.modrinth:embeddium:Na1PoLYF"
+    compileOnly "maven.modrinth:oculus:1.20.1-1.6.15a"*/
 
-//    implementation(jarJar("io.github.llamalad7:mixinextras-neoforge:0.2.1")) {
-//        jarJar.ranged(it, "[0.2.1,)")
-//    } // With newest NEO automatically enabled
+    compileOnly "sodium-neoforge:sodium-neoforge:1.21-0.6.0-alpha.2"
+    compileOnly "iris-neoforge:iris-neoforge:1.8.0-snapshot+mc1.21-local"
+
+    implementation "maven.modrinth:cloth-config:jMyYg8Uv"
+    implementation "maven.modrinth:pehkui:nKHizsl6"
 }
 
 tasks.named('build').configure { dependsOn('jarJar') }
@@ -162,22 +144,8 @@ tasks.withType(ProcessResources).configureEach {
     ]
     inputs.properties replaceProperties
 
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+    filesMatching(['META-INF/neoforge.mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
-    }
-}
-
-// Example configuration to allow publishing using the maven-publish plugin
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            from components.java
-        }
-    }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/repo"
-        }
     }
 }
 

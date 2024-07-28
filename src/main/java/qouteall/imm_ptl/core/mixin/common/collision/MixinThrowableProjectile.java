@@ -1,22 +1,11 @@
 package qouteall.imm_ptl.core.mixin.common.collision;
 
-import com.llamalad7.mixinextras.injector.WrapWithCondition;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Share;
-import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.HitResult;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import qouteall.imm_ptl.core.portal.PortalPlaceholderBlock;
 
 @Mixin(ThrowableProjectile.class)
 public class MixinThrowableProjectile {
-    @WrapOperation(
+    /*@WrapOperation(
         method = "tick",
         at = @At(
             value = "INVOKE",
@@ -32,9 +21,9 @@ public class MixinThrowableProjectile {
         shouldCancelHit.set(blockState.getBlock() == PortalPlaceholderBlock.instance);
         
         return blockState;
-    }
+    }*/
     
-    @WrapWithCondition(
+    /*@WrapWithCondition(
         method = "tick",
         at = @At(
             value = "INVOKE",
@@ -46,5 +35,5 @@ public class MixinThrowableProjectile {
         @Share("immptl_shouldCancelHit") LocalBooleanRef shouldCancelHit
     ) {
         return !shouldCancelHit.get();
-    }
+    }*/
 }

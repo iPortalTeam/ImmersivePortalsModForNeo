@@ -67,9 +67,9 @@ public class BlockManipulationClient {
         }
         
         Vec3 cameraPos = client.gameRenderer.getMainCamera().getPosition();
-        
-        float reachDistance = client.gameMode.getPickRange();
-        
+
+        double reachDistance = client.player.blockInteractionRange();
+
         PortalUtils.raytracePortalFromEntityView(client.player, tickDelta, reachDistance, true, portal1 -> portal1.isInteractableBy(client.player)).ifPresent(pair -> {
             Portal portal = pair.getFirst();
             Vec3 hitPos = pair.getSecond().hitPos();

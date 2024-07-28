@@ -34,7 +34,7 @@ public abstract class MixinMainTarget extends RenderTarget {
     )
     private void modifyTexImage2D(Args args) {
         boolean isStencilBufferEnabled = ((IEFrameBuffer) this).ip_getIsStencilBufferEnabled();
-
+        
         if (isStencilBufferEnabled) {
             args.set(2, IPCGlobal.useSeparatedStencilFormat ? GL_DEPTH32F_STENCIL8 : GL_DEPTH24_STENCIL8);
             args.set(6, ARBFramebufferObject.GL_DEPTH_STENCIL);
@@ -87,7 +87,7 @@ public abstract class MixinMainTarget extends RenderTarget {
     )
     private void modifyFrameBufferTexture2d(Args args) {
         boolean isStencilBufferEnabled = ((IEFrameBuffer) this).ip_getIsStencilBufferEnabled();
-
+        
         if (isStencilBufferEnabled) {
             if ((int) args.get(1) == GL30.GL_DEPTH_ATTACHMENT) {
                 args.set(1, GL30.GL_DEPTH_STENCIL_ATTACHMENT);
@@ -117,5 +117,5 @@ public abstract class MixinMainTarget extends RenderTarget {
 //            GlStateManager._glFramebufferTexture2D(target, attachment, textureTarget, texture, level);
 //        }
 //    }
-
+    
 }

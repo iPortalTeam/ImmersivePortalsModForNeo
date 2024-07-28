@@ -16,7 +16,7 @@ import java.util.Set;
 // 1. vertex shader clipping(requires GL3)
 // 2. fragment shader clipping
 public class ShaderCodeTransformation {
-    public enum ShaderType {
+    public static enum ShaderType {
         vs, fs
     }
     
@@ -56,7 +56,7 @@ public class ShaderCodeTransformation {
         if (IPGlobal.enableClippingMechanism) {
             Yaml yaml = new Yaml();
             
-            String yamlStr = McHelper.readTextResource(new ResourceLocation(
+            String yamlStr = McHelper.readTextResource(ResourceLocation.parse(
                 "immersive_portals:shaders/shader_transformation.yaml"
             ));
             ConfigsObj configsObj = yaml.loadAs(yamlStr, ConfigsObj.class);

@@ -21,7 +21,7 @@ public class NormalAnimation implements PortalAnimationDriver {
     
     public static void init() {
         PortalAnimationDriver.registerDeserializer(
-            new ResourceLocation("imm_ptl:normal"),
+            ResourceLocation.parse("imm_ptl:normal"),
             NormalAnimation::deserialize
         );
     }

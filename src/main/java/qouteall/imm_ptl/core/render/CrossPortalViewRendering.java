@@ -106,7 +106,6 @@ public class CrossPortalViewRendering {
     }
     
     /**
-     * {@link Camera#getMaxZoom(double)}
      */
     private static Vec3 getThirdPersonCameraPos(Vec3 endPos, Portal portal, Vec3 startPos) {
         Vec3 rtStart = portal.transformPoint(startPos);
@@ -130,8 +129,8 @@ public class CrossPortalViewRendering {
         return blockHitResult.getLocation();
     }
     
-    private static double getThirdPersonMaxDistance() {
-        return 4.0d * PehkuiInterface.invoker.computeThirdPersonScale(client.player, client.getFrameTime());
+    private static double getThirdPersonMaxDistance() { // TODO Maybe an issue
+        return 4.0d * PehkuiInterface.invoker.computeThirdPersonScale(client.player, client.getTimer().getGameTimeDeltaTicks());
     }
     
     //    private static Vec3d getThirdPersonCameraPos(Portal portalHit, Camera resuableCamera) {

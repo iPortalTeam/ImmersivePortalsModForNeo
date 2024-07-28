@@ -1,6 +1,5 @@
 package qouteall.imm_ptl.core.mixin.client.render;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -79,8 +78,7 @@ public class MixinLevelRenderer_Optional {
         require = 0
     )
     private void onGetShaderInRenderingLayer(
-        RenderType renderLayer, PoseStack matrices,
-        double x, double y, double z, Matrix4f matrix4f, CallbackInfo ci
+        RenderType renderType, double x, double y, double z, Matrix4f projectionMatrix, Matrix4f frustrumMatrix, CallbackInfo ci
     ) {
         FrontClipping.updateClippingEquationUniformForCurrentShader(false);
     }

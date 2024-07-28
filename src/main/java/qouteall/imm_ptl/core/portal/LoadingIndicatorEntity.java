@@ -11,10 +11,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import qouteall.q_misc_util.my_util.IntBox;
@@ -29,7 +26,7 @@ public class LoadingIndicatorEntity extends Entity {
                 .fireImmune()
                 .clientTrackingRange(96)
                 .updateInterval(20);
-        builder.dimensions = new EntityDimensions(1, 1, true);
+        builder.dimensions = new EntityDimensions(1, 1, .85f, EntityAttachments.createDefault(1, 1), true);
         return builder.build("");
     }
     
@@ -106,14 +103,14 @@ public class LoadingIndicatorEntity extends Entity {
             );
         }
     }
-    
+
     @Override
-    protected void defineSynchedData() {
-        getEntityData().define(TEXT, Component.literal("Loading..."));
-        getEntityData().define(BOX_LOW_POS, BlockPos.ZERO);
-        getEntityData().define(BOX_HIGH_POS, BlockPos.ZERO);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+       builder.define(TEXT, Component.literal("Loading..."));
+       builder.define(BOX_LOW_POS, BlockPos.ZERO);
+       builder.define(BOX_HIGH_POS, BlockPos.ZERO);
     }
-    
+
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
     

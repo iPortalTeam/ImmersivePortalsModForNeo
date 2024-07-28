@@ -3,6 +3,7 @@ package qouteall.imm_ptl.peripheral.wand;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 
+import static qouteall.imm_ptl.peripheral.wand.PortalWandItem.COMPONENT_TYPE;
 import static qouteall.imm_ptl.peripheral.wand.PortalWandItem.showSettings;
 
 public final class PortalWandItemClient {
@@ -13,8 +14,7 @@ public final class PortalWandItemClient {
             showSettings(player);
         }
         else {
-            PortalWandItem.Mode mode = PortalWandItem.Mode.fromTag(itemStack.getOrCreateTag());
-
+            PortalWandItem.Mode mode = itemStack.getOrDefault(COMPONENT_TYPE, PortalWandItem.Mode.FALLBACK);
             switch (mode) {
                 case CREATE_PORTAL -> {
                     ClientPortalWandPortalCreation.onLeftClick();

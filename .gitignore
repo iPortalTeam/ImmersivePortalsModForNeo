@@ -26,7 +26,6 @@ run/
 run_server/
 
 compiler_output/
-deps/
 
 # macOS droppings
 

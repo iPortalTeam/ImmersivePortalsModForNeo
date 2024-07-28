@@ -1,6 +1,6 @@
 package qouteall.imm_ptl.core.portal.custom_portal_gen.form;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 public class ConvertConventionalPortalForm extends PortalGenForm {
     
-    public static final Codec<ConvertConventionalPortalForm> codec = RecordCodecBuilder.create(instance -> {
+    public static final MapCodec<ConvertConventionalPortalForm> CODEC = RecordCodecBuilder.mapCodec(instance -> {
         return instance.group(
             SimpleBlockPredicate.CODEC.fieldOf("portal_block").forGetter(o -> o.portalBlock)
         ).apply(instance, instance.stable(ConvertConventionalPortalForm::new));
@@ -38,8 +38,8 @@ public class ConvertConventionalPortalForm extends PortalGenForm {
     }
     
     @Override
-    public Codec<? extends PortalGenForm> getCodec() {
-        return codec;
+    public MapCodec<? extends PortalGenForm> getCodec() {
+        return CODEC;
     }
     
     @Override

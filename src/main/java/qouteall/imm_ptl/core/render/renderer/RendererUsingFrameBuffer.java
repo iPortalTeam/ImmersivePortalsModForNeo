@@ -3,9 +3,9 @@ package qouteall.imm_ptl.core.render.renderer;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.compat.IPPortingLibCompat;
@@ -25,17 +25,17 @@ public class RendererUsingFrameBuffer extends PortalRenderer {
     SecondaryFrameBuffer secondaryFrameBuffer = new SecondaryFrameBuffer();
     
     @Override
-    public void onBeforeTranslucentRendering(PoseStack matrixStack) {
-        renderPortals(matrixStack);
+    public void onBeforeTranslucentRendering(Matrix4f modelView) {
+        renderPortals(modelView);
     }
     
     @Override
-    public void onAfterTranslucentRendering(PoseStack matrixStack) {
+    public void onAfterTranslucentRendering(Matrix4f modelView) {
     
     }
     
     @Override
-    public void onHandRenderingEnded(PoseStack matrixStack) {
+    public void onHandRenderingEnded() {
     
     }
     
@@ -58,14 +58,14 @@ public class RendererUsingFrameBuffer extends PortalRenderer {
     
     protected void doRenderPortal(
         PortalRenderable portal,
-        PoseStack matrixStack
+        Matrix4f modelView
     ) {
         if (PortalRendering.isRendering()) {
             //only support one-layer portal
             return;
         }
         
-        if (!testShouldRenderPortal(portal, matrixStack)) {
+        if (!testShouldRenderPortal(portal, modelView)) {
             return;
         }
         
@@ -92,7 +92,7 @@ public class RendererUsingFrameBuffer extends PortalRenderer {
         PortalRendering.popPortalLayer();
         
         CHelper.enableDepthClamp();
-        renderSecondBufferIntoMainBuffer(portal, matrixStack);
+        renderSecondBufferIntoMainBuffer(portal, modelView);
         CHelper.disableDepthClamp();
         
         MyRenderHelper.debugFramebufferDepth();
@@ -110,13 +110,13 @@ public class RendererUsingFrameBuffer extends PortalRenderer {
     
     private boolean testShouldRenderPortal(
         PortalRenderable portal,
-        PoseStack matrixStack
+        Matrix4f modelView
     ) {
-        FrontClipping.updateInnerClipping(matrixStack);
+        FrontClipping.updateInnerClipping(modelView);
         return QueryManager.renderAndGetDoesAnySamplePass(() -> {
             ViewAreaRenderer.renderPortalArea(
                 portal, Vec3.ZERO,
-                matrixStack.last().pose(),
+                modelView,
                 RenderSystem.getProjectionMatrix(),
                 true, true,
                 true, true
@@ -124,20 +124,20 @@ public class RendererUsingFrameBuffer extends PortalRenderer {
         });
     }
     
-    private void renderSecondBufferIntoMainBuffer(PortalRenderable portal, PoseStack matrixStack) {
+    private void renderSecondBufferIntoMainBuffer(PortalRenderable portal, Matrix4f modelView) {
         MyRenderHelper.drawPortalAreaWithFramebuffer(
             portal,
             secondaryFrameBuffer.fb,
-            matrixStack.last().pose(),
+            modelView,
             RenderSystem.getProjectionMatrix()
         );
     }
     
-    protected void renderPortals(PoseStack matrixStack) {
-        List<PortalRenderable> portalsToRender = getPortalsToRender(matrixStack);
+    protected void renderPortals(Matrix4f modelView) {
+        List<PortalRenderable> portalsToRender = getPortalsToRender(modelView);
     
         for (PortalRenderable portal : portalsToRender) {
-            doRenderPortal(portal, matrixStack);
+            doRenderPortal(portal, modelView);
         }
     }
 }
