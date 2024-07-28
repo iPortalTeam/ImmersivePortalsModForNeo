@@ -23,7 +23,6 @@ bin/
 # fabric
 
 run/
-runs/
 run_server/
 
 compiler_output/

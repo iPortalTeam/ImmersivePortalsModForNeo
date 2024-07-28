@@ -7,6 +7,8 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -27,7 +29,7 @@ import qouteall.q_misc_util.my_util.DQuaternion;
  * The right side of multiplication applies first.
  * finalRot = rawCameraRotation * gravity * animationDelta * portalRot
  */
-//@OnlyIn(Dist.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class TransformationManager {
     
     // the animation delta gradually reduces to identity
@@ -90,7 +92,13 @@ public class TransformationManager {
         }
         
         WorldRenderInfo.applyAdditionalTransformations(matrixStack);
-        
+    }
+    
+    public static Matrix4f processTransformation(Camera camera, Matrix4f matrix4f) {
+        PoseStack poseStack = new PoseStack();
+        poseStack.last().pose().set(matrix4f);
+        processTransformation(camera, poseStack);
+        return poseStack.last().pose();
     }
     
     public static boolean isAnimationRunning() {
@@ -276,7 +284,7 @@ public class TransformationManager {
     
     public static boolean isCalculatingViewBobbingOffset = false;
     
-    //@OnlyIn(Dist.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static class RemoteCallables {
         public static void enableIsometricView(float viewLength) {
             isometricViewLength = viewLength;

@@ -17,83 +17,83 @@ import java.util.List;
 
 public class RendererDebug extends PortalRenderer {
     @Override
-    public void onBeforeTranslucentRendering(Matrix4f matrixStack) {
-        renderPortals(matrixStack);
+    public void onBeforeTranslucentRendering(Matrix4f modelView) {
+        renderPortals(modelView);
     }
-
+    
     @Override
-    public void onAfterTranslucentRendering(Matrix4f matrixStack) {
-
+    public void onAfterTranslucentRendering(Matrix4f modelView) {
+    
     }
-
+    
     @Override
     public void onHandRenderingEnded() {
-
+    
     }
-
+    
     @Override
     public void prepareRendering() {
-
+    
     }
-
+    
     @Override
     public void finishRendering() {
-
+    
     }
-
+    
     @Override
     public void renderPortalInEntityRenderer(Portal portal) {
-
+    
     }
-
+    
     @Override
     public boolean replaceFrameBufferClearing() {
         return false;
     }
-
-    protected void doRenderPortal(PortalRenderable portal, Matrix4f matrixStack) {
+    
+    protected void doRenderPortal(PortalRenderable portal, Matrix4f modelView) {
         if (RenderStates.getRenderedPortalNum() != 0) {
             return;
         }
-
-        if (!testShouldRenderPortal(portal, matrixStack)) {
+        
+        if (!testShouldRenderPortal(portal, modelView)) {
             return;
         }
-
+    
         PortalRendering.pushPortalLayer(portal.getPortalLike());
-
+        
         GlStateManager._clearColor(1, 0, 1, 1);
         GlStateManager._clearDepth(1);
         GlStateManager._clear(
-                GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT,
-                Minecraft.ON_OSX
+            GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT,
+            Minecraft.ON_OSX
         );
         GL11.glDisable(GL11.GL_STENCIL_TEST);
-
+        
         renderPortalContent(portal);
-
+    
         PortalRendering.popPortalLayer();
     }
-
+    
     private boolean testShouldRenderPortal(
-            PortalRenderable portal,
-            Matrix4f matrixStack
+        PortalRenderable portal,
+        Matrix4f modelView
     ) {
         return QueryManager.renderAndGetDoesAnySamplePass(() -> {
             ViewAreaRenderer.renderPortalArea(
-                    portal, Vec3.ZERO,
-                    matrixStack,
-                    RenderSystem.getProjectionMatrix(),
-                    true, true,
-                    true, true);
+                portal, Vec3.ZERO,
+                modelView,
+                RenderSystem.getProjectionMatrix(),
+                true, true,
+                true, true);
         });
     }
-
-    protected void renderPortals(Matrix4f matrixStack) {
-        List<PortalRenderable> portalsToRender = getPortalsToRender(matrixStack);
-
+    
+    protected void renderPortals(Matrix4f modelView) {
+        List<PortalRenderable> portalsToRender = getPortalsToRender(modelView);
+    
         for (PortalRenderable portal : portalsToRender) {
-            doRenderPortal(portal, matrixStack);
+            doRenderPortal(portal, modelView);
         }
     }
 }

@@ -32,8 +32,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.ClientPayloadContext;
-import net.neoforged.neoforge.network.handling.ServerPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -228,7 +227,7 @@ public class ImplRemoteProcedureCall {
         }
 
         @OnlyIn(Dist.CLIENT)
-        public void handle(ClientPayloadContext c) {
+        public void handle(IPayloadContext c) {
             if (!deserializeSuccess) {
                 if (ERROR_MESSAGE_LIMIT.tryDecrement()) {
                     clientTellFailure();
@@ -345,6 +344,7 @@ public class ImplRemoteProcedureCall {
                     args.add(obj);
                 }
 
+
                 return new C2SRPCPayload(true, methodPath, method, args);
             } catch (Exception e) {
                 if (LOGGING_LIMIT.tryDecrement()) {
@@ -365,18 +365,20 @@ public class ImplRemoteProcedureCall {
             }
         }
 
-        public void handle(ServerPayloadContext c) {
+        public void handle(IPayloadContext c) {
+            if(!(c.player() instanceof ServerPlayer))
+                return;
+            ServerPlayer player = (ServerPlayer) c.player();
             if (!deserializeSuccess) {
                 if (ERROR_MESSAGE_LIMIT.tryDecrement()) {
-                    serverTellFailure(c.player());
+
+                    serverTellFailure(player);
                 }
                 return;
             }
 
             Validate.notNull(args, "args must not be null");
             Validate.notNull(method, "method must not be null");
-
-            ServerPlayer player = c.player();
 
             try {
                 Object[] argArray = new Object[args.size() + 1];
@@ -390,7 +392,7 @@ public class ImplRemoteProcedureCall {
                     LOGGER.error(
                             "Failed to invoke remote procedure call {} {}", methodPath, player, e
                     );
-                    serverTellFailure(c.player());
+                    serverTellFailure(player);
                 }
             }
         }

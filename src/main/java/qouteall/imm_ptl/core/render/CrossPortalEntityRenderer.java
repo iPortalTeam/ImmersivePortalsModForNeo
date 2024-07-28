@@ -2,6 +2,7 @@ package qouteall.imm_ptl.core.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.nick1st.imm_ptl.events.ClientCleanupEvent;
+import de.nick1st.imm_ptl.events.DimensionEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -12,6 +13,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 import org.joml.Matrix4f;
@@ -37,7 +40,7 @@ import qouteall.q_misc_util.my_util.Plane;
 
 import java.util.WeakHashMap;
 
-//@OnlyIn(Dist.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class CrossPortalEntityRenderer {
     private static final Minecraft client = Minecraft.getInstance();
     
@@ -52,9 +55,7 @@ public class CrossPortalEntityRenderer {
         NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> CrossPortalEntityRenderer.onClientTick());
 
         NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> CrossPortalEntityRenderer.cleanUp());
-
-        // @Nick1st - DynDimLib removal
- //       ClientWorldLoader.CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT.register(dim -> cleanUp());
+        NeoForge.EVENT_BUS.addListener(DimensionEvents.CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT.class, postClientTickEvent -> CrossPortalEntityRenderer.cleanUp());
     }
     
     private static void cleanUp() {
@@ -80,14 +81,15 @@ public class CrossPortalEntityRenderer {
     
     public static void onBeginRenderingEntitiesAndBlockEntities(Matrix4f modelView) {
         isRenderingEntityNormally = true;
-
+        
         if (PortalRendering.isRendering()) {
             FrontClipping.setupInnerClipping(
-                    PortalRendering.getActiveClippingPlane(),
-                    modelView, 0
+                PortalRendering.getActiveClippingPlane(),
+                modelView, 0
             );
         }
     }
+    
     private static boolean isCrossPortalRenderingEnabled() {
         if (IrisInterface.invoker.isIrisPresent()) {
             return false;
@@ -194,7 +196,7 @@ public class CrossPortalEntityRenderer {
                     Vec3 cameraPos = client.gameRenderer.getMainCamera().getPosition();
                     
                     Plane innerClipping = collidingPortal.getInnerClipping();
-
+                    
                     boolean isHidden = innerClipping != null &&
                         !innerClipping.isPointOnPositiveSide(cameraPos);
                     if (renderingPortal == collidingPortal || !isHidden) {

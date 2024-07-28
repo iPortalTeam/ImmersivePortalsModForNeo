@@ -75,8 +75,8 @@ public class GuiHelper {
         return new LayoutElement(false, 1, (a, b) -> {});
     }
     
-    public interface LayoutFunc {
-        void apply(int from, int to);
+    public static interface LayoutFunc {
+        public void apply(int from, int to);
     }
     
     public static LayoutFunc combine(LayoutFunc... args) {

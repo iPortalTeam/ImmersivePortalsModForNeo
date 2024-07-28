@@ -16,6 +16,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -37,7 +39,7 @@ import qouteall.q_misc_util.my_util.LimitedLogger;
 import java.util.Stack;
 import java.util.function.Consumer;
 
-//@OnlyIn(Dist.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class MyGameRenderer {
     public static final Minecraft client = Minecraft.getInstance();
     
@@ -46,7 +48,7 @@ public class MyGameRenderer {
     public static final int MAX_SECONDARY_BUFFER_NUM = 2;
     
     // portal rendering and outer world rendering uses different buffer builder storages
-    private static final Stack<RenderBuffers> secondaryRenderBuffers = new Stack<>();
+    private static Stack<RenderBuffers> secondaryRenderBuffers = new Stack<>();
     private static int usingRenderBuffersObjectNum = 0;
     
     // the vanilla visibility sections discovery code is multi-threaded
@@ -57,9 +59,7 @@ public class MyGameRenderer {
     public static boolean enablePortalCaveCulling = true;
     
     public static void init() {
-        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> {
-            secondaryRenderBuffers.clear();
-        });
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> secondaryRenderBuffers.clear());
     }
     
     @Nullable
@@ -153,7 +153,7 @@ public class MyGameRenderer {
         
         ObjectArrayList<SectionRenderDispatcher.RenderSection> newChunkInfoList = VisibleSectionDiscovery.takeList();
         ((IEWorldRenderer) oldWorldRenderer).portal_setChunkInfoList(newChunkInfoList);
-
+        
         Object irisPipeline = IrisInterface.invoker.getPipeline(worldRenderer);
         
         // switch (note: it will no longer switch the world that client player is in )
@@ -203,7 +203,7 @@ public class MyGameRenderer {
         SodiumInterface.invoker.switchContextWithCurrentWorldRenderer(newSodiumContext);
         
         ((IEWorldRenderer) worldRenderer).portal_setTransparencyShader(null);
-
+        
         IrisInterface.invoker.setPipeline(worldRenderer, null);
         
         //update lightmap
@@ -215,8 +215,8 @@ public class MyGameRenderer {
         invokeWrapper.accept(() -> {
             client.getProfiler().push("render_portal_content");
             client.gameRenderer.renderLevel(
-                    tickDelta,
-                    Util.getNanos()
+                tickDelta,
+                Util.getNanos()
             );
             client.getProfiler().pop();
         });
@@ -254,7 +254,7 @@ public class MyGameRenderer {
         ((IEWorldRenderer) worldRenderer).portal_setFrustum(oldFrustum);
         
         client.gameRenderer.resetProjectionMatrix(oldProjectionMatrix);
-
+        
         IrisInterface.invoker.setPipeline(worldRenderer, irisPipeline);
         
         client.getEntityRenderDispatcher()
@@ -270,6 +270,7 @@ public class MyGameRenderer {
     }
     
     /**
+     * {@link LevelRenderer#renderLevel}
      */
     @IPVanillaCopy
     public static void resetFogState() {
@@ -301,6 +302,7 @@ public class MyGameRenderer {
     }
     
     /**
+     * {@link LevelRenderer#renderLevel}
      */
     @IPVanillaCopy
     public static void resetDiffuseLighting() {

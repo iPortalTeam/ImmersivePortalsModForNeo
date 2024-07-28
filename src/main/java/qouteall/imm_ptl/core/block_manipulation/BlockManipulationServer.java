@@ -178,7 +178,6 @@ public class BlockManipulationServer {
         ) {
             FriendlyByteBuf buf = IPMcHelper.bytesToBuf(packetBytes);
             ServerboundUseItemOnPacket packet = ServerboundUseItemOnPacket.STREAM_CODEC.decode(buf);
-
             ServerLevel world = player.server.getLevel(dimension);
             Validate.notNull(world, "missing %s", dimension.location());
             

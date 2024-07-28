@@ -106,6 +106,7 @@ public class CrossPortalViewRendering {
     }
     
     /**
+     * {@link Camera#getMaxZoom(double)}
      */
     private static Vec3 getThirdPersonCameraPos(Vec3 endPos, Portal portal, Vec3 startPos) {
         Vec3 rtStart = portal.transformPoint(startPos);

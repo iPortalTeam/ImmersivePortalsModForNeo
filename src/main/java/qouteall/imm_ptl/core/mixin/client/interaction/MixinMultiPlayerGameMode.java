@@ -119,6 +119,7 @@ public abstract class MixinMultiPlayerGameMode implements IEClientPlayerInteract
             if (packet instanceof ServerboundPlayerActionPacket playerActionPacket) {
                 if (BlockManipulationServer.isAttackingAction(playerActionPacket.getAction())) {
                     FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                    ServerboundPlayerActionPacket.STREAM_CODEC.encode(buf, playerActionPacket);
                     return new ServerboundCustomPayloadPacket(McRemoteProcedureCall.createPacketToSendToServer(
                             "qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer.RemoteCallables.processPlayerActionPacket",
                             dimension,
@@ -127,6 +128,7 @@ public abstract class MixinMultiPlayerGameMode implements IEClientPlayerInteract
                 }
             } else if (packet instanceof ServerboundUseItemOnPacket useItemOnPacket) {
                 FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                ServerboundUseItemOnPacket.STREAM_CODEC.encode(buf, useItemOnPacket);
                 return new ServerboundCustomPayloadPacket(McRemoteProcedureCall.createPacketToSendToServer(
                         "qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer.RemoteCallables.processUseItemOnPacket",
                         dimension,

@@ -78,7 +78,7 @@ public class MixinLevelRenderer_Optional {
         require = 0
     )
     private void onGetShaderInRenderingLayer(
-            RenderType pRenderType, double pX, double pY, double pZ, Matrix4f pProjectionMatrix, Matrix4f pFrustrumMatrix, CallbackInfo ci
+        RenderType renderType, double x, double y, double z, Matrix4f projectionMatrix, Matrix4f frustrumMatrix, CallbackInfo ci
     ) {
         FrontClipping.updateClippingEquationUniformForCurrentShader(false);
     }

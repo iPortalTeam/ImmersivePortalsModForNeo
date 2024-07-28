@@ -2,7 +2,11 @@ package qouteall.imm_ptl.core.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.world.phys.Vec3;
@@ -46,7 +50,12 @@ public class ViewAreaRenderer {
         }
         
         if (doModifyDepth) {
-            GlStateManager._depthMask(!portalLike.isFuseView());
+            if (portalLike.isFuseView()) {
+                GlStateManager._depthMask(false);
+            }
+            else {
+                GlStateManager._depthMask(true);
+            }
         }
         else {
             GlStateManager._depthMask(false);

@@ -20,7 +20,7 @@ public class MixinFogRenderer {
     private static int previousBiomeFog = -1;
     @Shadow
     private static long biomeChangedTime = -1L;
-    
+
     static {
         FogRendererContext.copyContextFromObject = context -> {
             fogRed = context.red;
@@ -30,7 +30,7 @@ public class MixinFogRenderer {
             previousBiomeFog = context.previousBiomeFog;
             biomeChangedTime = context.biomeChangedTime;
         };
-        
+
         FogRendererContext.copyContextToObject = context -> {
             context.red = fogRed;
             context.green = fogGreen;
@@ -39,10 +39,10 @@ public class MixinFogRenderer {
             context.previousBiomeFog = previousBiomeFog;
             context.biomeChangedTime = biomeChangedTime;
         };
-        
+
         FogRendererContext.getCurrentFogColor =
-            () -> new Vec3(fogRed, fogGreen, fogBlue);
-        
+                () -> new Vec3(fogRed, fogGreen, fogBlue);
+
         FogRendererContext.init();
     }
 }

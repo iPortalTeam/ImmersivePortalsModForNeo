@@ -314,8 +314,7 @@ public class IPMcHelper {
     }
     
     public static FriendlyByteBuf bytesToBuf(byte[] packetBytes) {
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(packetBytes));
-        return buf;
+        return new FriendlyByteBuf(Unpooled.wrappedBuffer(packetBytes));
     }
     
     public static byte[] bufToBytes(FriendlyByteBuf buf) {
