@@ -17,6 +17,8 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -35,7 +37,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-//@OnlyIn(Dist.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class OverlayRendering {
     private static final RandomSource random = RandomSource.create();
     
@@ -61,7 +63,7 @@ public class OverlayRendering {
                 shaderOverlayWarned = true;
                 CHelper.printChat("[Immersive Portals] Portal overlay cannot be rendered with shaders");
             }
-
+            
             return;
         }
         
@@ -167,7 +169,6 @@ public class OverlayRendering {
     }
     
     /**
-     * {@link VertexConsumer#putBulkData(PoseStack.Pose, BakedQuad, float, float, float, int, int)}
      * it hardcoded alpha to 1. change it to my customized alpha
      */
     @IPVanillaCopy

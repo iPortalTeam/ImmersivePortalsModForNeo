@@ -22,7 +22,7 @@ public class Animated<T> {
     public long duration = 0;
     private TimingFunction timingFunction;
     
-    public interface TypeInfo<T> {
+    public static interface TypeInfo<T> {
         T interpolate(T start, T end, double progress);
         
         boolean isClose(T a, T b);
@@ -32,11 +32,11 @@ public class Animated<T> {
         }
     }
     
-    public interface TimeSupplier {
+    public static interface TimeSupplier {
         long getTime();
     }
     
-    public interface TimingFunction {
+    public static interface TimingFunction {
         double apply(double progress);
     }
     

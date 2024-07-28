@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.render;
 
 import de.nick1st.imm_ptl.events.ClientCleanupEvent;
+import de.nick1st.imm_ptl.events.DimensionEvents;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -10,9 +11,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
-import qouteall.imm_ptl.core.ClientWorldLoader;
-import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.imm_ptl.core.chunk_loading.PerformanceLevel;
 import qouteall.imm_ptl.core.ducks.IERenderSection;
 import qouteall.imm_ptl.core.miscellaneous.ClientPerformanceMonitor;
@@ -32,7 +33,7 @@ import java.util.Stack;
  * No cave culling because vanilla has a multithreaded cave culling that's hard to integrate with portal rendering.
  * The cave culling is conditionally enabled with Sodium: {@link PortalRendering#shouldEnableSodiumCaveCulling()}
  */
-//@OnlyIn(Dist.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class VisibleSectionDiscovery {
     
     private static ImmPtlViewArea builtChunks;
@@ -132,7 +133,7 @@ public class VisibleSectionDiscovery {
     }
     
     private static void discoverBottomOrTopLayerVisibleChunks(int cy) {
-        BlockTraverse.searchOnPlane(
+        BlockTraverse.<Object>searchOnPlane(
             cameraSectionPos.x(),
             cameraSectionPos.z(),
             viewDistance - 1,
@@ -186,11 +187,8 @@ public class VisibleSectionDiscovery {
     
     public static void init() {
         NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> VisibleSectionDiscovery.cleanUp());
+        NeoForge.EVENT_BUS.addListener(DimensionEvents.CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT.class, e -> VisibleSectionDiscovery.cleanUp());
 
-        // @Nick1st - DynDimLib removal
-//        ClientWorldLoader.CLIENT_DIMENSION_DYNAMIC_REMOVE_EVENT.register((dim) -> {
-//            cleanUp();
-//        });
     }
     
     private static void cleanUp() {

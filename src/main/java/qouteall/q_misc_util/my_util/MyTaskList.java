@@ -19,9 +19,9 @@ public class MyTaskList {
     private static final Logger LOGGER = LogUtils.getLogger();
     
     public interface MyTask {
-        boolean runAndGetIsFinished();
+        public boolean runAndGetIsFinished();
         
-        default void onCancelled() {}
+        public default void onCancelled() {}
     }
     
     private final ObjectList<MyTask> tasks = new ObjectArrayList<>();

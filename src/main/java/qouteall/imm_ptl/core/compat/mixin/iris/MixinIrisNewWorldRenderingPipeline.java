@@ -12,7 +12,7 @@ import qouteall.imm_ptl.core.compat.iris_compatibility.IEIrisNewWorldRenderingPi
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 
 @Mixin(value = IrisRenderingPipeline.class, remap = false)
-public class MixinIrisRenderingPipeline implements IEIrisNewWorldRenderingPipeline {
+public class MixinIrisNewWorldRenderingPipeline implements IEIrisNewWorldRenderingPipeline {
     @Shadow private boolean isRenderingWorld;
 
 //    @Shadow private ShadowRenderTargets shadowRenderTargets;

@@ -4,7 +4,12 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexBuffer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
@@ -36,7 +41,14 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_BACK;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_COMPONENT;
+import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.GL_FRONT;
+import static org.lwjgl.opengl.GL11.GL_RED;
+import static org.lwjgl.opengl.GL11.glCullFace;
+import static org.lwjgl.opengl.GL11.glReadPixels;
 
 public class MyRenderHelper {
     
@@ -281,7 +293,7 @@ public class MyRenderHelper {
         
         drawFramebufferWithViewport(
             textureProvider, doUseAlphaBlend, doEnableModifyAlpha,
-            left, right, bottom, up,
+            left, (double) right, bottom, (double) up,
             viewportWidth, viewportHeight
         );
     }
@@ -334,8 +346,13 @@ public class MyRenderHelper {
         else {
             RenderSystem.disableBlend();
         }
-
-        GlStateManager._colorMask(true, true, true, doEnableModifyAlpha);
+        
+        if (doEnableModifyAlpha) {
+            GlStateManager._colorMask(true, true, true, true);
+        }
+        else {
+            GlStateManager._colorMask(true, true, true, false);
+        }
         
         ShaderInstance shader = doUseAlphaBlend ? client.gameRenderer.blitShader : blitScreenNoBlendShader;
         

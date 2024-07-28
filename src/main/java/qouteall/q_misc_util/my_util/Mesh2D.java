@@ -1,6 +1,10 @@
 package qouteall.q_misc_util.my_util;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -8,7 +12,11 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Unit;
 import org.apache.commons.lang3.Validate;
@@ -1471,7 +1479,7 @@ public class Mesh2D {
         return new Vec2d((sumX / sumWeight) / 3, (sumY / sumWeight) / 3);
     }
     
-    public record Rect(double minX, double minY, double maxX, double maxY) {
+    public static record Rect(double minX, double minY, double maxX, double maxY) {
     }
     
     public Rect getBoundingBox() {

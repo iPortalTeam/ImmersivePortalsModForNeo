@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.portal.custom_portal_gen.form;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -15,7 +16,7 @@ public class HeterogeneousForm extends NetherPortalLikeForm {
     public final SimpleBlockPredicate areaBlock;
     public final SimpleBlockPredicate frameBlock;
     
-    public static final Codec<HeterogeneousForm> codec = RecordCodecBuilder.create(instance -> {
+    public static final MapCodec<HeterogeneousForm> CODEC = RecordCodecBuilder.mapCodec(instance -> {
         return instance.group(
             Codec.BOOL.fieldOf("generate_frame_if_not_found").forGetter(o -> o.generateFrameIfNotFound),
             SimpleBlockPredicate.CODEC.fieldOf("area_block").forGetter(o -> o.areaBlock),
@@ -59,8 +60,8 @@ public class HeterogeneousForm extends NetherPortalLikeForm {
     }
     
     @Override
-    public Codec<? extends PortalGenForm> getCodec() {
-        return codec;
+    public MapCodec<? extends PortalGenForm> getCodec() {
+        return CODEC;
     }
     
     @Override

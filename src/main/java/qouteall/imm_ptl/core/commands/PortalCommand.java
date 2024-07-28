@@ -14,6 +14,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ComponentArgument;
@@ -102,14 +103,14 @@ public class PortalCommand {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public static void register(
-        CommandDispatcher<CommandSourceStack> dispatcher
+        CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext ctx
     ) {
         
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands
             .literal("portal")
             .requires(PortalCommand::canUsePortalCommand);
         
-        registerPortalTargetedCommands(builder);
+        registerPortalTargetedCommands(builder, ctx);
         
         LiteralArgumentBuilder<CommandSourceStack> animation =
             Commands.literal("animation");
@@ -407,7 +408,7 @@ public class PortalCommand {
     }
     
     private static void registerPortalTargetedCommands(
-        LiteralArgumentBuilder<CommandSourceStack> builder
+        LiteralArgumentBuilder<CommandSourceStack> builder, CommandBuildContext ctx
     ) {
         builder.then(Commands.literal("view_portal_data")
             .executes(context -> processPortalTargetedCommand(
@@ -420,7 +421,7 @@ public class PortalCommand {
         
         builder.then(Commands.literal("set_portal_custom_name")
             .then(Commands
-                .argument("name", ComponentArgument.textComponent())
+                .argument("name", ComponentArgument.textComponent(ctx))
                 .executes(context -> processPortalTargetedCommand(
                     context,
                     portal -> {

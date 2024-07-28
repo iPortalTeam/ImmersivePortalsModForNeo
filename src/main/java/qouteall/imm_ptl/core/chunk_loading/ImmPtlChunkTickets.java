@@ -1,6 +1,5 @@
 package qouteall.imm_ptl.core.chunk_loading;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import de.nick1st.imm_ptl.events.DimensionEvents;
 import de.nick1st.imm_ptl.events.ServerCleanupEvent;
@@ -9,14 +8,7 @@ import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongPredicate;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ChunkHolder;
-import net.minecraft.server.level.ChunkMap;
-import net.minecraft.server.level.ChunkTaskPriorityQueue;
-import net.minecraft.server.level.ChunkTaskPriorityQueueSorter;
-import net.minecraft.server.level.DistanceManager;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.Ticket;
-import net.minecraft.server.level.TicketType;
+import net.minecraft.server.level.*;
 import net.minecraft.util.SortedArraySet;
 import net.minecraft.util.thread.ProcessorMailbox;
 import net.minecraft.world.level.ChunkPos;
@@ -193,11 +185,22 @@ public class ImmPtlChunkTickets {
             if (chunkHolder == null) {
                 return true;
             }
-            
-            Either<LevelChunk, ChunkHolder.ChunkLoadingFailure> resultNow =
-                chunkHolder.getEntityTickingChunkFuture().getNow(null);
-            
-            return resultNow != null && resultNow.left().isPresent();
+
+            ChunkResult<LevelChunk> resultNow = chunkHolder.getEntityTickingChunkFuture()
+                    .getNow(null);
+
+            if (resultNow == null) {
+                return false;
+            }
+
+            if (!resultNow.isSuccess()) {
+                LOGGER.error(
+                        "Chunk loading failure {} {} {}",
+                        world, new ChunkPos(chunkPos)
+                );
+            }
+
+            return true;
         });
         
         // flush the pending-add-ticket queues

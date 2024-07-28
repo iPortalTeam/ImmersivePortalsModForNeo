@@ -7,19 +7,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
-import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.configuration.ICustomConfigurationTask;
-import net.neoforged.neoforge.network.event.OnGameConfigurationEvent;
-import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
+import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -91,8 +88,13 @@ public class ImmPtlNetworkConfig {
     public static record S2CConfigStartPacket(
         ModVersion versionFromServer
     ) implements CustomPacketPayload {
-        public static final ResourceLocation ID = new ResourceLocation("immersive_portals_core:config_packet");
-        
+        public static final CustomPacketPayload.Type<S2CConfigStartPacket> TYPE =
+                CustomPacketPayload.createType("iportal:config_packet");
+
+        public static final StreamCodec<FriendlyByteBuf, S2CConfigStartPacket> CODEC = StreamCodec.of(
+                (b, p) -> p.write(b), S2CConfigStartPacket::read
+        );
+
         public static S2CConfigStartPacket read(FriendlyByteBuf buf) {
             ModVersion info = ModVersion.read(buf);
             return new S2CConfigStartPacket(info);
@@ -103,19 +105,19 @@ public class ImmPtlNetworkConfig {
         }
 
         @Override
-        public ResourceLocation id() {
-            return ID;
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
         }
-        
+
         // handled on client side
         //@OnlyIn(Dist.CLIENT)
-        public void handle(ConfigurationPayloadContext configurationPayloadContext) {
+        public void handle(IPayloadContext configurationPayloadContext) {
             LOGGER.info(
                 "Client received ImmPtl config packet. Server mod version: {}", versionFromServer
             );
             
             serverVersion = versionFromServer;
-            configurationPayloadContext.replyHandler().send(new C2SConfigCompletePacket(
+            configurationPayloadContext.reply(new C2SConfigCompletePacket(
                 immPtlVersion, IPConfig.getConfig().clientTolerantVersionMismatchWithServer
             ));
         }
@@ -125,27 +127,32 @@ public class ImmPtlNetworkConfig {
         ModVersion versionFromClient,
         boolean clientTolerantVersionMismatch
     ) implements CustomPacketPayload {
-        public static final ResourceLocation ID = new ResourceLocation("immersive_portals_core:configure_complete");
-        
+        public static final CustomPacketPayload.Type<C2SConfigCompletePacket> TYPE =
+                CustomPacketPayload.createType(
+                        ("iportal:configure_complete")
+                );
+        public static final StreamCodec<FriendlyByteBuf, C2SConfigCompletePacket> CODEC = StreamCodec.of(
+                (b, p) -> p.write(b), C2SConfigCompletePacket::read
+        );
+
         public static C2SConfigCompletePacket read(FriendlyByteBuf buf) {
             ModVersion info = ModVersion.read(buf);
             boolean clientTolerantVersionMismatch = buf.readBoolean();
             return new C2SConfigCompletePacket(info, clientTolerantVersionMismatch);
         }
         
-        @Override
         public void write(FriendlyByteBuf buf) {
             versionFromClient.write(buf);
             buf.writeBoolean(clientTolerantVersionMismatch);
         }
 
         @Override
-        public ResourceLocation id() {
-            return ID;
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
         }
-        
+
         // handled on server side
-        public void handle(ConfigurationPayloadContext configurationPayloadContext
+        public void handle(IPayloadContext configurationPayloadContext
         ) {
            // TODO @Nick1st - This method body must be synced with the fabric system
             if (versionFromClient.isNormalVersion() && immPtlVersion.isNormalVersion()) {
@@ -154,7 +161,7 @@ public class ImmPtlNetworkConfig {
                     !IPConfig.getConfig().serverTolerantVersionMismatchWithClient &&
                     !clientTolerantVersionMismatch
                 ) {
-                    configurationPayloadContext.replyHandler().disconnect(Component.translatable(
+                    configurationPayloadContext.disconnect(Component.translatable(
                         "imm_ptl.mod_major_minor_version_mismatch",
                         immPtlVersion.toString(),
                         versionFromClient.toString()
@@ -171,7 +178,7 @@ public class ImmPtlNetworkConfig {
                 }
             }
 
-            configurationPayloadContext.taskCompletedHandler().onTaskCompleted(ImmPtlConfigurationTask.TYPE);
+            configurationPayloadContext.finishCurrentTask(ImmPtlConfigurationTask.TYPE);
         }
     }
     
@@ -179,9 +186,8 @@ public class ImmPtlNetworkConfig {
         immPtlVersion = O_O.getImmPtlVersion();
         
         LOGGER.info("Immersive Portals Core version {}", immPtlVersion);
-
         // TODO @Nick1st - Check that this fixes Server login
-        eventBus.addListener(OnGameConfigurationEvent.class, (event) -> {
+        eventBus.addListener(RegisterConfigurationTasksEvent.class, (event) -> {
             if (event.getListener().getConnectionType().isNeoForge()) {
                 event.register(new ImmPtlConfigurationTask());
             }

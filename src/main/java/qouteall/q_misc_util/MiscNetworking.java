@@ -7,6 +7,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -28,13 +29,22 @@ public class MiscNetworking {
         new ResourceLocation("q_misc_util", "remote_stc");
     public static final ResourceLocation id_ctsRemote =
         new ResourceLocation("q_misc_util", "remote_cts");
-    
+
+    public static final CustomPacketPayload.Type<CustomPacketPayload> TYPE_STC_REMOTE = CustomPacketPayload.createType("q_misc_util:remote_stc");
+    public static final CustomPacketPayload.Type<CustomPacketPayload> TYPE_CTS_REMOTE = CustomPacketPayload.createType("q_misc_util:remote_cts");
+
     public static record DimIdSyncPacket(
         CompoundTag dimIntIdTag,
         CompoundTag dimTypeTag
     ) implements CustomPacketPayload {
-        public static final ResourceLocation ID = new ResourceLocation("q_misc_util", "dim_int_id_sync");
-        
+        public static final CustomPacketPayload.Type<DimIdSyncPacket> TYPE =
+                CustomPacketPayload.createType("imm_ptl:dim_int_id_sync");
+
+        public static final StreamCodec<FriendlyByteBuf, DimIdSyncPacket> CODEC =
+                StreamCodec.of(
+                        (b, p) -> p.write(b), DimIdSyncPacket::read
+                );
+
         public static DimIdSyncPacket createFromServer(MinecraftServer server) {
             DimIntIdMap rec = DimensionIntId.getServerMap(server);
             CompoundTag dimIntIdTag = rec.toTag(dim -> true);
@@ -69,25 +79,23 @@ public class MiscNetworking {
         public static DimIdSyncPacket createPacket(MinecraftServer server) {
             return DimIdSyncPacket.createFromServer(server);
         }
-        
+
         @Override
+        public @NotNull Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+
         public void write(FriendlyByteBuf buf) {
             buf.writeNbt(dimIntIdTag);
             buf.writeNbt(dimTypeTag);
         }
 
-        @Override
-        public @NotNull ResourceLocation id() {
-            return ID;
-        }
-
         public static DimIdSyncPacket read(FriendlyByteBuf buf) {
             CompoundTag idMapTag = buf.readNbt();
             CompoundTag typeTag = buf.readNbt();
-            
+
             return new DimIdSyncPacket(idMapTag, typeTag);
         }
-
         // must be handled early
         // should not be handled in client main thread, otherwise it may be late
         public void handleOnNetworkingThread() {

@@ -5,6 +5,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -24,7 +26,7 @@ import java.util.stream.Collectors;
 
 // currently only exists on client side
 // TODO remove this in 1.21
-//@OnlyIn(Dist.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class PortalGroup implements PortalLike {
     
     private static final LimitedLogger limitedLogger = new LimitedLogger(20);
@@ -171,8 +173,8 @@ public class PortalGroup implements PortalLike {
     public ResourceKey<Level> getDestDim() {
         return getFirstPortal().getDestDim();
     }
-
-    //@OnlyIn(Dist.CLIENT)
+    
+    @OnlyIn(Dist.CLIENT)
     @Override
     public boolean isRoughlyVisibleTo(Vec3 cameraPos) {
         return true;
@@ -248,7 +250,7 @@ public class PortalGroup implements PortalLike {
         return portals.stream().anyMatch(p -> p.cannotRenderInMe(portal));
     }
     
-    //@OnlyIn(Dist.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
     public BoxPredicate getInnerFrustumCullingFunc(
         double innerCameraX, double innerCameraY, double innerCameraZ

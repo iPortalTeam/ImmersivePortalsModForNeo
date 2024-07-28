@@ -1,27 +1,30 @@
 package qouteall.imm_ptl.peripheral.mixin.common.dim_stack;
 
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.chunk.status.ChunkStatusTasks;
+import net.minecraft.world.level.chunk.status.ToFullChunk;
+import net.minecraft.world.level.chunk.status.WorldGenContext;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import qouteall.imm_ptl.peripheral.dim_stack.DimStackManagement;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
-@Mixin(ChunkStatus.class)
+@Mixin(ChunkStatusTasks.class)
 public class MixinChunkStatus_CVB {
     @Inject(
-        method = "lambda$static$16", at = @At("HEAD"),
-        remap = false
+            method = "generateSpawn", at = @At("HEAD")
     )
-    private static void redirectPopulateEntities(
-        ChunkStatus var1, ServerLevel world, ChunkGenerator var3, List<ChunkAccess> var4, ChunkAccess chunk,
-        CallbackInfo ci
+    private static void onGenerateSpawn(
+            WorldGenContext worldGenContext, ChunkStatus chunkStatus,
+            Executor executor, ToFullChunk toFullChunk, List<ChunkAccess> list,
+            ChunkAccess chunkAccess, CallbackInfoReturnable<CompletableFuture<ChunkAccess>> cir
     ) {
-        DimStackManagement.replaceBedrock(world, chunk);
+        DimStackManagement.replaceBedrock(worldGenContext.level(), chunkAccess);
     }
 }

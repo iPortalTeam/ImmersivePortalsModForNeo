@@ -1,5 +1,6 @@
 package qouteall.imm_ptl.core.mixin.client.render;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -51,7 +52,6 @@ import qouteall.imm_ptl.core.render.FrontClipping;
 import qouteall.imm_ptl.core.render.ImmPtlViewArea;
 import qouteall.imm_ptl.core.render.MyGameRenderer;
 import qouteall.imm_ptl.core.render.MyRenderHelper;
-import qouteall.imm_ptl.core.render.TransformationManager;
 import qouteall.imm_ptl.core.render.VisibleSectionDiscovery;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
@@ -139,14 +139,11 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void onAfterCutoutRendering(
-        PoseStack matrices, float tickDelta, long limitTime,
-        boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer,
-        LightTexture lightmapTextureManager, Matrix4f matrix4f,
-        CallbackInfo ci
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
 //        IPCGlobal.renderer.onBeforeTranslucentRendering(matrices);
         
-        CrossPortalEntityRenderer.onBeginRenderingEntitiesAndBlockEntities(matrices);
+        CrossPortalEntityRenderer.onBeginRenderingEntitiesAndBlockEntities(modelView);
     }
     
     @Inject(
@@ -157,22 +154,14 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void onMyBeforeTranslucentRendering(
-        PoseStack matrices,
-        float tickDelta,
-        long limitTime,
-        boolean renderBlockOutline,
-        Camera camera,
-        GameRenderer gameRenderer,
-        LightTexture lightmapTextureManager,
-        Matrix4f matrix4f,
-        CallbackInfo ci
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
-        IPCGlobal.renderer.onBeforeTranslucentRendering(matrices);
+        IPCGlobal.renderer.onBeforeTranslucentRendering(modelView);
         
         MyGameRenderer.updateFogColor();
         MyGameRenderer.resetFogState();
         
-        MyGameRenderer.resetDiffuseLighting(matrices);
+        MyGameRenderer.resetDiffuseLighting();
         
         FrontClipping.disableClipping();
     }
@@ -187,7 +176,11 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
             shift = At.Shift.AFTER
         )
     )
-    private void onEndRenderingEntities(PoseStack poseStack, float partialTick, long finishNanoTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f projectionMatrix, CallbackInfo ci) {
+    private void onEndRenderingEntities(
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer,
+        LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2,
+        CallbackInfo ci, @Local PoseStack poseStack
+    ) {
         CrossPortalEntityRenderer.onEndRenderingEntitiesAndBlockEntities(poseStack);
     }
     
@@ -196,40 +189,28 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         at = @At("RETURN")
     )
     private void onAfterTranslucentRendering(
-        PoseStack matrices,
-        float tickDelta,
-        long limitTime,
-        boolean renderBlockOutline,
-        Camera camera,
-        GameRenderer gameRenderer,
-        LightTexture lightmapTextureManager,
-        Matrix4f matrix4f,
-        CallbackInfo ci
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
+        IPCGlobal.renderer.onAfterTranslucentRendering(modelView);
         
-        IPCGlobal.renderer.onAfterTranslucentRendering(matrices);
-        
-        //make hand rendering normal
-        Lighting.setupLevel(matrices.last().pose());
+        // make hand rendering normal
+        Lighting.setupLevel();
     }
     
     @Inject(
         method = "renderLevel",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderSectionLayer(Lnet/minecraft/client/renderer/RenderType;Lcom/mojang/blaze3d/vertex/PoseStack;DDDLorg/joml/Matrix4f;)V"
+            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderSectionLayer(Lnet/minecraft/client/renderer/RenderType;DDDLorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V"
         )
     )
     private void onBeforeRenderingLayer(
-        PoseStack matrices, float tickDelta, long limitTime,
-        boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer,
-        LightTexture lightmapTextureManager, Matrix4f matrix4f,
-        CallbackInfo ci
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.setupInnerClipping(
                 PortalRendering.getActiveClippingPlane(),
-                matrices.last().pose(),
+                modelView,
                 -FrontClipping.ADJUSTMENT
                 // move the clipping plane a little back, to make world wrapping portal not z-fight
             );
@@ -248,15 +229,12 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         method = "renderLevel",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderSectionLayer(Lnet/minecraft/client/renderer/RenderType;Lcom/mojang/blaze3d/vertex/PoseStack;DDDLorg/joml/Matrix4f;)V",
+            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderSectionLayer(Lnet/minecraft/client/renderer/RenderType;DDDLorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V",
             shift = At.Shift.AFTER
         )
     )
     private void onAfterRenderingLayer(
-        PoseStack matrices, float tickDelta, long limitTime,
-        boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer,
-        LightTexture lightmapTextureManager, Matrix4f matrix4f,
-        CallbackInfo ci
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.disableClipping();
@@ -418,20 +396,12 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void beforeRenderingWeather(
-        PoseStack matrices,
-        float tickDelta,
-        long limitTime,
-        boolean renderBlockOutline,
-        Camera camera,
-        GameRenderer gameRenderer,
-        LightTexture lightmapTextureManager,
-        Matrix4f matrix4f,
-        CallbackInfo ci
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.setupInnerClipping(
                 PortalRendering.getActiveClippingPlane(),
-                matrices.last().pose(), 0
+                modelView, 0
             );
             RenderStates.isRenderingPortalWeather = true;
         }
@@ -446,15 +416,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void afterRenderingWeather(
-        PoseStack matrices,
-        float tickDelta,
-        long limitTime,
-        boolean renderBlockOutline,
-        Camera camera,
-        GameRenderer gameRenderer,
-        LightTexture lightmapTextureManager,
-        Matrix4f matrix4f,
-        CallbackInfo ci
+        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.disableClipping();
@@ -504,7 +466,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         method = "renderSky", at = @At("HEAD"), cancellable = true
     )
     private void onRenderSkyBegin(
-        PoseStack poseStack, Matrix4f matrix4f, float partialTick, Camera camera,
+        Matrix4f modelView, Matrix4f matrix4f, float partialTick, Camera camera,
         boolean isFoggy, Runnable runnable, CallbackInfo ci
     ) {
         if (WorldRenderInfo.isRendering()) {
@@ -524,7 +486,10 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         method = "renderSky",
         at = @At("RETURN")
     )
-    private void onRenderSkyEnd(PoseStack poseStack, Matrix4f matrix4f, float f, Camera camera, boolean bl, Runnable runnable, CallbackInfo ci) {
+    private void onRenderSkyEnd(
+        Matrix4f modelView, Matrix4f matrix4f, float f, Camera camera,
+        boolean bl, Runnable runnable, CallbackInfo ci
+    ) {
         MyRenderHelper.recoverFaceCulling();
     }
     
@@ -541,13 +506,6 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
             return WorldRenderInfo.getCameraPos();
         }
         return player.getEyePosition(partialTicks);
-    }
-    
-    @Inject(
-        method = "prepareCullFrustum", at = @At("HEAD")
-    )
-    private void onSetupFrustum(PoseStack matrices, Vec3 pos, Matrix4f projectionMatrix, CallbackInfo ci) {
-        TransformationManager.processTransformation(minecraft.gameRenderer.getMainCamera(), matrices);
     }
     
     // vanilla clears translucentFramebuffer even when transparencyShader is null
@@ -599,7 +557,6 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     
     /**
      * when rendering portal, it won't call {@link ViewArea#repositionCamera(double, double)}
-     * So {@link ViewArea#getRenderSectionAt(BlockPos)} will return incorrect result
      */
     @Inject(
         method = "isSectionCompiled",

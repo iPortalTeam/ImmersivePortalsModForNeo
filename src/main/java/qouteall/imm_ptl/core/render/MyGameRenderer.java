@@ -2,7 +2,6 @@ package qouteall.imm_ptl.core.render;
 
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.Util;
@@ -17,6 +16,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -38,7 +39,7 @@ import qouteall.q_misc_util.my_util.LimitedLogger;
 import java.util.Stack;
 import java.util.function.Consumer;
 
-//@OnlyIn(Dist.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class MyGameRenderer {
     public static final Minecraft client = Minecraft.getInstance();
     
@@ -47,7 +48,7 @@ public class MyGameRenderer {
     public static final int MAX_SECONDARY_BUFFER_NUM = 2;
     
     // portal rendering and outer world rendering uses different buffer builder storages
-    private static final Stack<RenderBuffers> secondaryRenderBuffers = new Stack<>();
+    private static Stack<RenderBuffers> secondaryRenderBuffers = new Stack<>();
     private static int usingRenderBuffersObjectNum = 0;
     
     // the vanilla visibility sections discovery code is multi-threaded
@@ -58,9 +59,7 @@ public class MyGameRenderer {
     public static boolean enablePortalCaveCulling = true;
     
     public static void init() {
-        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> {
-            secondaryRenderBuffers.clear();
-        });
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> secondaryRenderBuffers.clear());
     }
     
     @Nullable
@@ -154,7 +153,7 @@ public class MyGameRenderer {
         
         ObjectArrayList<SectionRenderDispatcher.RenderSection> newChunkInfoList = VisibleSectionDiscovery.takeList();
         ((IEWorldRenderer) oldWorldRenderer).portal_setChunkInfoList(newChunkInfoList);
-
+        
         Object irisPipeline = IrisInterface.invoker.getPipeline(worldRenderer);
         
         // switch (note: it will no longer switch the world that client player is in )
@@ -204,7 +203,7 @@ public class MyGameRenderer {
         SodiumInterface.invoker.switchContextWithCurrentWorldRenderer(newSodiumContext);
         
         ((IEWorldRenderer) worldRenderer).portal_setTransparencyShader(null);
-
+        
         IrisInterface.invoker.setPipeline(worldRenderer, null);
         
         //update lightmap
@@ -217,8 +216,7 @@ public class MyGameRenderer {
             client.getProfiler().push("render_portal_content");
             client.gameRenderer.renderLevel(
                 tickDelta,
-                Util.getNanos(),
-                new PoseStack()
+                Util.getNanos()
             );
             client.getProfiler().pop();
         });
@@ -256,7 +254,7 @@ public class MyGameRenderer {
         ((IEWorldRenderer) worldRenderer).portal_setFrustum(oldFrustum);
         
         client.gameRenderer.resetProjectionMatrix(oldProjectionMatrix);
-
+        
         IrisInterface.invoker.setPipeline(worldRenderer, irisPipeline);
         
         client.getEntityRenderDispatcher()
@@ -272,7 +270,7 @@ public class MyGameRenderer {
     }
     
     /**
-     * {@link LevelRenderer#renderLevel(PoseStack, float, long, boolean, Camera, GameRenderer, LightTexture, Matrix4f)}
+     * {@link LevelRenderer#renderLevel}
      */
     @IPVanillaCopy
     public static void resetFogState() {
@@ -304,15 +302,17 @@ public class MyGameRenderer {
     }
     
     /**
-     * {@link LevelRenderer#renderLevel(PoseStack, float, long, boolean, Camera, GameRenderer, LightTexture, Matrix4f)}
+     * {@link LevelRenderer#renderLevel}
      */
     @IPVanillaCopy
-    public static void resetDiffuseLighting(PoseStack matrixStack) {
-        if (client.level.effects().constantAmbientLight()) {
-            Lighting.setupNetherLevel(matrixStack.last().pose());
+    public static void resetDiffuseLighting() {
+        ClientLevel world = client.level;
+        assert world != null;
+        if (world.effects().constantAmbientLight()) {
+            Lighting.setupNetherLevel();
         }
         else {
-            Lighting.setupLevel(matrixStack.last().pose());
+            Lighting.setupLevel();
         }
     }
     
