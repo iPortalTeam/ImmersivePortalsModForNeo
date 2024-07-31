@@ -6,6 +6,7 @@ import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
+import qouteall.imm_ptl.core.McHelper;
 import qouteall.q_misc_util.Helper;
 
 @Deprecated

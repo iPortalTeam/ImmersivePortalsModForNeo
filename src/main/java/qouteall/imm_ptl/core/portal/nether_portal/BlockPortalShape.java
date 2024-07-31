@@ -26,6 +26,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+// TODO eventually replace it with FastBlockPortalShape
 public class BlockPortalShape {
     public static int defaultLengthLimit = 64;
     public BlockPos anchor;

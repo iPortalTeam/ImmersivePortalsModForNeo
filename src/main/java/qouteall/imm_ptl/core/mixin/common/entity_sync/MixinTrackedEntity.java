@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 //NOTE must redirect all packets about entities
+@SuppressWarnings({"JavadocReference", "resource"})
 @Mixin(ChunkMap.TrackedEntity.class)
 public abstract class MixinTrackedEntity implements IETrackedEntity {
     @Shadow
@@ -75,6 +76,7 @@ public abstract class MixinTrackedEntity implements IETrackedEntity {
         );
     }
     
+    @SuppressWarnings("rawtypes")
     @Redirect(
         method = "Lnet/minecraft/server/level/ChunkMap$TrackedEntity;broadcastAndSend(Lnet/minecraft/network/protocol/Packet;)V",
         at = @At(
@@ -247,7 +249,7 @@ public abstract class MixinTrackedEntity implements IETrackedEntity {
         // avoid sending wrong position delta update packet
         ((IEEntityTrackerEntry) serverEntity).ip_updateTrackedEntityPosition();
         
-        Packet spawnPacket = entity.getAddEntityPacket();
+        Packet spawnPacket = entity.getAddEntityPacket(serverEntity);
         Packet<ClientGamePacketListener> redirected = PacketRedirection.createRedirectedMessage(
             entity.getServer(),
             entity.level().dimension(), spawnPacket
