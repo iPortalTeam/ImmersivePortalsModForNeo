@@ -2,6 +2,7 @@ package qouteall.q_misc_util;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
@@ -62,7 +63,7 @@ public class CustomTextOverlay {
      * {@link Gui#render(GuiGraphics, float)}
      * {@link net.minecraft.client.gui.screens.AlertScreen}
      */
-    public static void render(GuiGraphics guiGraphics, float partialTick) {
+    public static void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         long currTime = System.nanoTime();
         
         boolean removes = ENTRIES.entrySet().removeIf(e -> e.getValue().clearingTime < currTime);

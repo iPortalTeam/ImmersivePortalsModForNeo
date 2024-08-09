@@ -70,6 +70,7 @@ public abstract class MixinCamera implements IECamera {
         }
     }
     
+    // TODO using global variable to pass may be problematic when multiple camera objects are used
     @Inject(method = "getMaxZoom", at = @At("RETURN"), cancellable = true)
     private void onGetMaxZoomReturn(float f, CallbackInfoReturnable<Float> cir) {
         lastClipSpaceResult = cir.getReturnValue();
