@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -225,8 +224,7 @@ public class MyGameRenderer {
         invokeWrapper.accept(() -> {
             client.getProfiler().push("render_portal_content");
             client.gameRenderer.renderLevel(
-                tickDelta,
-                Util.getNanos()
+                client.getTimer()
             );
             client.getProfiler().pop();
         });

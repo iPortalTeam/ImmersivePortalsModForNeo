@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -22,6 +21,7 @@ import org.apache.commons.lang3.Validate;
 import org.joml.Matrix4f;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
+import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.miscellaneous.IPVanillaCopy;
 import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
@@ -205,33 +205,27 @@ public class MyRenderHelper {
         shader.apply();
         
         Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferBuilder = tessellator
+            .begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         
         // upper triangle
-//        bufferBuilder.vertex(1, -1, 0).color(r, g, b, a)
-//            .endVertex();
-//        bufferBuilder.vertex(1, 1, 0).color(r, g, b, a)
-//            .endVertex();
-//        bufferBuilder.vertex(-1, 1, 0).color(r, g, b, a)
-//            .endVertex();
+//        bufferBuilder.addVertex(1, -1, 0).setColor(r, g, b, a)
+//            ;
+//        bufferBuilder.addVertex(1, 1, 0).setColor(r, g, b, a)
+//            ;
+//        bufferBuilder.addVertex(-1, 1, 0).setColor(r, g, b, a)
+//            ;
         
         // down triangle
-        bufferBuilder.vertex(-1, 1, 0).color(r, g, b, a)
-            .endVertex();
-        bufferBuilder.vertex(-1, -1, 0).color(r, g, b, a)
-            .endVertex();
-        bufferBuilder.vertex(1, -1, 0).color(r, g, b, a)
-            .endVertex();
+        bufferBuilder.addVertex(-1, 1, 0).setColor(r, g, b, a);
+        bufferBuilder.addVertex(-1, -1, 0).setColor(r, g, b, a);
+        bufferBuilder.addVertex(1, -1, 0).setColor(r, g, b, a);
         
-        bufferBuilder.vertex(1, 0, 0).color(r, g, b, a)
-            .endVertex();
-        bufferBuilder.vertex(0, 1, 0).color(r, g, b, a)
-            .endVertex();
-        bufferBuilder.vertex(-1, 0, 0).color(r, g, b, a)
-            .endVertex();
+        bufferBuilder.addVertex(1, 0, 0).setColor(r, g, b, a);
+        bufferBuilder.addVertex(0, 1, 0).setColor(r, g, b, a);
+        bufferBuilder.addVertex(-1, 0, 0).setColor(r, g, b, a);
         
-        BufferUploader.draw(bufferBuilder.end());
+        BufferUploader.draw(bufferBuilder.build());
         
         shader.clear();
     }
@@ -253,24 +247,18 @@ public class MyRenderHelper {
         shader.apply();
         
         Tesselator tessellator = RenderSystem.renderThreadTesselator();
-        BufferBuilder bufferBuilder = tessellator.getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferBuilder = tessellator.
+            begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         
-        bufferBuilder.vertex(1, -1, 0).color(r, g, b, a)
-            .endVertex();
-        bufferBuilder.vertex(1, 1, 0).color(r, g, b, a)
-            .endVertex();
-        bufferBuilder.vertex(-1, 1, 0).color(r, g, b, a)
-            .endVertex();
+        bufferBuilder.addVertex(1, -1, 0).setColor(r, g, b, a);
+        bufferBuilder.addVertex(1, 1, 0).setColor(r, g, b, a);
+        bufferBuilder.addVertex(-1, 1, 0).setColor(r, g, b, a);
         
-        bufferBuilder.vertex(-1, 1, 0).color(r, g, b, a)
-            .endVertex();
-        bufferBuilder.vertex(-1, -1, 0).color(r, g, b, a)
-            .endVertex();
-        bufferBuilder.vertex(1, -1, 0).color(r, g, b, a)
-            .endVertex();
+        bufferBuilder.addVertex(-1, 1, 0).setColor(r, g, b, a);
+        bufferBuilder.addVertex(-1, -1, 0).setColor(r, g, b, a);
+        bufferBuilder.addVertex(1, -1, 0).setColor(r, g, b, a);
         
-        BufferUploader.draw(bufferBuilder.end());
+        BufferUploader.draw(bufferBuilder.build());
         
         shader.clear();
     }
@@ -293,14 +281,14 @@ public class MyRenderHelper {
         
         drawFramebufferWithViewport(
             textureProvider, doUseAlphaBlend, doEnableModifyAlpha,
-            left, (double) right, bottom, (double) up,
+            left, right, bottom, up,
             viewportWidth, viewportHeight
         );
     }
     
     public static void drawFramebuffer(
         RenderTarget textureProvider, boolean doUseAlphaBlend, boolean doEnableModifyAlpha,
-        float xMin, double xMax, float yMin, double yMax
+        float xMin, float xMax, float yMin, float yMax
     ) {
         drawFramebufferWithViewport(
             textureProvider,
@@ -317,7 +305,7 @@ public class MyRenderHelper {
     @IPVanillaCopy
     public static void drawFramebufferWithViewport(
         RenderTarget textureProvider, boolean doUseAlphaBlend, boolean doEnableModifyAlpha,
-        float left, double right, float bottom, double up,
+        float left, float right, float bottom, float up,
         int viewportWidth, int viewportHeight
     ) {
         CHelper.checkGlError();
@@ -370,24 +358,23 @@ public class MyRenderHelper {
         float textureYScale = (float) viewportHeight / (float) textureProvider.height;
         
         Tesselator tessellator = RenderSystem.renderThreadTesselator();
-        BufferBuilder bufferBuilder = tessellator.getBuilder();
+        BufferBuilder bufferBuilder = tessellator
+            .begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferBuilder.addVertex(left, up, 0.0f)
+            .setUv(0.0F, 0.0F)
+            .setColor(255, 255, 255, 255);
+        bufferBuilder.addVertex(right, up, 0.0f)
+            .setUv(textureXScale, 0.0F)
+            .setColor(255, 255, 255, 255);
+        bufferBuilder.addVertex(right, bottom, 0.0f)
+            .setUv(textureXScale, textureYScale)
+            .setColor(255, 255, 255, 255);
+        bufferBuilder.addVertex(left, bottom, 0.0f)
+            .setUv(0.0F, textureYScale)
+            .setColor(255, 255, 255, 255);
         
-        bufferBuilder.vertex(left, up, 0.0D)
-            .uv(0.0F, 0.0F)
-            .color(255, 255, 255, 255).endVertex();
-        bufferBuilder.vertex(right, up, 0.0D)
-            .uv(textureXScale, 0.0F)
-            .color(255, 255, 255, 255).endVertex();
-        bufferBuilder.vertex(right, bottom, 0.0D)
-            .uv(textureXScale, textureYScale)
-            .color(255, 255, 255, 255).endVertex();
-        bufferBuilder.vertex(left, bottom, 0.0D)
-            .uv(0.0F, textureYScale)
-            .color(255, 255, 255, 255).endVertex();
-        
-        BufferUploader.draw(bufferBuilder.end());
+        BufferUploader.draw(bufferBuilder.build());
         
         shader.clear();
         
@@ -418,7 +405,7 @@ public class MyRenderHelper {
     
     /**
      * If we don't do this
-     * the future created in {@link SectionRenderDispatcher#uploadSectionLayer(BufferBuilder.RenderedBuffer, VertexBuffer)}
+     * the future created in {@link SectionRenderDispatcher#uploadSectionLayer}
      * may never complete
      */
     public static void earlyRemoteUpload() {

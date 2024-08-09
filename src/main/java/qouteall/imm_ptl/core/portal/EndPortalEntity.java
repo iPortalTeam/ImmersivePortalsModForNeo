@@ -83,16 +83,9 @@ public class EndPortalEntity extends Portal {
             LOGGER.error("End portal mode abnormal");
         }
         
-        /**
-         * {@link EndPortalBlock#getPortalDestination}
-         * */
-        
         // for toObsidianPlatform mode, if the platform does not get generated before
         // going through portal, the player may fall into void
-        EndPlatformFeature.createEndPlatform(
-            world, BlockPos.containing(ServerLevel.END_SPAWN_POINT.getBottomCenter()).below(),
-            true
-        );
+        doCreateEndPlatform(world);
         
         // update dragon fight info
         EndDragonFight dragonFight = world.getDragonFight();
@@ -102,6 +95,16 @@ public class EndPortalEntity extends Portal {
         if (((IEEndDragonFight) dragonFight).ip_getNeedsStateScanning()) {
             ((IEEndDragonFight) dragonFight).ip_scanState();
         }
+    }
+    
+    /**
+     * {@link EndPortalBlock#getPortalDestination}
+     */
+    private static void doCreateEndPlatform(ServerLevel world) {
+        EndPlatformFeature.createEndPlatform(
+            world, BlockPos.containing(ServerLevel.END_SPAWN_POINT.getBottomCenter()).below(),
+            true
+        );
     }
     
     private static void generateClassicalEndPortal(ServerLevel world, Vec3 destination, Vec3 portalCenter) {
@@ -264,7 +267,7 @@ public class EndPortalEntity extends Portal {
         assert server != null;
         ServerLevel endWorld = server.getLevel(Level.END);
         if (endWorld != null) {
-            ServerLevel.makeObsidianPlatform(endWorld);
+            doCreateEndPlatform(endWorld);
         }
     }
     
@@ -343,7 +346,7 @@ public class EndPortalEntity extends Portal {
                     assert server != null;
                     ServerLevel endWorld = server.getLevel(Level.END);
                     if (endWorld != null) {
-                        ServerLevel.makeObsidianPlatform(endWorld);
+                        doCreateEndPlatform(endWorld);
                     }
                 }
             }
