@@ -42,6 +42,7 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+import qouteall.imm_ptl.core.McHelper;
 import qouteall.q_misc_util.my_util.CountDownInt;
 import qouteall.q_misc_util.my_util.DQuaternion;
 
@@ -144,7 +145,9 @@ public class ImplRemoteProcedureCall {
     ) implements CustomPacketPayload {
         
         public static final CustomPacketPayload.Type<C2SRPCPayload> TYPE =
-            CustomPacketPayload.createType("iportal:remote_c2s");
+            new CustomPacketPayload.Type<>(
+                McHelper.newResourceLocation("iportal:remote_c2s")
+            );
         
         public static final StreamCodec<RegistryFriendlyByteBuf, C2SRPCPayload> CODEC = StreamCodec.of(
             (b, p) -> p.write(b), C2SRPCPayload::read
@@ -237,7 +240,9 @@ public class ImplRemoteProcedureCall {
     ) implements CustomPacketPayload {
         
         public static final CustomPacketPayload.Type<S2CRPCPayload> TYPE =
-            CustomPacketPayload.createType("iportal:remote_s2c");
+            new CustomPacketPayload.Type<>(
+                McHelper.newResourceLocation("iportal:remote_s2c")
+            );
         
         public static final StreamCodec<RegistryFriendlyByteBuf, S2CRPCPayload> CODEC = StreamCodec.of(
             (b, p) -> p.write(b), S2CRPCPayload::read

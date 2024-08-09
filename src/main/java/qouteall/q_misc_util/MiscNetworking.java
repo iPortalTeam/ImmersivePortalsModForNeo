@@ -38,7 +38,9 @@ public class MiscNetworking {
         CompoundTag dimTypeTag
     ) implements CustomPacketPayload {
         public static final CustomPacketPayload.Type<DimIdSyncPacket> TYPE =
-            CustomPacketPayload.createType("imm_ptl:dim_int_id_sync");
+            new CustomPacketPayload.Type<>(
+                McHelper.newResourceLocation("imm_ptl:dim_int_id_sync")
+            );
         
         public static final StreamCodec<FriendlyByteBuf, DimIdSyncPacket> CODEC =
             StreamCodec.of(

@@ -247,7 +247,7 @@ public class PacketRedirection {
         int dimensionIntId, Packet<? extends ClientGamePacketListener> packet
     ) implements CustomPacketPayload {
         public static final CustomPacketPayload.Type<Payload> TYPE =
-            CustomPacketPayload.createType(payloadId.toString());
+            new CustomPacketPayload.Type<>(payloadId);
         
         public static final StreamCodec<RegistryFriendlyByteBuf, Payload> CODEC =
             StreamCodec.of(

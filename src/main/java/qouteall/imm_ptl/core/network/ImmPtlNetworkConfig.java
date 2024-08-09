@@ -7,7 +7,6 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
@@ -19,7 +18,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.IPMcHelper;
+import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.mixin.common.other_sync.IEServerConfigurationPacketListenerImpl;
 import qouteall.imm_ptl.core.platform_specific.IPConfig;
 import qouteall.imm_ptl.core.platform_specific.O_O;
@@ -95,7 +94,9 @@ public class ImmPtlNetworkConfig {
         ModVersion versionFromServer
     ) implements CustomPacketPayload {
         public static final CustomPacketPayload.Type<S2CConfigStartPacket> TYPE =
-            CustomPacketPayload.createType("iportal:config_packet");
+            new CustomPacketPayload.Type<>(
+                McHelper.newResourceLocation("iportal:config_packet")
+            );
         
         public static final StreamCodec<FriendlyByteBuf, S2CConfigStartPacket> CODEC = StreamCodec.of(
             (b, p) -> p.write(b), S2CConfigStartPacket::read
@@ -134,8 +135,8 @@ public class ImmPtlNetworkConfig {
         boolean clientTolerantVersionMismatch
     ) implements CustomPacketPayload {
         public static final CustomPacketPayload.Type<C2SConfigCompletePacket> TYPE =
-            CustomPacketPayload.createType(
-                ("iportal:configure_complete")
+            new CustomPacketPayload.Type<>(
+                McHelper.newResourceLocation("iportal:configure_complete")
             );
         public static final StreamCodec<FriendlyByteBuf, C2SConfigCompletePacket> CODEC = StreamCodec.of(
             (b, p) -> p.write(b), C2SConfigCompletePacket::read

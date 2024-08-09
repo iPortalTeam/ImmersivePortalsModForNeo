@@ -60,7 +60,7 @@
     "common.miscellaneous.MixinBlockGetter",
     "common.miscellaneous.MixinEnderDragon",
     "common.miscellaneous.MixinFishingHook",
-    "common.miscellaneous.MixinMob",
+    "common.miscellaneous.MixinLeashable",
     "common.networking.MixinClientboundCustomPayloadPacket",
     "common.other_sync.IEServerConfigurationPacketListenerImpl",
     "common.other_sync.MixinMapItemSavedData",
