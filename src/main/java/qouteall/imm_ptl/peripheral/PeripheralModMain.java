@@ -15,6 +15,7 @@ import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import qouteall.dimlib.api.DimensionAPI;
+import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.peripheral.alternate_dimension.AlternateDimensions;
 import qouteall.imm_ptl.peripheral.alternate_dimension.ChaosBiomeSource;
 import qouteall.imm_ptl.peripheral.alternate_dimension.ErrorTerrainGenerator;

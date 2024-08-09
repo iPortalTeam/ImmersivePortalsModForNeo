@@ -187,11 +187,14 @@ public class NormalSkylandGenerator extends NoiseBasedChunkGenerator {
     }
     
     @Override
-    public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunkAccess) {
+    public CompletableFuture<ChunkAccess> fillFromNoise(
+        Blender blender, RandomState pRandomState,
+        StructureManager structureManager, ChunkAccess chunkAccess
+    ) {
         ((IEChunkAccess_AlternateDim) chunkAccess).ip_setNoiseChunk(null);
         
         return delegate.fillFromNoise(
-            executor, blender, delegatedRandomState, structureManager, chunkAccess
+            blender, delegatedRandomState, structureManager, chunkAccess
         ).thenApply(c -> {
             ((IEChunkAccess_AlternateDim) c).ip_setNoiseChunk(null);
             return c;

@@ -26,6 +26,7 @@ import net.minecraft.world.level.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.ClientWorldLoader;
+import qouteall.imm_ptl.core.McHelper;
 import qouteall.q_misc_util.dimension.DimIntIdMap;
 import qouteall.q_misc_util.dimension.DimensionIntId;
 

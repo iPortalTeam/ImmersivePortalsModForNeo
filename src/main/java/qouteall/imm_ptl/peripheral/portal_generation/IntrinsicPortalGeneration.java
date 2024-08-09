@@ -11,6 +11,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.portal.PortalShape;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.IPGlobal;
+import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.portal.custom_portal_gen.CustomPortalGeneration;
 
 import java.util.ArrayList;
