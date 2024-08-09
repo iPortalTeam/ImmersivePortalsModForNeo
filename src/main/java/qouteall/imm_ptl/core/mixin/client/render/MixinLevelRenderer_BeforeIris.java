@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.core.mixin.client.render;
 
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
@@ -16,7 +17,7 @@ public class MixinLevelRenderer_BeforeIris {
     // inject it after Iris, run before Iris
     @Inject(method = "renderLevel", at = @At(value = "CONSTANT", args = "stringValue=translucent"))
     private void iris$beginTranslucents(
-        float partialTick, long nanoTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f frustrumMatrix, CallbackInfo ci
+        DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
         IPCGlobal.renderer.onBeginIrisTranslucentRendering(modelView);
     }

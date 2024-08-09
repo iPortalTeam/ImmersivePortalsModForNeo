@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -58,6 +59,7 @@ import qouteall.imm_ptl.core.render.context_management.RenderStates;
 import qouteall.imm_ptl.core.render.context_management.WorldRenderInfo;
 import qouteall.q_misc_util.Helper;
 
+@SuppressWarnings("JavadocReference")
 @Mixin(value = LevelRenderer.class)
 public abstract class MixinLevelRenderer implements IEWorldRenderer {
     
@@ -139,7 +141,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void onAfterCutoutRendering(
-        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
+        DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
 //        IPCGlobal.renderer.onBeforeTranslucentRendering(matrices);
         
@@ -154,7 +156,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void onMyBeforeTranslucentRendering(
-        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
+        DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
         IPCGlobal.renderer.onBeforeTranslucentRendering(modelView);
         
@@ -177,9 +179,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void onEndRenderingEntities(
-        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer,
-        LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2,
-        CallbackInfo ci, @Local PoseStack poseStack
+        DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci, @Local PoseStack poseStack
     ) {
         CrossPortalEntityRenderer.onEndRenderingEntitiesAndBlockEntities(poseStack);
     }
@@ -189,7 +189,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         at = @At("RETURN")
     )
     private void onAfterTranslucentRendering(
-        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
+        DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
         IPCGlobal.renderer.onAfterTranslucentRendering(modelView);
         
@@ -205,7 +205,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void onBeforeRenderingLayer(
-        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
+        DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.setupInnerClipping(
@@ -234,7 +234,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void onAfterRenderingLayer(
-        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci
+        DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.disableClipping();
@@ -396,7 +396,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void beforeRenderingWeather(
-        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
+        DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f matrix4f2, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.setupInnerClipping(
@@ -416,7 +416,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void afterRenderingWeather(
-        float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci
+        DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.disableClipping();
@@ -557,7 +557,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     
     /**
      * when rendering portal, it won't call {@link ViewArea#repositionCamera(double, double)}
-     * So {@link ViewArea#getRenderSectionAt(BlockPos)} will return incorrect result
+     * So {@link ViewArea#getRenderSectionAt} will return incorrect result
      */
     @Inject(
         method = "isSectionCompiled",
