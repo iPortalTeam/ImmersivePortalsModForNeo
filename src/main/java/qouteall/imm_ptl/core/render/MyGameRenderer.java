@@ -23,6 +23,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPCGlobal;
@@ -35,6 +36,7 @@ import qouteall.imm_ptl.core.ducks.IEMinecraftClient;
 import qouteall.imm_ptl.core.ducks.IEParticleManager;
 import qouteall.imm_ptl.core.ducks.IEWorldRenderer;
 import qouteall.imm_ptl.core.miscellaneous.IPVanillaCopy;
+import qouteall.imm_ptl.core.mixin.client.render.IERenderSystem;
 import qouteall.imm_ptl.core.mixin.client.render.IESectionRenderDispatcher;
 import qouteall.imm_ptl.core.render.context_management.DimensionRenderHelper;
 import qouteall.imm_ptl.core.render.context_management.FogRendererContext;
@@ -58,7 +60,7 @@ public class MyGameRenderer {
     private static Stack<RenderBuffers> secondaryRenderBuffers = new Stack<>();
     private static int usingRenderBuffersObjectNum = 0;
     
-    // the vanilla visibility sections discovery code is multi-threaded
+    // the vanilla visibility sections discovery code is multithreaded
     // when the player teleports through a portal, on the first frame it will not work normally
     // so use IP's non-multi-threaded algorithm at the first frame
     public static int vanillaTerrainSetupOverride = 0;
@@ -159,8 +161,10 @@ public class MyGameRenderer {
         // the projection matrix contains view bobbing.
         // the view bobbing is related with scale
         Matrix4f oldProjectionMatrix = RenderSystem.getProjectionMatrix();
+        Matrix4fStack oldModelViewStack = IERenderSystem.ip_getModelViewStack();
         
-        ObjectArrayList<SectionRenderDispatcher.RenderSection> newChunkInfoList = VisibleSectionDiscovery.takeList();
+        ObjectArrayList<SectionRenderDispatcher.RenderSection> newChunkInfoList =
+            VisibleSectionDiscovery.takeList();
         ((IEWorldRenderer) oldWorldRenderer).portal_setChunkInfoList(newChunkInfoList);
         
         Object irisPipeline = IrisInterface.invoker.getPipeline(worldRenderer);
@@ -213,6 +217,8 @@ public class MyGameRenderer {
         
         ((IEWorldRenderer) worldRenderer).portal_setTransparencyShader(null);
         
+        IERenderSystem.ip_setModelViewStack(new Matrix4fStack(16));
+        
         IrisInterface.invoker.setPipeline(worldRenderer, null);
         
         //update lightmap
@@ -262,6 +268,7 @@ public class MyGameRenderer {
         ((IEWorldRenderer) worldRenderer).portal_setFrustum(oldFrustum);
         
         client.gameRenderer.resetProjectionMatrix(oldProjectionMatrix);
+        IERenderSystem.ip_setModelViewStack(oldModelViewStack);
         
         IrisInterface.invoker.setPipeline(worldRenderer, irisPipeline);
         

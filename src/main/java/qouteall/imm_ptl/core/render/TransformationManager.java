@@ -85,7 +85,7 @@ public class TransformationManager {
         return null;
     }
     
-    public static void processTransformation(Camera camera, PoseStack matrixStack) {
+    private static void processTransformation(Camera camera, PoseStack matrixStack) {
         DQuaternion currentAnimationDelta = getCurrentAnimationDelta();
         if (currentAnimationDelta != null) {
             matrixStack.mulPose(currentAnimationDelta.toMcQuaternion());
