@@ -195,7 +195,7 @@ public class O_O {
     }
     
     public static String getIssueLink() {
-        return "https://github.com/iPortalTeam/ImmersivePortalsMod/issues";
+        return "https://github.com/iPortalTeam/ImmersivePortalsMod/discussions";
     }
     
     @Nullable
