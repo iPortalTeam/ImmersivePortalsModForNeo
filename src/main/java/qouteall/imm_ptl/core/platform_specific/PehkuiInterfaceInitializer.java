@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core.platform_specific;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -9,11 +7,12 @@ import org.apache.commons.lang3.Validate;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.compat.PehkuiInterface;
-import qouteall.imm_ptl.core.ducks.IECamera;
 import qouteall.imm_ptl.core.portal.Portal;
 import virtuoel.pehkui.api.ScaleData;
 import virtuoel.pehkui.api.ScaleTypes;
 import virtuoel.pehkui.util.ScaleUtils;
+
+import static qouteall.imm_ptl.core.platform_specific.PehkuiInterfaceInitializerClient.onPlayerTeleportedClient;
 
 public class PehkuiInterfaceInitializer {
     
@@ -112,25 +111,26 @@ public class PehkuiInterfaceInitializer {
     public static void init() {
         PehkuiInterface.invoker = new OnPehkuiPresent();
     }
-    
+
+    // @Nick1st Neo: Moved to client class
     //@OnlyIn(Dist.CLIENT)
-    private static void onPlayerTeleportedClient(Portal portal) {
-        if (portal.hasScaling() && portal.isTeleportChangesScale()) {
-            Minecraft client = Minecraft.getInstance();
-            
-            LocalPlayer player = client.player;
-            
-            Validate.notNull(player);
-            
-            doScalingForEntity(player, portal);
-            
-            IECamera camera = (IECamera) client.gameRenderer.getMainCamera();
-            camera.ip_setCameraY(
-                ((float) (camera.ip_getCameraY() * portal.getScaling())),
-                ((float) (camera.ip_getLastCameraY() * portal.getScaling()))
-            );
-        }
-    }
+//    private static void onPlayerTeleportedClient(Portal portal) {
+//        if (portal.hasScaling() && portal.isTeleportChangesScale()) {
+//            Minecraft client = Minecraft.getInstance();
+//
+//            LocalPlayer player = client.player;
+//
+//            Validate.notNull(player);
+//
+//            doScalingForEntity(player, portal);
+//
+//            IECamera camera = (IECamera) client.gameRenderer.getMainCamera();
+//            camera.ip_setCameraY(
+//                ((float) (camera.ip_getCameraY() * portal.getScaling())),
+//                ((float) (camera.ip_getLastCameraY() * portal.getScaling()))
+//            );
+//        }
+//    }
     
     private static void onEntityTeleportedServer(Entity entity, Portal portal) {
         if (portal.hasScaling() && portal.isTeleportChangesScale()) {
@@ -142,7 +142,7 @@ public class PehkuiInterfaceInitializer {
         }
     }
     
-    private static void doScalingForEntity(Entity entity, Portal portal) {
+    static void doScalingForEntity(Entity entity, Portal portal) {
         Vec3 eyePos = McHelper.getEyePos(entity);
         Vec3 lastTickEyePos = McHelper.getLastTickEyePos(entity);
         
