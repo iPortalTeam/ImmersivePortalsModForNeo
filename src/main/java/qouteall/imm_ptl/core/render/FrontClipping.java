@@ -194,7 +194,8 @@ public class FrontClipping {
         Uniform clippingEquationUniform = ((IEShader) shader).ip_getClippingEquationUniform();
         if (clippingEquationUniform != null) {
             if (isClippingEnabled) {
-                double[] equation = isRenderingEntities ? activeClipPlaneAfterModelView : activeClipPlaneEquationBeforeModelView;
+                double[] equation = activeClipPlaneEquationBeforeModelView;
+//                double[] equation = isRenderingEntities ? activeClipPlaneAfterModelView : activeClipPlaneEquationBeforeModelView;
                 clippingEquationUniform.set(
                     (float) equation[0], (float) equation[1],
                     (float) equation[2], (float) equation[3]
