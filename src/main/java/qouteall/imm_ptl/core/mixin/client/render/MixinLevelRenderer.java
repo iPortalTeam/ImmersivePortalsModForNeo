@@ -374,7 +374,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         double cameraX,
         double cameraY,
         double cameraZ,
-        float tickDelta,
+        float partialTick,
         PoseStack matrixStack,
         MultiBufferSource vertexConsumerProvider
     ) {
@@ -382,7 +382,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         renderEntity(
             entity,
             cameraX, cameraY, cameraZ,
-            tickDelta,
+            partialTick,
             matrixStack, vertexConsumerProvider
         );
         CrossPortalEntityRenderer.afterRenderingEntity(entity);
@@ -600,12 +600,12 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         double cameraX,
         double cameraY,
         double cameraZ,
-        float tickDelta,
+        float partialTick,
         PoseStack matrixStack,
         MultiBufferSource vertexConsumerProvider
     ) {
         renderEntity(
-            entity, cameraX, cameraY, cameraZ, tickDelta, matrixStack, vertexConsumerProvider
+            entity, cameraX, cameraY, cameraZ, partialTick, matrixStack, vertexConsumerProvider
         );
     }
     

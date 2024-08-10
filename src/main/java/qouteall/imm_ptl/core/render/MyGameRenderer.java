@@ -133,8 +133,6 @@ public class MyGameRenderer {
         
         CHelper.checkGlError();
         
-        float tickDelta = RenderStates.getPartialTick();
-        
         IEGameRenderer ieGameRenderer = (IEGameRenderer) client.gameRenderer;
         DimensionRenderHelper helper =
             ClientWorldLoader.getDimensionRenderHelper(newDimension);

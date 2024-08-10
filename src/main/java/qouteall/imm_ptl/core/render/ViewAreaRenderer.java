@@ -120,7 +120,7 @@ public class ViewAreaRenderer {
     
     public static void buildPortalViewAreaTrianglesBuffer(
         Vec3 fogColor, PortalRenderable portalRenderable,
-        Vec3 cameraPos, float tickDelta
+        Vec3 cameraPos, float partialTick
     ) {
         Tesselator tessellator = RenderSystem.renderThreadTesselator();
         BufferBuilder bufferBuilder = tessellator

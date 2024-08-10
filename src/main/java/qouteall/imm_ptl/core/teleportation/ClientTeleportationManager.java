@@ -333,7 +333,7 @@ public class ClientTeleportationManager {
         Validate.isTrue(player != null);
         
         ResourceKey<Level> toDimension = portal.getDestDim();
-        float tickDelta = RenderStates.getPartialTick();
+        float partialTick = RenderStates.getPartialTick();
         
         Entity vehicle = player.getVehicle();
         Vec3 oldVehiclePos = vehicle != null ? vehicle.position() : null;
@@ -385,7 +385,7 @@ public class ClientTeleportationManager {
         
         //because the teleportation may happen before rendering
         //but after pre render info being updated
-        RenderStates.updatePreRenderInfo(tickDelta);
+        RenderStates.updatePreRenderInfo(partialTick);
         
         if (teleportation.isDynamic()) {
             LOGGER.info(
@@ -402,7 +402,7 @@ public class ClientTeleportationManager {
                     portal dest/content dir: {} {}""",
                 portal, tickTimeForTeleportation, isTicking, teleportationCounter,
                 teleportation.lastWorldEyePos(), teleportation.currentWorldEyePos(), partialTicks,
-                teleportation.newLastTickEyePos().lerp(teleportation.newThisTickEyePos(), tickDelta),
+                teleportation.newLastTickEyePos().lerp(teleportation.newThisTickEyePos(), partialTick),
                 portal.getOriginPos(), portal.getNormal(),
                 portal.getDestPos(), portal.getContentDirection()
             );

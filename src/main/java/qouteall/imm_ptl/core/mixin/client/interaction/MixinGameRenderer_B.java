@@ -14,7 +14,7 @@ public class MixinGameRenderer_B {
     
     //do not update target when rendering portal
     @Inject(method = "Lnet/minecraft/client/renderer/GameRenderer;pick(F)V", at = @At("HEAD"), cancellable = true)
-    private void onUpdateTargetedEntity(float tickDelta, CallbackInfo ci) {
+    private void onUpdateTargetedEntity(float partialTick, CallbackInfo ci) {
         if (Minecraft.getInstance().level != null) {
             if (WorldRenderInfo.isRendering()) {
                 ci.cancel();
@@ -23,9 +23,9 @@ public class MixinGameRenderer_B {
     }
     
     @Inject(method = "Lnet/minecraft/client/renderer/GameRenderer;pick(F)V", at = @At("RETURN"))
-    private void onUpdateTargetedEntityFinish(float tickDelta, CallbackInfo ci) {
+    private void onUpdateTargetedEntityFinish(float partialTick, CallbackInfo ci) {
         if (Minecraft.getInstance().level != null) {
-            BlockManipulationClient.updatePointedBlock(tickDelta);
+            BlockManipulationClient.updatePointedBlock(partialTick);
         }
     }
 }

@@ -53,7 +53,7 @@ public class BlockManipulationClient {
         return bhr == null || bhr.getType() == HitResult.Type.MISS;
     }
     
-    public static void updatePointedBlock(float tickDelta) {
+    public static void updatePointedBlock(float partialTick) {
         if (client.gameMode == null || client.level == null || client.player == null) {
             return;
         }
@@ -69,7 +69,7 @@ public class BlockManipulationClient {
         
         double reachDistance = client.player.blockInteractionRange();
         
-        PortalUtils.raytracePortalFromEntityView(client.player, tickDelta, reachDistance, true, portal1 -> portal1.isInteractableBy(client.player)).ifPresent(pair -> {
+        PortalUtils.raytracePortalFromEntityView(client.player, partialTick, reachDistance, true, portal1 -> portal1.isInteractableBy(client.player)).ifPresent(pair -> {
             Portal portal = pair.getFirst();
             Vec3 hitPos = pair.getSecond().hitPos();
             double distanceToPortalPointing = hitPos.distanceTo(cameraPos);
@@ -78,7 +78,7 @@ public class BlockManipulationClient {
                 
                 updateTargetedBlockThroughPortal(
                     cameraPos,
-                    client.player.getViewVector(tickDelta),
+                    client.player.getViewVector(partialTick),
                     client.player.level().dimension(),
                     distanceToPortalPointing,
                     reachDistance,

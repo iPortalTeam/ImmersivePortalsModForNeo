@@ -69,11 +69,11 @@ public class PortalUtils {
     }
     
     public static Optional<Pair<Portal, RayTraceResult>> raytracePortalFromEntityView(
-        Entity player, float tickDelta, double maxDistance, boolean includeGlobalPortal,
+        Entity player, float partialTick, double maxDistance, boolean includeGlobalPortal,
         Predicate<Portal> predicate
     ) {
-        Vec3 from = player.getEyePosition(tickDelta);
-        Vec3 to = from.add(player.getViewVector(tickDelta).scale(maxDistance));
+        Vec3 from = player.getEyePosition(partialTick);
+        Vec3 to = from.add(player.getViewVector(partialTick).scale(maxDistance));
         Level world = player.level();
         return raytracePortals(world, from, to, includeGlobalPortal, predicate);
     }

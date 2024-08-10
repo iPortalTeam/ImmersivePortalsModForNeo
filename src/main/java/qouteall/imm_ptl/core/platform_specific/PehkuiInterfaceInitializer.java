@@ -46,15 +46,15 @@ public class PehkuiInterfaceInitializer {
         }
         
         @Override
-        public float getBaseScale(Entity entity, float tickDelta) {
+        public float getBaseScale(Entity entity, float partialTick) {
             try {
-                return ScaleTypes.BASE.getScaleData(entity).getBaseScale(tickDelta);
+                return ScaleTypes.BASE.getScaleData(entity).getBaseScale(partialTick);
             } catch (Throwable e) {
                 if (!loggedErrorMessage) {
                     loggedErrorMessage = true;
                     logErrorMessage(entity, e, "getting scale");
                 }
-                return super.getBaseScale(entity, tickDelta);
+                return super.getBaseScale(entity, partialTick);
             }
         }
         
@@ -72,41 +72,41 @@ public class PehkuiInterfaceInitializer {
         }
         
         @Override
-        public float computeThirdPersonScale(Entity entity, float tickDelta) {
+        public float computeThirdPersonScale(Entity entity, float partialTick) {
             try {
-                return ScaleTypes.THIRD_PERSON.getScaleData(entity).getScale(tickDelta);
+                return ScaleTypes.THIRD_PERSON.getScaleData(entity).getScale(partialTick);
             } catch (Throwable e) {
                 if (!loggedErrorMessage) {
                     loggedErrorMessage = true;
                     logErrorMessage(entity, e, "getting third person scale");
                 }
-                return super.computeThirdPersonScale(entity, tickDelta);
+                return super.computeThirdPersonScale(entity, partialTick);
             }
         }
         
         @Override
-        public float computeBlockReachScale(Entity entity, float tickDelta) {
+        public float computeBlockReachScale(Entity entity, float partialTick) {
             try {
-                return ScaleTypes.BLOCK_REACH.getScaleData(entity).getScale(tickDelta);
+                return ScaleTypes.BLOCK_REACH.getScaleData(entity).getScale(partialTick);
             } catch (Throwable e) {
                 if (!loggedErrorMessage) {
                     loggedErrorMessage = true;
                     logErrorMessage(entity, e, "getting reach scale");
                 }
-                return super.computeBlockReachScale(entity, tickDelta);
+                return super.computeBlockReachScale(entity, partialTick);
             }
         }
         
         @Override
-        public float computeMotionScale(Entity entity, float tickDelta) {
+        public float computeMotionScale(Entity entity, float partialTick) {
             try {
-                return ScaleTypes.MOTION.getScaleData(entity).getScale(tickDelta);
+                return ScaleTypes.MOTION.getScaleData(entity).getScale(partialTick);
             } catch (Throwable e) {
                 if (!loggedErrorMessage) {
                     loggedErrorMessage = true;
                     logErrorMessage(entity, e, "getting motion scale");
                 }
-                return super.computeMotionScale(entity, tickDelta);
+                return super.computeMotionScale(entity, partialTick);
             }
         }
     }

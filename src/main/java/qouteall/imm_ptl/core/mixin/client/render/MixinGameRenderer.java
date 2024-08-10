@@ -77,9 +77,11 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
             return;
         }
         minecraft.getProfiler().push("ip_pre_render");
-        RenderStates.updatePreRenderInfo(deltaTracker.getGameTimeDeltaTicks());
+        // Note do not use delta tick. use partial tick.
+        float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
+        RenderStates.updatePreRenderInfo(partialTick);
         StableClientTimer.update(
-            minecraft.level.getGameTime(), deltaTracker.getGameTimeDeltaTicks()
+            minecraft.level.getGameTime(), partialTick
         );
         ClientPortalAnimationManagement.update(); // must update before teleportation
         ClientTeleportationManager.manageTeleportation(false);
@@ -326,7 +328,7 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
     }
     
     @Override
-    public void portal_bobView(PoseStack matrixStack, float tickDelta) {
-        bobView(matrixStack, tickDelta);
+    public void portal_bobView(PoseStack matrixStack, float partialTick) {
+        bobView(matrixStack, partialTick);
     }
 }

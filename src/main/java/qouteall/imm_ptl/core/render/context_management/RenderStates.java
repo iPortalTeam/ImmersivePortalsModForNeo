@@ -86,7 +86,7 @@ public class RenderStates {
     public static boolean isRenderingPortalWeather = false;
     
     public static void updatePreRenderInfo(
-        float tickDelta_
+        float newPartialTick
     ) {
         ClientWorldLoader.initializeIfNeeded();
         
@@ -101,7 +101,7 @@ public class RenderStates {
         originalPlayerLastTickPos = McHelper.lastTickPosOf(cameraEntity);
         PlayerInfo entry = CHelper.getClientPlayerListEntry();
         originalGameMode = entry != null ? entry.getGameMode() : GameType.CREATIVE;
-        partialTick = tickDelta_;
+        partialTick = newPartialTick;
         
         renderedDimensions.clear();
         lastPortalRenderInfos = portalRenderInfos;

@@ -91,7 +91,7 @@ public class OverlayRendering {
      */
     private static void renderBreakablePortalOverlay(
         BreakablePortalEntity portal,
-        float tickDelta,
+        float partialTick,
         PoseStack matrixStack,
         MultiBufferSource vertexConsumerProvider
     ) {

@@ -27,7 +27,7 @@ public class PehkuiInterface {
             return getBaseScale(entity, 1.0f);
         }
         
-        public float getBaseScale(Entity entity, float tickDelta) {
+        public float getBaseScale(Entity entity, float partialTick) {
             return 1.0f;
         }
         
@@ -35,7 +35,7 @@ public class PehkuiInterface {
             
         }
         
-        public float computeThirdPersonScale(Entity entity, float tickDelta) {
+        public float computeThirdPersonScale(Entity entity, float partialTick) {
             return 1.0f;
         }
         
@@ -43,7 +43,7 @@ public class PehkuiInterface {
             return computeBlockReachScale(entity, 1.0f);
         }
         
-        public float computeBlockReachScale(Entity entity, float tickDelta) {
+        public float computeBlockReachScale(Entity entity, float partialTick) {
             return 1.0f;
         }
         
@@ -51,7 +51,7 @@ public class PehkuiInterface {
             return computeMotionScale(entity, 1.0f);
         }
         
-        public float computeMotionScale(Entity entity, float tickDelta) {
+        public float computeMotionScale(Entity entity, float partialTick) {
             return 1.0f;
         }
     }

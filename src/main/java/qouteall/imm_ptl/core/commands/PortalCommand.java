@@ -2364,10 +2364,10 @@ public class PortalCommand {
     
     @Deprecated
     public static Optional<Pair<Portal, Vec3>> getPlayerPointingPortalRaw(
-        Player player, float tickDelta, double maxDistance, boolean includeGlobalPortal
+        Player player, float partialTick, double maxDistance, boolean includeGlobalPortal
     ) {
         return PortalUtils.raytracePortalFromEntityView(
-                player, tickDelta, maxDistance, includeGlobalPortal, p -> true
+                player, partialTick, maxDistance, includeGlobalPortal, p -> true
             )
             .map(p -> Pair.of(p.getFirst(), p.getSecond().hitPos()));
     }

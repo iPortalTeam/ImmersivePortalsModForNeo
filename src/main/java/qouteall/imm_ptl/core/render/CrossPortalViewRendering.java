@@ -135,7 +135,7 @@ public class CrossPortalViewRendering {
     
     private static double getThirdPersonMaxDistance() {
         return 4.0d * PehkuiInterface.invoker.computeThirdPersonScale(
-            client.player, client.getTimer().getGameTimeDeltaTicks()
+            client.player, RenderStates.getPartialTick()
         );
     }
     
