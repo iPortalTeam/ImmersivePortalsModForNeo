@@ -1676,6 +1676,10 @@ public class Portal extends Entity implements
         return teleportChangesGravity;
     }
     
+    public boolean isTeleportChangesGravity() {
+        return teleportChangesGravity;
+    }
+    
     public void setTeleportChangesGravity(boolean cond) {
         teleportChangesGravity = cond;
     }

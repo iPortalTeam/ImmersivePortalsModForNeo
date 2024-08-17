@@ -123,20 +123,16 @@ public class GcMonitor {
             }
             
             if (LOG_LIMIT.tryDecrement()) {
-                LOGGER.error(
-                    "Memory seems not enough. Try to Shrink loading distance or allocate more memory."
-                );
-                
-                long maxMemory1 = Runtime.getRuntime().maxMemory();
-                long totalMemory1 = Runtime.getRuntime().totalMemory();
-                long freeMemory1 = Runtime.getRuntime().freeMemory();
-                long usedMemory1 = totalMemory1 - freeMemory1;
-                
                 // When using ZGC, the memory usage amount is decreased with a delay
                 
-                LOGGER.info(String.format(
-                    "Memory: % 2d%% %03d/%03dMB", usedMemory1 * 100L / maxMemory1,
-                    PortalDebugCommands.toMiB(usedMemory1), PortalDebugCommands.toMiB(maxMemory1)
+                LOGGER.error(String.format(
+                    """
+                    Memory seems not enough. Try to Shrink loading distance or allocate more memory.
+                    Memory: % 2d%% %03d/%03dMB
+                    (Note: The memory check may be not very accurate.)
+                    """,
+                    usedMemory * 100L / maxMemory,
+                    PortalDebugCommands.toMiB(usedMemory), PortalDebugCommands.toMiB(maxMemory)
                 ));
                 
                 if (LOG_LIMIT.isZero()) {
