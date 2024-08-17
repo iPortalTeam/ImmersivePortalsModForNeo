@@ -342,40 +342,19 @@ public class MyRenderHelper {
             GlStateManager._colorMask(true, true, true, false);
         }
         
-        ShaderInstance shader = doUseAlphaBlend ? client.gameRenderer.blitShader : blitScreenNoBlendShader;
+        ShaderInstance shader = doUseAlphaBlend ?
+            client.gameRenderer.blitShader : blitScreenNoBlendShader;
+        
+        Validate.notNull(shader, "shader is null");
         
         shader.setSampler("DiffuseSampler", textureProvider.getColorTextureId());
-        
-        Matrix4f projectionMatrix = (new Matrix4f()).setOrtho(0.0F, (float) viewportWidth, (float) viewportHeight, 0.0F, 1000.0F, 3000.0F);
-        
-        shader.MODEL_VIEW_MATRIX.set(new Matrix4f().translation(0.0F, 0.0F, -2000.0F));
-        
-        shader.PROJECTION_MATRIX.set(projectionMatrix);
-        
         shader.apply();
-        
-        float textureXScale = (float) viewportWidth / (float) textureProvider.width;
-        float textureYScale = (float) viewportHeight / (float) textureProvider.height;
-        
-        Tesselator tessellator = RenderSystem.renderThreadTesselator();
-        BufferBuilder bufferBuilder = tessellator
-            .begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        
-        bufferBuilder.addVertex(left, up, 0.0f)
-            .setUv(0.0F, 0.0F)
-            .setColor(255, 255, 255, 255);
-        bufferBuilder.addVertex(right, up, 0.0f)
-            .setUv(textureXScale, 0.0F)
-            .setColor(255, 255, 255, 255);
-        bufferBuilder.addVertex(right, bottom, 0.0f)
-            .setUv(textureXScale, textureYScale)
-            .setColor(255, 255, 255, 255);
-        bufferBuilder.addVertex(left, bottom, 0.0f)
-            .setUv(0.0F, textureYScale)
-            .setColor(255, 255, 255, 255);
-        
-        BufferUploader.draw(bufferBuilder.build());
-        
+        BufferBuilder bufferBuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLIT_SCREEN);
+        bufferBuilder.addVertex(0.0f, 0.0f, 0.0f);
+        bufferBuilder.addVertex(1.0f, 0.0f, 0.0f);
+        bufferBuilder.addVertex(1.0f, 1.0f, 0.0f);
+        bufferBuilder.addVertex(0.0f, 1.0f, 0.0f);
+        BufferUploader.draw(bufferBuilder.buildOrThrow());
         shader.clear();
         
         GlStateManager._depthMask(true);
