@@ -12,7 +12,6 @@ import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.PortalRenderInfo;
 import qouteall.imm_ptl.core.render.MyGameRenderer;
 import qouteall.imm_ptl.core.render.MyRenderHelper;
-import qouteall.imm_ptl.core.render.PortalRenderable;
 import qouteall.imm_ptl.core.render.SecondaryFrameBuffer;
 import qouteall.imm_ptl.core.render.ViewAreaRenderer;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
@@ -83,7 +82,7 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
         client.getMainRenderTarget().bindWrite(false);
     }
     
-    protected void doRenderPortal(PortalRenderable portal, Matrix4f modelView) {
+    protected void doRenderPortal(Portal portal, Matrix4f modelView) {
         if (PortalRendering.isRendering()) {
             // this renderer only supports one-layer portal
             return;
@@ -95,7 +94,7 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
         
         client.getMainRenderTarget().bindWrite(true);
         
-        PortalRendering.pushPortalLayer(portal.getPortalLike());
+        PortalRendering.pushPortalLayer(portal);
         
         renderPortalContent(portal);
         
@@ -143,7 +142,7 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
     
     }
     
-    private boolean testShouldRenderPortal(PortalRenderable portal, Matrix4f modelView) {
+    private boolean testShouldRenderPortal(Portal portal, Matrix4f modelView) {
         
         //reset projection matrix
 //        client.gameRenderer.loadProjectionMatrix(RenderStates.basicProjectionMatrix);
@@ -207,9 +206,9 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
     }
     
     protected void renderPortals(Matrix4f modelView) {
-        List<PortalRenderable> portalsToRender = getPortalsToRender(modelView);
+        List<Portal> portalsToRender = getPortalsToRender(modelView);
         
-        for (PortalRenderable portal : portalsToRender) {
+        for (Portal portal : portalsToRender) {
             doRenderPortal(portal, modelView);
         }
     }

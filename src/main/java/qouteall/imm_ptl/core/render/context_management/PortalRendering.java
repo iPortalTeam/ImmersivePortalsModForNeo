@@ -26,11 +26,11 @@ import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public class PortalRendering {
-    private static final Stack<PortalLike> portalLayers = new Stack<>();
+    private static final Stack<Portal> portalLayers = new Stack<>();
     private static boolean isRenderingCache = false;
     private static boolean isRenderingOddNumberOfMirrorsCache = false;
     
-    public static void pushPortalLayer(PortalLike portal) {
+    public static void pushPortalLayer(Portal portal) {
         portalLayers.push(portal);
         updateCache();
     }
@@ -78,7 +78,7 @@ public class PortalRendering {
      * @return The innermost portal that's currently being rendered.
      * Must use after checking {@link #isRendering()}
      */
-    public static PortalLike getRenderingPortal() {
+    public static Portal getRenderingPortal() {
         return portalLayers.peek();
     }
     
@@ -133,12 +133,10 @@ public class PortalRendering {
      */
     public static boolean shouldEnableSodiumCaveCulling() {
         if (isRendering()) {
-            PortalLike renderingPortal = getRenderingPortal();
+            Portal renderingPortal = getRenderingPortal();
             
-            if (renderingPortal instanceof Portal portal) {
-                if (portal.getPortalShape() instanceof BoxPortalShape) {
-                    return false;
-                }
+            if (renderingPortal.getPortalShape() instanceof BoxPortalShape) {
+                return false;
             }
             
             Vec3 currentCameraPos = CHelper.getCurrentCameraPos();

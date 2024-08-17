@@ -13,7 +13,6 @@ import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.imm_ptl.core.portal.PortalRenderInfo;
 import qouteall.imm_ptl.core.render.FrontClipping;
 import qouteall.imm_ptl.core.render.MyRenderHelper;
-import qouteall.imm_ptl.core.render.PortalRenderable;
 import qouteall.imm_ptl.core.render.ViewAreaRenderer;
 import qouteall.imm_ptl.core.render.context_management.FogRendererContext;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
@@ -72,9 +71,9 @@ public class RendererUsingStencil extends PortalRenderer {
     }
     
     protected void renderPortals(Matrix4f modelView) {
-        List<PortalRenderable> portalsToRender = getPortalsToRender(modelView);
+        List<Portal> portalsToRender = getPortalsToRender(modelView);
         
-        for (PortalRenderable portal : portalsToRender) {
+        for (Portal portal : portalsToRender) {
             doRenderPortal(portal, modelView);
         }
     }
@@ -123,11 +122,9 @@ public class RendererUsingStencil extends PortalRenderer {
     }
     
     protected void doRenderPortal(
-        PortalRenderable portal,
+        Portal portal,
         Matrix4f modelView
     ) {
-        PortalLike portalLike = portal.getPortalLike();
-        
         if (shouldSkipRenderingInsideFuseViewPortal(portal)) {
             return;
         }
@@ -136,7 +133,7 @@ public class RendererUsingStencil extends PortalRenderer {
         
         client.getProfiler().push("render_view_area");
         
-        boolean anySamplePassed = PortalRenderInfo.renderAndDecideVisibility(portalLike, () -> {
+        boolean anySamplePassed = PortalRenderInfo.renderAndDecideVisibility(portal, () -> {
             renderPortalViewAreaToStencil(portal, modelView);
         });
         
@@ -147,11 +144,11 @@ public class RendererUsingStencil extends PortalRenderer {
             return;
         }
         
-        PortalRendering.pushPortalLayer(portalLike);
+        PortalRendering.pushPortalLayer(portal);
         
         int thisPortalStencilValue = outerPortalStencilValue + 1;
         
-        if (!portalLike.isFuseView()) {
+        if (!portal.isFuseView()) {
             client.getProfiler().push("clear_depth_of_view_area");
             clearDepthOfThePortalViewArea(portal);
             client.getProfiler().pop();
@@ -164,7 +161,7 @@ public class RendererUsingStencil extends PortalRenderer {
         PortalRendering.popPortalLayer();
         // pop portal layer before restoring depth, for clipping, see ViewAreaRenderer
         
-        if (!portalLike.isFuseView()) {
+        if (!portal.isFuseView()) {
             restoreDepthOfPortalViewArea(portal, modelView, thisPortalStencilValue);
         }
         
@@ -177,7 +174,7 @@ public class RendererUsingStencil extends PortalRenderer {
     }
     
     private void renderPortalViewAreaToStencil(
-        PortalRenderable portal, Matrix4f modelView
+        Portal portal, Matrix4f modelView
     ) {
         int outerPortalStencilValue = PortalRendering.getPortalLayer();
         
@@ -205,7 +202,7 @@ public class RendererUsingStencil extends PortalRenderer {
     }
     
     private void clearDepthOfThePortalViewArea(
-        PortalRenderable portal
+        Portal portal
     ) {
         GlStateManager._enableDepthTest();
         GlStateManager._depthMask(true);
@@ -233,7 +230,7 @@ public class RendererUsingStencil extends PortalRenderer {
     }
     
     protected void restoreDepthOfPortalViewArea(
-        PortalRenderable portal, Matrix4f modelView,
+        Portal portal, Matrix4f modelView,
         int portalStencilValue
     ) {
         setStencilLimitation(portalStencilValue);
@@ -299,7 +296,7 @@ public class RendererUsingStencil extends PortalRenderer {
         GL11.glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     }
     
-    public static boolean shouldSkipRenderingInsideFuseViewPortal(PortalRenderable portal) {
+    public static boolean shouldSkipRenderingInsideFuseViewPortal(Portal portal) {
         if (!PortalRendering.isRendering()) {
             return false;
         }

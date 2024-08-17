@@ -7,7 +7,6 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import qouteall.imm_ptl.core.portal.Portal;
-import qouteall.imm_ptl.core.render.PortalRenderable;
 import qouteall.imm_ptl.core.render.QueryManager;
 import qouteall.imm_ptl.core.render.ViewAreaRenderer;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
@@ -51,7 +50,7 @@ public class RendererDebug extends PortalRenderer {
         return false;
     }
     
-    protected void doRenderPortal(PortalRenderable portal, Matrix4f modelView) {
+    protected void doRenderPortal(Portal portal, Matrix4f modelView) {
         if (RenderStates.getRenderedPortalNum() != 0) {
             return;
         }
@@ -60,7 +59,7 @@ public class RendererDebug extends PortalRenderer {
             return;
         }
     
-        PortalRendering.pushPortalLayer(portal.getPortalLike());
+        PortalRendering.pushPortalLayer(portal);
         
         GlStateManager._clearColor(1, 0, 1, 1);
         GlStateManager._clearDepth(1);
@@ -76,7 +75,7 @@ public class RendererDebug extends PortalRenderer {
     }
     
     private boolean testShouldRenderPortal(
-        PortalRenderable portal,
+        Portal portal,
         Matrix4f modelView
     ) {
         return QueryManager.renderAndGetDoesAnySamplePass(() -> {
@@ -90,9 +89,9 @@ public class RendererDebug extends PortalRenderer {
     }
     
     protected void renderPortals(Matrix4f modelView) {
-        List<PortalRenderable> portalsToRender = getPortalsToRender(modelView);
+        List<Portal> portalsToRender = getPortalsToRender(modelView);
     
-        for (PortalRenderable portal : portalsToRender) {
+        for (Portal portal : portalsToRender) {
             doRenderPortal(portal, modelView);
         }
     }

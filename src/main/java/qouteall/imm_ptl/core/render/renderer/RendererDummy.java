@@ -3,7 +3,6 @@ package qouteall.imm_ptl.core.render.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import org.joml.Matrix4f;
 import qouteall.imm_ptl.core.portal.Portal;
-import qouteall.imm_ptl.core.render.PortalRenderable;
 
 public class RendererDummy extends PortalRenderer {
     @Override
@@ -37,7 +36,7 @@ public class RendererDummy extends PortalRenderer {
     }
     
     protected void doRenderPortal(
-        PortalRenderable portal,
+        Portal portal,
         PoseStack matrixStack
     ) {
     

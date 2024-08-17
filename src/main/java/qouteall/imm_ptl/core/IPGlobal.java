@@ -81,12 +81,6 @@ public class IPGlobal {
     
     public static boolean crossPortalCollision = true;
     
-    public static int chunkUnloadDelayTicks = 10 * 20;
-    
-    public static boolean enablePortalRenderingMerge = true;
-    
-    public static boolean forceMergePortalRendering = false;
-    
     public static boolean netherPortalOverlay = false;
     
     public static boolean debugDisableFog = false;

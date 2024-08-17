@@ -63,8 +63,6 @@ import qouteall.imm_ptl.core.portal.shape.PortalShape;
 import qouteall.imm_ptl.core.portal.shape.PortalShapeSerialization;
 import qouteall.imm_ptl.core.portal.shape.RectangularPortalShape;
 import qouteall.imm_ptl.core.portal.shape.SpecialFlatPortalShape;
-import qouteall.imm_ptl.core.render.PortalGroup;
-import qouteall.imm_ptl.core.render.PortalRenderable;
 import qouteall.imm_ptl.core.render.renderer.PortalRenderer;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.my_util.BoxPredicate;
@@ -85,7 +83,7 @@ import java.util.stream.Collectors;
  * Portal entity. Global portals are also entities but not added into world.
  */
 public class Portal extends Entity implements
-    PortalLike, IPEntityEventListenableEntity, PortalRenderable {
+    PortalLike, IPEntityEventListenableEntity {
     private static final Logger LOGGER = LogUtils.getLogger();
     
     public static final EntityType<Portal> ENTITY_TYPE = createPortalEntityType(Portal::new);
@@ -1590,22 +1588,6 @@ public class Portal extends Entity implements
         unsetRemoved();
     }
     
-    @Environment(EnvType.CLIENT)
-    public PortalLike getRenderingDelegate() {
-        if (IPGlobal.enablePortalRenderingMerge) {
-            PortalGroup group = PortalRenderInfo.getGroupOf(this);
-            if (group != null) {
-                return group;
-            }
-            else {
-                return this;
-            }
-        }
-        else {
-            return this;
-        }
-    }
-    
     @Override
     public void refreshDimensions() {
         boundingBoxCache = null;
@@ -1999,9 +1981,4 @@ public class Portal extends Entity implements
         return thisSideCollisionExclusion;
     }
     
-    // for PortalRenderable
-    @Override
-    public PortalLike getPortalLike() {
-        return this;
-    }
 }

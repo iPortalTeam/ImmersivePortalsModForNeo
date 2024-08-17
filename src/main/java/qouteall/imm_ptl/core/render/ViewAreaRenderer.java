@@ -17,13 +17,14 @@ import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
-import qouteall.imm_ptl.core.render.renderer.PortalRenderer;
 import qouteall.q_misc_util.my_util.TriangleConsumer;
+
+import java.util.Objects;
 
 public class ViewAreaRenderer {
     
     public static void renderPortalArea(
-        PortalRenderable portalRenderable, Vec3 fogColor,
+        Portal portalRenderable, Vec3 fogColor,
         Matrix4f modelViewMatrix, Matrix4f projectionMatrix,
         boolean doFaceCulling, boolean doModifyColor,
         boolean doModifyDepth, boolean doClip
@@ -119,14 +120,14 @@ public class ViewAreaRenderer {
     }
     
     public static void buildPortalViewAreaTrianglesBuffer(
-        Vec3 fogColor, PortalRenderable portalRenderable,
+        Vec3 fogColor, Portal portal,
         Vec3 cameraPos, float partialTick
     ) {
         Tesselator tessellator = RenderSystem.renderThreadTesselator();
         BufferBuilder bufferBuilder = tessellator
             .begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         
-        Vec3 originRelativeToCamera = portalRenderable.getPortalLike().getOriginPos().subtract(cameraPos);
+        Vec3 originRelativeToCamera = portal.getPortalLike().getOriginPos().subtract(cameraPos);
         
         TriangleConsumer vertexOutput = (p0x, p0y, p0z, p1x, p1y, p1z, p2x, p2y, p2z) -> {
             bufferBuilder
@@ -140,21 +141,9 @@ public class ViewAreaRenderer {
                 .setColor((float) fogColor.x, (float) fogColor.y, (float) fogColor.z, 1.0f);
         };
         
-        if (portalRenderable instanceof Portal portal) {
-            portal.renderViewAreaMesh(originRelativeToCamera, vertexOutput);
-        }
-        else if (portalRenderable instanceof PortalRenderer.PortalGroupToRender portalGroupToRender) {
-            PortalLike portalLike = portalGroupToRender.getPortalLike();
-            for (Portal portal : portalGroupToRender.portals()) {
-                Vec3 relativeToGroup = portal.getOriginPos().subtract(portalLike.getOriginPos());
-                portal.renderViewAreaMesh(
-                    originRelativeToCamera.add(relativeToGroup),
-                    vertexOutput
-                );
-            }
-        }
+        portal.renderViewAreaMesh(originRelativeToCamera, vertexOutput);
         
-        BufferUploader.draw(bufferBuilder.build());
+        BufferUploader.draw(Objects.requireNonNull(bufferBuilder.build()));
     }
     
     public static void outputTriangle(
