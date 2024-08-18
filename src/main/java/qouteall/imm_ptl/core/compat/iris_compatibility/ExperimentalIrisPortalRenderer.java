@@ -198,7 +198,7 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
         // draw the portal areas again to increase stencil
         // to limit the area of Iris deferred composite rendering
         for (Portal reallyRenderedPortal : reallyRenderedPortals) {
-            if (!reallyRenderedPortal.getPortalLike().isFuseView()) {
+            if (!reallyRenderedPortal.isFuseView()) {
                 renderPortalViewAreaToStencil(reallyRenderedPortal, modelView);
             }
         }

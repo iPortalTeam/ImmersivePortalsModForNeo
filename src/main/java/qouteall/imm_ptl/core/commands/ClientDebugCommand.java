@@ -197,9 +197,9 @@ public class ClientDebugCommand {
             .literal("report_rendering")
             .executes(context -> {
                 StringBuilder sb = new StringBuilder();
-                for (List<WeakReference<PortalLike>> rendering : RenderStates.lastPortalRenderInfos) {
+                for (List<WeakReference<Portal>> rendering : RenderStates.lastPortalRenderInfos) {
                     sb.append("----------\n");
-                    for (WeakReference<PortalLike> portalLikeWeakReference : rendering) {
+                    for (WeakReference<Portal> portalLikeWeakReference : rendering) {
                         sb.append(portalLikeWeakReference.get().toString());
                         sb.append("\n");
                     }
@@ -357,31 +357,6 @@ public class ClientDebugCommand {
             })
         );
         
-        builder.then(ClientCommandManager
-            .literal("report_portal_groups")
-            .executes(context -> {
-                for (ClientLevel clientWorld : ClientWorldLoader.getClientWorlds()) {
-                    Map<Optional<PortalGroup>, List<Portal>> result =
-                        Streams.stream(clientWorld.entitiesForRendering())
-                            .flatMap(
-                                entity -> entity instanceof Portal ?
-                                    Stream.of(((Portal) entity)) : Stream.empty()
-                            )
-                            .collect(Collectors.groupingBy(
-                                p -> Optional.ofNullable(PortalRenderInfo.getGroupOf(p))
-                            ));
-                    
-                    CHelper.printChat("\n" + clientWorld.dimension().location().toString());
-                    result.forEach((g, l) -> {
-                        CHelper.printChat("\n" + g.toString());
-                        CHelper.printChat(l.stream()
-                            .map(Portal::toString).collect(Collectors.joining("\n"))
-                        );
-                    });
-                }
-                return 0;
-            })
-        );
         builder.then(ClientCommandManager
             .literal("report_client_light_status")
             .executes(context -> {

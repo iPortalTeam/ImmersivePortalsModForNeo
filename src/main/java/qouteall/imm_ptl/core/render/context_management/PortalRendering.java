@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.IPGlobal;
@@ -78,18 +79,18 @@ public class PortalRendering {
      * @return The innermost portal that's currently being rendered.
      * Must use after checking {@link #isRendering()}
      */
-    public static Portal getRenderingPortal() {
+    public static @NotNull Portal getRenderingPortal() {
         return portalLayers.peek();
     }
     
     public static void onBeginPortalWorldRendering() {
-        List<WeakReference<PortalLike>> currRenderInfo = portalLayers.stream().map(
-            (Function<PortalLike, WeakReference<PortalLike>>) WeakReference::new
+        List<WeakReference<Portal>> currRenderInfo = portalLayers.stream().map(
+            (Function<Portal, WeakReference<Portal>>) WeakReference::new
         ).collect(Collectors.toList());
         RenderStates.portalRenderInfos.add(currRenderInfo);
         RenderStates.portalsRenderedThisFrame++;
         
-        if (portalLayers.stream().anyMatch(PortalLike::hasScaling)) {
+        if (portalLayers.stream().anyMatch(Portal::hasScaling)) {
             RenderStates.renderedScalingPortal = true;
         }
         

@@ -50,21 +50,20 @@ public abstract class MixinSodiumOcclusionCuller {
         ip_tolerantInitialFrustumTestFail = false;
         
         if (PortalRendering.isRendering()) {
-            PortalLike renderingPortal = PortalRendering.getRenderingPortal();
-            if (renderingPortal instanceof Portal portal) {
-                Vec3 cameraPos = CHelper.getCurrentCameraPos();
-                ip_modifiedStartPoint = portal.getPortalShape().getModifiedVisibleSectionIterationOrigin(
-                    portal, cameraPos
+            Portal portal = PortalRendering.getRenderingPortal();
+            
+            Vec3 cameraPos = CHelper.getCurrentCameraPos();
+            ip_modifiedStartPoint = portal.getPortalShape().getModifiedVisibleSectionIterationOrigin(
+                portal, cameraPos
+            );
+            if (ip_modifiedStartPoint != null) {
+                doUseOcclusionCulling = false;
+                
+                RenderSection renderSection = getRenderSection(
+                    ip_modifiedStartPoint.x(), ip_modifiedStartPoint.y(), ip_modifiedStartPoint.z()
                 );
-                if (ip_modifiedStartPoint != null) {
-                    doUseOcclusionCulling = false;
-                    
-                    RenderSection renderSection = getRenderSection(
-                        ip_modifiedStartPoint.x(), ip_modifiedStartPoint.y(), ip_modifiedStartPoint.z()
-                    );
-                    if (renderSection != null && !isWithinFrustum(viewport, renderSection)) {
-                        ip_tolerantInitialFrustumTestFail = true;
-                    }
+                if (renderSection != null && !isWithinFrustum(viewport, renderSection)) {
+                    ip_tolerantInitialFrustumTestFail = true;
                 }
             }
         }

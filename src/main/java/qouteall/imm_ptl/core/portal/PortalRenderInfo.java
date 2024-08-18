@@ -1,5 +1,6 @@
 package qouteall.imm_ptl.core.portal;
 
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -7,6 +8,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.render.GlQueryObject;
 import qouteall.imm_ptl.core.render.QueryManager;
@@ -14,6 +16,7 @@ import qouteall.imm_ptl.core.render.context_management.RenderStates;
 import qouteall.imm_ptl.core.render.context_management.WorldRenderInfo;
 import qouteall.q_misc_util.Helper;
 
+import java.lang.ref.Cleaner;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +26,9 @@ import java.util.UUID;
 // to access the package private field of Portal, this class is not in "render" package
 @SuppressWarnings("resource")
 @Environment(EnvType.CLIENT)
-public class PortalRenderInfo {
+public class PortalRenderInfo implements AutoCloseable {
+    
+    private static final Logger LOGGER = LogUtils.getLogger();
     
     public static class Visibility {
         public GlQueryObject lastFrameQuery;
@@ -108,19 +113,38 @@ public class PortalRenderInfo {
     }
     
     public PortalRenderInfo() {
-    
+        CLEANER.register(this, getGcDirectedCleaningFunc());
     }
     
     private void tick(Portal portal) {
         Validate.isTrue(portal.level().isClientSide());
-        
     }
     
     // disposing twice is fine
     public void dispose() {
-        disposeInfoMap((Map<List<UUID>, Visibility>) this.infoMap);
+        disposeInfoMap(infoMap);
     }
     
+    private Runnable getGcDirectedCleaningFunc() {
+        Map<List<UUID>, Visibility> infoMap1 = this.infoMap;
+        // the disposal func should not reference this
+        return () -> {
+            // TODO change it to debug
+            LOGGER.info("Running GC-directed PortalRenderInfo clean");
+            
+            // the cleaner runs on its own thread. Use the task list to avoid thread safety issue.
+            IPGlobal.PRE_TOTAL_RENDER_TASK_LIST.addOneShotTask(() -> {
+                disposeInfoMap(infoMap1);
+            });
+        };
+    }
+    
+    @Override
+    public void close() throws Exception {
+        dispose();
+    }
+    
+    // running it twice is fine
     private static void disposeInfoMap(Map<List<UUID>, Visibility> infoMap) {
         infoMap.values().forEach(Visibility::dispose);
         infoMap.clear();
@@ -186,11 +210,11 @@ public class PortalRenderInfo {
         }
     }
     
-    public static boolean renderAndDecideVisibility(PortalLike portalLike, Runnable queryRendering) {
+    public static boolean renderAndDecideVisibility(Portal portal, Runnable queryRendering) {
         ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
         
         boolean decision;
-        if (IPGlobal.offsetOcclusionQuery && portalLike instanceof Portal portal) {
+        if (IPGlobal.offsetOcclusionQuery) {
             PortalRenderInfo renderInfo = get(portal);
             
             List<UUID> renderingDescription = WorldRenderInfo.getRenderingDescription();
@@ -233,19 +257,5 @@ public class PortalRenderInfo {
         return decision;
     }
     
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        
-        // normally if a portal is removed by calling remove() it will dispose normally
-        // but that cannot be guaranteed
-        // use this to avoid potential resource leak
-        IPGlobal.PRE_TOTAL_RENDER_TASK_LIST.addTask(() -> {
-//            if (!infoMap.isEmpty()) {
-//                Helper.err("A PortalRenderInfo is not being deterministically disposed");
-//            }
-            dispose();
-            return true;
-        });
-    }
+    private static final Cleaner CLEANER = Cleaner.create();
 }

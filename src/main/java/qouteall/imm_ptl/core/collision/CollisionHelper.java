@@ -541,18 +541,6 @@ public class CollisionHelper {
         thisTickStagnate = false;
     }
     
-    public static PortalLike getCollisionHandlingUnit(Portal portal) {
-        if (portal.getIsGlobal()) {
-            return portal;
-        }
-        if (portal.level().isClientSide()) {
-            return getCollisionHandlingUnitClient(portal);
-        }
-        else {
-            return portal;
-        }
-    }
-    
     @Environment(EnvType.CLIENT)
     public static PortalLike getCollisionHandlingUnitClient(Portal portal) {
         return PortalGroup.getPortalUnit(portal);

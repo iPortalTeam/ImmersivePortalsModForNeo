@@ -1,1 +1,1 @@
-Move Iris compat to 1.7.0. Change default nether portal mode to adaptive. Maybe fix issue with bobby.
+Upgrade to MC 1.21. NOTE: This is a possibly buggy preview version. Backup your world before using it.

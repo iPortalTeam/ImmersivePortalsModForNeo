@@ -149,7 +149,7 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
         
         deferredBuffer.fb.bindWrite(true);
         
-        return PortalRenderInfo.renderAndDecideVisibility(portal.getPortalLike(), () -> {
+        return PortalRenderInfo.renderAndDecideVisibility(portal, () -> {
             
             ViewAreaRenderer.renderPortalArea(
                 portal, Vec3.ZERO,

@@ -184,7 +184,7 @@ public class CrossPortalEntityRenderer {
         PoseStack matrixStack
     ) {
         if (PortalRendering.isRendering()) {
-            PortalLike renderingPortal = PortalRendering.getRenderingPortal();
+            Portal renderingPortal = PortalRendering.getRenderingPortal();
             //correctly rendering it needs two culling planes
             //use some rough check to work around
             

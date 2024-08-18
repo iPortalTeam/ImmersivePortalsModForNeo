@@ -58,8 +58,8 @@ public class RenderStates {
     private static float partialTick = 0;
     
     public static Set<ResourceKey<Level>> renderedDimensions = new HashSet<>();
-    public static List<List<WeakReference<PortalLike>>> lastPortalRenderInfos = new ArrayList<>();
-    public static List<List<WeakReference<PortalLike>>> portalRenderInfos = new ArrayList<>();
+    public static List<List<WeakReference<Portal>>> lastPortalRenderInfos = new ArrayList<>();
+    public static List<List<WeakReference<Portal>>> portalRenderInfos = new ArrayList<>();
     public static int portalsRenderedThisFrame = 0;// mixins to sodium use that
     
     public static Vec3 lastCameraPos = Vec3.ZERO;

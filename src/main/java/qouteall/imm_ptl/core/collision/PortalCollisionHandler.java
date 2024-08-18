@@ -194,7 +194,6 @@ public class PortalCollisionHandler {
             ) && collidingPortal.isOnDestinationSide(p.getOriginPos(), 0.1)
         );
         
-        PortalLike collisionHandlingUnit = CollisionHelper.getCollisionHandlingUnit(collidingPortal);
         Direction transformedGravityDirection = collidingPortal.getTransformedGravityDirection(GravityChangerInterface.invoker.getGravityDirection(entity));
         
         Plane innerClipping = collidingPortal.getInnerClipping();
