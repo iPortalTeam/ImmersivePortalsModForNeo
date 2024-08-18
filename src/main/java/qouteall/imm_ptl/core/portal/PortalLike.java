@@ -16,19 +16,9 @@ import qouteall.q_misc_util.my_util.Plane;
 import java.util.UUID;
 
 /**
- * The PortalLike interface is introduced for the merge portal rendering optimization.
- * (A portal or a portal rendering group is a PortalLike)
- * You probably need to manipulate portal entities, not PortalLike
- *
- * TODO remove in 1.21
+ * This is no longer needed. May be deleted in the future.
  */
 public interface PortalLike {
-    @Deprecated
-    @Environment(EnvType.CLIENT)
-    BoxPredicate getInnerFrustumCullingFunc(
-        double cameraX, double cameraY, double cameraZ
-    );
-    
     boolean isConventionalPortal();
     
     AABB getThinBoundingBox();

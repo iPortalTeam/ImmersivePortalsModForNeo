@@ -144,7 +144,7 @@ public abstract class PortalRenderer {
         }
         
         if (PortalRendering.isRendering()) {
-            PortalLike outerPortal = PortalRendering.getRenderingPortal();
+            Portal outerPortal = PortalRendering.getRenderingPortal();
             
             if (outerPortal.cannotRenderInMe(portal)) {
                 return true;
@@ -233,7 +233,7 @@ public abstract class PortalRenderer {
         
     }
     
-    private static int getPortalRenderDistance(PortalLike portal) {
+    private static int getPortalRenderDistance(Portal portal) {
         int mcRenderDistance = client.options.getEffectiveRenderDistance();
         
         if (portal.getScale() > 2) {
@@ -302,7 +302,7 @@ public abstract class PortalRenderer {
         return null;
     }
     
-    public static boolean shouldApplyScaleToModelView(PortalLike portal) {
+    public static boolean shouldApplyScaleToModelView(Portal portal) {
         return portal.hasScaling() && portal.isFuseView();
     }
     

@@ -20,6 +20,7 @@ import net.minecraft.world.phys.Vec3;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
 import qouteall.imm_ptl.core.compat.sodium_compatibility.SodiumInterface;
+import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.imm_ptl.core.portal.nether_portal.BlockPortalShape;
 import qouteall.imm_ptl.core.portal.nether_portal.BreakablePortalEntity;
@@ -33,7 +34,7 @@ public class OverlayRendering {
     private static final RandomSource random = RandomSource.create();
     
     
-    public static boolean shouldRenderOverlay(PortalLike portal) {
+    public static boolean shouldRenderOverlay(Portal portal) {
         if (portal instanceof BreakablePortalEntity breakablePortalEntity) {
             if (breakablePortalEntity.getActualOverlay() != null) {
                 return breakablePortalEntity.isInFrontOfPortal(CHelper.getCurrentCameraPos());
@@ -45,7 +46,7 @@ public class OverlayRendering {
     private static boolean shaderOverlayWarned = false;
     
     public static void onRenderPortalEntity(
-        PortalLike portal,
+        Portal portal,
         PoseStack matrixStack,
         MultiBufferSource vertexConsumerProvider
     ) {

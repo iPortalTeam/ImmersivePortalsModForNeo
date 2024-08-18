@@ -235,7 +235,7 @@ public class CrossPortalEntityRenderer {
         Vec3 newEyePos = transformingPortal.transformPoint(entityEyePos);
         
         if (PortalRendering.isRendering()) {
-            PortalLike renderingPortal = PortalRendering.getRenderingPortal();
+            Portal renderingPortal = PortalRendering.getRenderingPortal();
             
             Vec3 transformedEntityPos = newEyePos.subtract(McHelper.getEyeOffset(entity));
             AABB transformedBoundingBox = McHelper.getBoundingBoxWithMovedPosition(entity, transformedEntityPos);
@@ -349,7 +349,7 @@ public class CrossPortalEntityRenderer {
         assert player != null;
         
         if (PortalRendering.isRendering()) {
-            PortalLike renderingPortal = PortalRendering.getRenderingPortal();
+            Portal renderingPortal = PortalRendering.getRenderingPortal();
             if (renderingPortal instanceof Mirror) {
                 // if the camera pos is too close to the mirror,
                 // it will show the inside of the player head.
@@ -374,7 +374,7 @@ public class CrossPortalEntityRenderer {
             return true;
         }
         if (PortalRendering.isRendering()) {
-            PortalLike renderingPortal = PortalRendering.getRenderingPortal();
+            Portal renderingPortal = PortalRendering.getRenderingPortal();
             Portal collidingPortal = ((IEEntity) entity).ip_getCollidingPortal();
             
             if (entity instanceof Player && !renderingPortal.getDoRenderPlayer()) {

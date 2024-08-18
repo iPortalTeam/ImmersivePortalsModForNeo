@@ -45,7 +45,7 @@ public class PortalRendering {
         isRenderingCache = getPortalLayer() != 0;
         
         int mirrorNum = 0;
-        for (PortalLike portal : portalLayers) {
+        for (Portal portal : portalLayers) {
             if (portal instanceof Mirror) {
                 mirrorNum++;
             }
@@ -105,7 +105,7 @@ public class PortalRendering {
     
     public static Vec3 getRenderingCameraPos() {
         Vec3 pos = RenderStates.originalCamera.getPosition();
-        for (PortalLike portal : portalLayers) {
+        for (Portal portal : portalLayers) {
             pos = portal.transformPoint(pos);
         }
         return pos;
@@ -113,7 +113,7 @@ public class PortalRendering {
     
     public static double getExtraModelViewScaling() {
         double scale = 1.0;
-        for (PortalLike portal : portalLayers) {
+        for (Portal portal : portalLayers) {
             if (!PortalRenderer.shouldApplyScaleToModelView(portal)) {
                 scale *= portal.getScale();
             }
@@ -158,7 +158,7 @@ public class PortalRendering {
                 return false;
             }
             
-            PortalLike renderingPortal = getRenderingPortal();
+            Portal renderingPortal = getRenderingPortal();
             if (renderingPortal instanceof Mirror) {
                 return false;
             }
@@ -178,7 +178,7 @@ public class PortalRendering {
     
     public static @Nullable Plane getActiveClippingPlane() {
         
-        PortalLike renderingPortal = getRenderingPortal();
+        Portal renderingPortal = getRenderingPortal();
         
         Plane plane = renderingPortal.getInnerClipping();
         
@@ -189,14 +189,14 @@ public class PortalRendering {
                 // Then we need to inherit clipping plane from outer layers
                 int i = portalLayers.size() - 2;
                 while (i >= 0) {
-                    PortalLike portal = portalLayers.get(i);
+                    Portal portal = portalLayers.get(i);
                     Plane outerPlane = portal.getInnerClipping();
                     
                     if (outerPlane != null) {
                         // transform that plane to the current rendering coordinate
                         // the inner clipping plane should be in the outermost portal's destination coordinate
                         for (int j = i + 1; j < portalLayers.size(); j++) {
-                            PortalLike portal1 = portalLayers.get(j);
+                            Portal portal1 = portalLayers.get(j);
                             outerPlane = new Plane(
                                 portal1.transformPoint(outerPlane.pos()),
                                 portal1.transformLocalVecNonScale(outerPlane.normal())
@@ -221,13 +221,9 @@ public class PortalRendering {
             return false;
         }
         
-        PortalLike last = portalLayers.get(portalLayers.size() - 1);
-        PortalLike secondLast = portalLayers.get(portalLayers.size() - 2);
+        Portal last = portalLayers.get(portalLayers.size() - 1);
+        Portal secondLast = portalLayers.get(portalLayers.size() - 2);
         
-        if (last instanceof Portal lastPortal) {
-            return toRender == secondLast && Portal.isReversePortal(toRender, lastPortal);
-        }
-        
-        return false;
+        return toRender == secondLast && Portal.isReversePortal(toRender, last);
     }
 }

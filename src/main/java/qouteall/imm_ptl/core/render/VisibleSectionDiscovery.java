@@ -67,11 +67,9 @@ public class VisibleSectionDiscovery {
         
         SectionPos modifiedVisibleSectionIterationOrigin = null;
         if (PortalRendering.isRendering()) {
-            PortalLike renderingPortal = PortalRendering.getRenderingPortal();
-            if (renderingPortal instanceof Portal portal) {
-                modifiedVisibleSectionIterationOrigin = portal.getPortalShape()
-                    .getModifiedVisibleSectionIterationOrigin(portal, cameraPos);
-            }
+            Portal renderingPortal = PortalRendering.getRenderingPortal();
+            modifiedVisibleSectionIterationOrigin = renderingPortal.getPortalShape()
+                .getModifiedVisibleSectionIterationOrigin(renderingPortal, cameraPos);
         }
         
         if (modifiedVisibleSectionIterationOrigin != null) {

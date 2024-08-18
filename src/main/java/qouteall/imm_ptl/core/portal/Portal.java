@@ -1412,15 +1412,6 @@ public class Portal extends Entity implements
     }
     
     
-    @Environment(EnvType.CLIENT)
-    @Deprecated
-    @Override
-    public BoxPredicate getInnerFrustumCullingFunc(
-        double cameraX, double cameraY, double cameraZ
-    ) {
-        throw new UnsupportedOperationException();
-    }
-    
     public Matrix4d getFullSpaceTransformation() {
         Vec3 originPos = getOriginPos();
         Vec3 destPos = getDestPos();

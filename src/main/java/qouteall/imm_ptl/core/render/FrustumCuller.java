@@ -88,15 +88,13 @@ public class FrustumCuller {
         }
         
         if (PortalRendering.isRendering()) {
-            PortalLike renderingPortal = PortalRendering.getRenderingPortal();
+            Portal renderingPortal = PortalRendering.getRenderingPortal();
             
             // do inner frustum culling
             
-            if (renderingPortal instanceof Portal portal) {
-                return portal.getPortalShape().getInnerFrustumCullingFunc(
-                    portal, new Vec3(cameraX, cameraY, cameraZ)
-                );
-            }
+            return renderingPortal.getPortalShape().getInnerFrustumCullingFunc(
+                renderingPortal, new Vec3(cameraX, cameraY, cameraZ)
+            );
         }
         else {
             if (!IPCGlobal.useSuperAdvancedFrustumCulling) {

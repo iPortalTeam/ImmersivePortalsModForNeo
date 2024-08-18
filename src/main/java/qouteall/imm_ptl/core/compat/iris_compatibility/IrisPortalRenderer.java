@@ -294,7 +294,7 @@ public class IrisPortalRenderer extends PortalRenderer {
         
         GlStateManager._enableDepthTest();
         
-        boolean result = PortalRenderInfo.renderAndDecideVisibility(portal.getPortalLike(), () -> {
+        boolean result = PortalRenderInfo.renderAndDecideVisibility(portal, () -> {
             ViewAreaRenderer.renderPortalArea(
                 portal, Vec3.ZERO,
                 modelView,

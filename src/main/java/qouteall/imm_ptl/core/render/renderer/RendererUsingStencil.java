@@ -301,7 +301,7 @@ public class RendererUsingStencil extends PortalRenderer {
             return false;
         }
         
-        PortalLike renderingPortal = PortalRendering.getRenderingPortal();
+        Portal renderingPortal = PortalRendering.getRenderingPortal();
         
         if (!renderingPortal.isFuseView()) {
             return false;
@@ -309,7 +309,7 @@ public class RendererUsingStencil extends PortalRenderer {
         
         Vec3 cameraPos = CHelper.getCurrentCameraPos();
         
-        Vec3 transformedCameraPos = portal.getPortalLike()
+        Vec3 transformedCameraPos = portal
             .transformPoint(renderingPortal.transformPoint(cameraPos));
         
         // roughly test whether they are reverse portals

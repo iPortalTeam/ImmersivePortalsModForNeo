@@ -119,7 +119,7 @@ public class FrontClipping {
         };
     }
     
-    public static void setupOuterClipping(PoseStack matrixStack, PortalLike portalLike) {
+    public static void setupOuterClipping(PoseStack matrixStack, Portal portalLike) {
         if (!IPCGlobal.useFrontClipping) {
             return;
         }

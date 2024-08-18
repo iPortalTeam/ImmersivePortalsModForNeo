@@ -30,7 +30,6 @@ import qouteall.imm_ptl.core.mixin.common.collision.IEEntity_Collision;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.imm_ptl.core.portal.global_portals.GlobalPortalStorage;
-import qouteall.imm_ptl.core.render.PortalGroup;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.MiscHelper;
 import qouteall.q_misc_util.my_util.LimitedLogger;
@@ -379,7 +378,7 @@ public class CollisionHelper {
         return IEEntity_Collision.ip_CollideWithShapes(vec, collisionBox, builder.build());
     }
     
-    public static AABB transformBox(PortalLike portal, AABB originalBox) {
+    public static AABB transformBox(Portal portal, AABB originalBox) {
         if (portal.getRotation() == null && portal.getScale() == 1) {
             return originalBox.move(portal.getDestPos().subtract(portal.getOriginPos()));
         }
@@ -539,11 +538,6 @@ public class CollisionHelper {
         
         lastTickStagnate = thisTickStagnate;
         thisTickStagnate = false;
-    }
-    
-    @Environment(EnvType.CLIENT)
-    public static PortalLike getCollisionHandlingUnitClient(Portal portal) {
-        return PortalGroup.getPortalUnit(portal);
     }
     
     @Nullable

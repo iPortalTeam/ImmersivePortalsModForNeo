@@ -433,7 +433,7 @@ public class MyRenderHelper {
         
         // just disable fog for fuse-view portals for now
         if (PortalRendering.isRendering()) {
-            PortalLike renderingPortal = PortalRendering.getRenderingPortal();
+            Portal renderingPortal = PortalRendering.getRenderingPortal();
             
             if (renderingPortal.isFuseView()) {
                 return value * 23333;

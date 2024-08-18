@@ -24,12 +24,11 @@ import java.util.Objects;
 public class ViewAreaRenderer {
     
     public static void renderPortalArea(
-        Portal portalRenderable, Vec3 fogColor,
+        Portal portal, Vec3 fogColor,
         Matrix4f modelViewMatrix, Matrix4f projectionMatrix,
         boolean doFaceCulling, boolean doModifyColor,
         boolean doModifyDepth, boolean doClip
     ) {
-        PortalLike portalLike = portalRenderable.getPortalLike();
         
         if (doFaceCulling) {
             GlStateManager._enableCull();
@@ -38,7 +37,7 @@ public class ViewAreaRenderer {
             GlStateManager._disableCull();
         }
         
-        if (portalLike.isFuseView() && IPGlobal.maxPortalLayer != 0) {
+        if (portal.isFuseView() && IPGlobal.maxPortalLayer != 0) {
             GlStateManager._colorMask(false, false, false, false);
         }
         else {
@@ -51,7 +50,7 @@ public class ViewAreaRenderer {
         }
         
         if (doModifyDepth) {
-            if (portalLike.isFuseView()) {
+            if (portal.isFuseView()) {
                 GlStateManager._depthMask(false);
             }
             else {
@@ -95,7 +94,7 @@ public class ViewAreaRenderer {
         
         ViewAreaRenderer.buildPortalViewAreaTrianglesBuffer(
             fogColor,
-            portalRenderable,
+            portal,
             CHelper.getCurrentCameraPos(),
             RenderStates.getPartialTick()
         );
@@ -127,7 +126,7 @@ public class ViewAreaRenderer {
         BufferBuilder bufferBuilder = tessellator
             .begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         
-        Vec3 originRelativeToCamera = portal.getPortalLike().getOriginPos().subtract(cameraPos);
+        Vec3 originRelativeToCamera = portal.getOriginPos().subtract(cameraPos);
         
         TriangleConsumer vertexOutput = (p0x, p0y, p0z, p1x, p1y, p1z, p2x, p2y, p2z) -> {
             bufferBuilder

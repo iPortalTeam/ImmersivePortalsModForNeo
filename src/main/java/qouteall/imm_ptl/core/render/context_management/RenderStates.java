@@ -237,7 +237,7 @@ public class RenderStates {
             return false;
         }
         if (PortalRendering.isRendering()) {
-            PortalLike renderingPortal = PortalRendering.getRenderingPortal();
+            Portal renderingPortal = PortalRendering.getRenderingPortal();
             Vec3 particlePos = particle.getBoundingBox().getCenter();
             return renderingPortal.isOnDestinationSide(particlePos, 0.5);
         }
