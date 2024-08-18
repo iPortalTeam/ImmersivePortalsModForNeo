@@ -1067,13 +1067,7 @@ public class Portal extends Entity implements
         Vec3 originalVelocityRelativeToPortal, Entity entity,
         Vec3 oldEntityPos
     ) {
-        Vec3 result;
-        if (teleportChangesScale) {
-            result = transformLocalVecNonScale(originalVelocityRelativeToPortal);
-        }
-        else {
-            result = transformLocalVec(originalVelocityRelativeToPortal);
-        }
+        Vec3 result = transformLocalVec(originalVelocityRelativeToPortal);
         
         final int maxVelocity = 15;
         if (originalVelocityRelativeToPortal.length() > maxVelocity) {

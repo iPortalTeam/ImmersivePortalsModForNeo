@@ -87,7 +87,7 @@ public record FastBlockPortalShape(
     // assemble two ints into one long, to avoid object allocation
     // (this is not needed when Valhalla is released)
     public static long assemble(int a, int b) {
-        // this is not chunk pos but same as chunk pos
+        // this is not chunk pos but the packing is same as chunk pos
         return ChunkPos.asLong(a, b);
     }
     
@@ -298,17 +298,13 @@ public record FastBlockPortalShape(
         
         ListTag positions = new ListTag();
         
-        positions.add(IntTag.valueOf(basePosX));
-        positions.add(IntTag.valueOf(basePosY));
-        positions.add(IntTag.valueOf(basePosZ));
-        
         for (int i = 0; i < localAreaBlockCoords.length / 2; i++) {
             int a = localAreaBlockCoords[i * 2];
             int b = localAreaBlockCoords[i * 2 + 1];
             
-            positions.add(IntTag.valueOf(toWorldX(axis, coordOnAxis, a, b)));
-            positions.add(IntTag.valueOf(toWorldY(axis, coordOnAxis, a, b)));
-            positions.add(IntTag.valueOf(toWorldZ(axis, coordOnAxis, a, b)));
+            positions.add(IntTag.valueOf(toWorldX(axis, 0, a, b) + basePosX));
+            positions.add(IntTag.valueOf(toWorldY(axis, 0, a, b) + basePosY));
+            positions.add(IntTag.valueOf(toWorldZ(axis, 0, a, b) + basePosZ));
         }
         
         tag.put("poses", positions);
@@ -333,9 +329,9 @@ public record FastBlockPortalShape(
             int a = localFrameWithoutCornerBlockCoords[frameI * 2];
             int b = localFrameWithoutCornerBlockCoords[frameI * 2 + 1];
             
-            int x = toWorldX(axis, newBaseX, a, b);
-            int y = toWorldY(axis, newBaseY, a, b);
-            int z = toWorldZ(axis, newBaseZ, a, b);
+            int x = toWorldX(axis, 0, a, b) + newBaseX;
+            int y = toWorldY(axis, 0, a, b) + newBaseY;
+            int z = toWorldZ(axis, 0, a, b) + newBaseZ;
             
             if (!framePredicate.test(x, y, z)) {
                 return false;
@@ -346,9 +342,9 @@ public record FastBlockPortalShape(
             int a = localAreaBlockCoords[areaI * 2];
             int b = localAreaBlockCoords[areaI * 2 + 1];
             
-            int x = toWorldX(axis, newBaseX, a, b);
-            int y = toWorldY(axis, newBaseY, a, b);
-            int z = toWorldZ(axis, newBaseZ, a, b);
+            int x = toWorldX(axis, 0, a, b) + newBaseX;
+            int y = toWorldY(axis, 0, a, b) + newBaseY;
+            int z = toWorldZ(axis, 0, a, b) + newBaseZ;
             
             if (!areaPredicate.test(x, y, z)) {
                 return false;

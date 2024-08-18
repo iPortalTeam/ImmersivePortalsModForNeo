@@ -81,8 +81,8 @@ public class ScalingSquareForm extends NetherPortalLikeForm {
         return (blockAccess, x, y, z) -> {
             boolean matches = fastTemplate.matchShape(
                 x, y, z,
-                (px, py, pz) -> areaPredicate.test(blockAccess.getBlockState(px, py, pz)),
-                (px, py, pz) -> otherSideFramePredicate.test(blockAccess.getBlockState(px, py, pz))
+                (px, py, pz) -> otherSideFramePredicate.test(blockAccess.getBlockState(px, py, pz)),
+                (px, py, pz) -> areaPredicate.test(blockAccess.getBlockState(px, py, pz))
             );
             if (matches) {
                 boolean matchToSelf = fromWorld == toWorld
