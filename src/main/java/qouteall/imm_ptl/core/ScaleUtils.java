@@ -5,9 +5,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.Validate;
@@ -15,8 +17,14 @@ import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.ducks.IECamera;
 import qouteall.imm_ptl.core.portal.Portal;
 
-@SuppressWarnings("resource")
+@SuppressWarnings({"resource", "JavadocReference", "DanglingJavadoc"})
 public class ScaleUtils {
+    
+    /**
+     * It's the id of attribute modifier of scale.
+     */
+    public static final ResourceLocation IPORTAL_SCALING =
+        ResourceLocation.fromNamespaceAndPath("iportal", "scaling");
     
     @Environment(EnvType.CLIENT)
     public static void onClientPlayerTeleported(Portal portal) {
@@ -69,6 +77,51 @@ public class ScaleUtils {
         return 1.0;
     }
     
+    public static double getIPortalScaling(Entity entity) {
+        AttributeInstance scaleAttr = getScaleAttr(entity);
+        if (scaleAttr == null) {
+            return 1;
+        }
+        
+        AttributeModifier modifier = scaleAttr.getModifier(IPORTAL_SCALING);
+        if (modifier == null) {
+            return 1;
+        }
+        
+        /**
+         * {@link AttributeInstance#calculateValue()}
+         */
+        return modifier.amount() + 1.0;
+    }
+    
+    public static void setIPortalScaling(Entity entity, double newScale) {
+        AttributeInstance scaleAttr = getScaleAttr(entity);
+        if (scaleAttr == null) {
+            return;
+        }
+        
+        if (Math.abs(newScale - 1.0) < 0.0001) {
+            scaleAttr.removeModifier(IPORTAL_SCALING);
+            
+            // it updates cached eyeHeight field, which is important in feet pos calculation
+            entity.refreshDimensions();
+            
+            return;
+        }
+        
+        /**
+         * {@link AttributeInstance#calculateValue()}
+         */
+        scaleAttr.addOrReplacePermanentModifier(new AttributeModifier(
+            IPORTAL_SCALING,
+            newScale - 1.0,
+            AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+        ));
+        
+        // it updates cached eyeHeight field, which is important in feet pos calculation
+        entity.refreshDimensions();
+    }
+    
     public static void setBaseScale(Entity entity, double scale) {
         AttributeInstance scaleAttr = getScaleAttr(entity);
         if (scaleAttr != null) {
@@ -95,7 +148,7 @@ public class ScaleUtils {
         Vec3 eyePos = McHelper.getEyePos(entity);
         Vec3 lastTickEyePos = McHelper.getLastTickEyePos(entity);
         
-        double oldScale = ScaleUtils.getBaseScale(entity);
+        double oldScale = ScaleUtils.getIPortalScaling(entity);
         double newScale = transformScale(portal, oldScale);
         
         if (!entity.level().isClientSide && isScaleIllegal(newScale)) {
@@ -105,7 +158,7 @@ public class ScaleUtils {
             );
         }
         
-        ScaleUtils.setBaseScale(entity, newScale);
+        ScaleUtils.setIPortalScaling(entity, newScale);
         
         if (!entity.level().isClientSide) {
             McHelper.setEyePos(entity, eyePos, lastTickEyePos);
