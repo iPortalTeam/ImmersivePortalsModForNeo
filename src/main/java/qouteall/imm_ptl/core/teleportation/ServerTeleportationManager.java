@@ -24,10 +24,10 @@ import qouteall.dimlib.api.DimensionAPI;
 import qouteall.imm_ptl.core.IPMcHelper;
 import qouteall.imm_ptl.core.IPPerServerInfo;
 import qouteall.imm_ptl.core.McHelper;
+import qouteall.imm_ptl.core.ScaleUtils;
 import qouteall.imm_ptl.core.chunk_loading.ImmPtlChunkTracking;
 import qouteall.imm_ptl.core.collision.PortalCollisionHandler;
 import qouteall.imm_ptl.core.compat.GravityChangerInterface;
-import qouteall.imm_ptl.core.compat.PehkuiInterface;
 import qouteall.imm_ptl.core.ducks.IEEntity;
 import qouteall.imm_ptl.core.ducks.IEServerPlayNetworkHandler;
 import qouteall.imm_ptl.core.ducks.IEServerPlayerEntity;
@@ -201,7 +201,7 @@ public class ServerTeleportationManager {
             
             portal.onEntityTeleportedOnServer(player);
             
-            PehkuiInterface.invoker.onServerEntityTeleported(player, portal);
+            ScaleUtils.onServerEntityTeleported(player, portal);
             
             if (portal.getTeleportChangesGravity()) {
                 Direction oldGravityDir = GravityChangerInterface.invoker.getGravityDirection(player);
@@ -218,7 +218,7 @@ public class ServerTeleportationManager {
                 portal, failReason
             );
             teleportEntityGeneral(player, player.position(), ((ServerLevel) player.level()));
-            PehkuiInterface.invoker.setBaseScale(player, PehkuiInterface.invoker.getBaseScale(player));
+            ScaleUtils.setBaseScale(player, ScaleUtils.getBaseScale(player));
             GravityChangerInterface.invoker.setBaseGravityDirectionServer(
                 player, GravityChangerInterface.invoker.getGravityDirection(player)
             );
@@ -576,7 +576,7 @@ public class ServerTeleportationManager {
         
         portal.onEntityTeleportedOnServer(entity);
         
-        PehkuiInterface.invoker.onServerEntityTeleported(entity, portal);
+        ScaleUtils.onServerEntityTeleported(entity, portal);
         
         // a new entity may be created
         this.lastTeleportGameTime.put(entity, currGameTime);

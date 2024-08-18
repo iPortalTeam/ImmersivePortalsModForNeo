@@ -24,11 +24,11 @@ import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.IPMcHelper;
 import qouteall.imm_ptl.core.McHelper;
+import qouteall.imm_ptl.core.ScaleUtils;
 import qouteall.imm_ptl.core.api.PortalAPI;
 import qouteall.imm_ptl.core.collision.CollisionHelper;
 import qouteall.imm_ptl.core.collision.PortalCollisionHandler;
 import qouteall.imm_ptl.core.compat.GravityChangerInterface;
-import qouteall.imm_ptl.core.compat.PehkuiInterface;
 import qouteall.imm_ptl.core.ducks.IEAbstractClientPlayer;
 import qouteall.imm_ptl.core.ducks.IEClientPlayNetworkHandler;
 import qouteall.imm_ptl.core.ducks.IEEntity;
@@ -367,7 +367,7 @@ public class ClientTeleportationManager {
             TeleportationUtil.transformEntityVelocity(portal, vehicle, portalPointVelocity, oldVehiclePos);
         }
         
-        PehkuiInterface.invoker.onClientPlayerTeleported(portal);
+        ScaleUtils.onClientPlayerTeleported(portal);
         
         player.connection.send(ClientPlayNetworking.createC2SPacket(
             new ImmPtlNetworking.TeleportPacket(

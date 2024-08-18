@@ -23,7 +23,7 @@ import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.McHelper;
-import qouteall.imm_ptl.core.compat.PehkuiInterface;
+import qouteall.imm_ptl.core.ScaleUtils;
 import qouteall.imm_ptl.core.ducks.IEEntity;
 import qouteall.imm_ptl.core.miscellaneous.IPVanillaCopy;
 import qouteall.imm_ptl.core.mixin.common.collision.IEEntity_Collision;
@@ -503,7 +503,7 @@ public class CollisionHelper {
             .expandTowards(backwardExpand);
         
         // when the scale is big, the entity could move quickly abruptly
-        double scale = PehkuiInterface.invoker.getScale(entity);
+        double scale = ScaleUtils.getScale(entity);
         if (scale > 4) {
             box = box.inflate(scale);
         }

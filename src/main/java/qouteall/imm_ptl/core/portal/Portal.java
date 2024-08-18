@@ -45,7 +45,6 @@ import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.api.ImmPtlEntityExtension;
 import qouteall.imm_ptl.core.api.PortalAPI;
-import qouteall.imm_ptl.core.compat.PehkuiInterface;
 import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
 import qouteall.imm_ptl.core.mc_utils.IPEntityEventListenableEntity;
 import qouteall.imm_ptl.core.mc_utils.ServerTaskList;
@@ -1069,13 +1068,8 @@ public class Portal extends Entity implements
         Vec3 oldEntityPos
     ) {
         Vec3 result;
-        if (PehkuiInterface.invoker.isPehkuiPresent()) {
-            if (teleportChangesScale) {
-                result = transformLocalVecNonScale(originalVelocityRelativeToPortal);
-            }
-            else {
-                result = transformLocalVec(originalVelocityRelativeToPortal);
-            }
+        if (teleportChangesScale) {
+            result = transformLocalVecNonScale(originalVelocityRelativeToPortal);
         }
         else {
             result = transformLocalVec(originalVelocityRelativeToPortal);
