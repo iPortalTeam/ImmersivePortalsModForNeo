@@ -125,11 +125,11 @@ public class GcMonitor {
             if (LOG_LIMIT.tryDecrement()) {
                 // When using ZGC, the memory usage amount is decreased with a delay
                 
-                LOGGER.error(String.format(
+                LOGGER.warn(String.format(
                     """
                     Memory seems not enough. Try to Shrink loading distance or allocate more memory.
                     Memory: % 2d%% %03d/%03dMB
-                    (Note: The memory check may be not very accurate.)
+                    (Note: The memory check may be inaccurate.)
                     """,
                     usedMemory * 100L / maxMemory,
                     PortalDebugCommands.toMiB(usedMemory), PortalDebugCommands.toMiB(maxMemory)

@@ -73,6 +73,9 @@ public class ScaleUtils {
         AttributeInstance scaleAttr = getScaleAttr(entity);
         if (scaleAttr != null) {
             scaleAttr.setBaseValue(scale);
+            
+            // it updates cached eyeHeight field, which is important in feet pos calculation
+            entity.refreshDimensions();
         }
     }
     

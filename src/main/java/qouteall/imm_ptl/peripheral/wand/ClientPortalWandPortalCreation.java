@@ -44,7 +44,7 @@ public class ClientPortalWandPortalCreation {
     public static final Animated<Vec3> cursor = new Animated<>(
         Animated.VEC3_NULLABLE_TYPE_INFO,
         () -> RenderStates.renderStartNanoTime,
-        TimingFunction.circle::mapProgress,
+        TimingFunction.sine::mapProgress,
         null
     );
     
@@ -177,7 +177,7 @@ public class ClientPortalWandPortalCreation {
         }
         
         if (cursorPointing != null) {
-            cursor.setTarget(cursorPointing, Helper.secondToNano(0.5));
+            cursor.setTarget(cursorPointing, Helper.secondToNano(0.1));
         }
         else {
             cursor.clearTarget();
