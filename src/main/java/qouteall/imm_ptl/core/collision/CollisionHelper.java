@@ -245,6 +245,7 @@ public class CollisionHelper {
      * Vanilla copy {@link Entity#collide(Vec3)}
      * But filters collisions behind the clipping plane and handles stepping with rotated gravity.
      */
+    @SuppressWarnings("JavadocReference")
     @IPVanillaCopy
     public static Vec3 handleCollisionWithShapeProcessor(
         Entity entity,
@@ -270,8 +271,7 @@ public class CollisionHelper {
         boolean collidesWithFloor = collidesOnGravityAxis && attemptToMoveAlongGravity;
         boolean touchGround = entity.onGround() || collidesWithFloor;
         boolean collidesHorizontally = movesOnNonGravityAxis(collisionDelta, gravityAxis);
-        float maxUpStep = entity.maxUpStep()
-            * PehkuiInterface.invoker.getBaseScale(entity);
+        double maxUpStep = entity.maxUpStep();
         if (steppingScale > 1) {
             maxUpStep *= steppingScale;
         }
@@ -503,7 +503,7 @@ public class CollisionHelper {
             .expandTowards(backwardExpand);
         
         // when the scale is big, the entity could move quickly abruptly
-        float scale = PehkuiInterface.invoker.getBaseScale(entity);
+        double scale = PehkuiInterface.invoker.getScale(entity);
         if (scale > 4) {
             box = box.inflate(scale);
         }

@@ -29,14 +29,6 @@ public class IPModEntry implements ModInitializer {
             Helper.log("Dimensional Threading is not present");
         }
         
-        if (O_O.getIsPehkuiPresent()) {
-            PehkuiInterfaceInitializer.init();
-            Helper.log("Pehkui is present");
-        }
-        else {
-            Helper.log("Pehkui is not present");
-        }
-        
         if (FabricLoader.getInstance().isModLoaded("gravity_changer_q")) {
             GravityChangerInterface.invoker = new GravityChangerInterface.OnGravityChangerPresent();
             Helper.log("Gravity API is present");

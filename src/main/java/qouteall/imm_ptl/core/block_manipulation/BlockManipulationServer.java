@@ -76,7 +76,7 @@ public class BlockManipulationServer {
             return false;
         }
         
-        Float playerScale = PehkuiInterface.invoker.computeBlockReachScale(player);
+        double playerScale = PehkuiInterface.invoker.computeBlockReachScale(player);
         
         Vec3 pos = Vec3.atCenterOf(requestPos);
         Vec3 playerPos = player.position();

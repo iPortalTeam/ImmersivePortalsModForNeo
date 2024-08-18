@@ -1,13 +1,21 @@
 package qouteall.imm_ptl.core.compat;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.phys.Vec3;
+import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.Nullable;
+import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.McHelper;
+import qouteall.imm_ptl.core.ducks.IECamera;
 import qouteall.imm_ptl.core.portal.Portal;
 
+@SuppressWarnings("resource")
 public class PehkuiInterface {
     
     public static class Invoker {
@@ -16,61 +24,117 @@ public class PehkuiInterface {
         }
         
         public void onClientPlayerTeleported(Portal portal) {
-            showMissingPehkui(portal);
+            if (portal.hasScaling() && portal.isTeleportChangesScale()) {
+                Minecraft client = Minecraft.getInstance();
+                
+                LocalPlayer player = client.player;
+                
+                Validate.notNull(player, "Player is null");
+                
+                doScalingForEntity(player, portal);
+                
+                IECamera camera = (IECamera) client.gameRenderer.getMainCamera();
+                camera.ip_setCameraY(
+                    ((float) (camera.ip_getCameraY() * portal.getScaling())),
+                    ((float) (camera.ip_getLastCameraY() * portal.getScaling()))
+                );
+            }
         }
         
         public void onServerEntityTeleported(Entity entity, Portal portal) {
-        
+            if (portal.hasScaling() && portal.isTeleportChangesScale()) {
+                doScalingForEntity(entity, portal);
+                
+                if (entity.getVehicle() != null) {
+                    doScalingForEntity(entity.getVehicle(), portal);
+                }
+            }
         }
         
-        public float getBaseScale(Entity entity) {
-            return getBaseScale(entity, 1.0f);
+        public static @Nullable AttributeInstance getScaleAttr(Entity entity) {
+            if (entity instanceof LivingEntity livingEntity) {
+                return livingEntity.getAttributes().getInstance(Attributes.SCALE);
+            }
+            return null;
         }
         
-        public float getBaseScale(Entity entity, float partialTick) {
-            return 1.0f;
+        public double getScale(Entity entity) {
+            if (entity instanceof LivingEntity livingEntity) {
+                return livingEntity.getScale();
+            }
+            return 1.0;
         }
         
-        public void setBaseScale(Entity entity, float scale) {
+        public double getBaseScale(Entity entity) {
+            AttributeInstance scaleAttr = getScaleAttr(entity);
+            if (scaleAttr != null) {
+                return scaleAttr.getBaseValue();
+            }
+            return 1.0;
+        }
+        
+        public void setBaseScale(Entity entity, double scale) {
+            AttributeInstance scaleAttr = getScaleAttr(entity);
+            if (scaleAttr != null) {
+                scaleAttr.setBaseValue(scale);
+            }
+        }
+        
+        public double computeThirdPersonScale(Entity entity) {
+            return getScale(entity);
+        }
+        
+        public double computeBlockReachScale(Entity entity) {
+            return getScale(entity);
+        }
+        
+        public double computeMotionScale(Entity entity) {
+            return getScale(entity);
+        }
+        
+        private static void doScalingForEntity(Entity entity, Portal portal) {
+            Vec3 eyePos = McHelper.getEyePos(entity);
+            Vec3 lastTickEyePos = McHelper.getLastTickEyePos(entity);
             
+            double oldScale = PehkuiInterface.invoker.getBaseScale(entity);
+            double newScale = transformScale(portal, oldScale);
+            
+            if (!entity.level().isClientSide && isScaleIllegal(newScale)) {
+                newScale = 1;
+                entity.sendSystemMessage(
+                    Component.literal("Scale out of range")
+                );
+            }
+            
+            PehkuiInterface.invoker.setBaseScale(entity, newScale);
+            
+            if (!entity.level().isClientSide) {
+                McHelper.setEyePos(entity, eyePos, lastTickEyePos);
+                McHelper.updateBoundingBox(entity);
+            }
+            else {
+                McHelper.setEyePos(entity, eyePos, lastTickEyePos);
+                McHelper.updateBoundingBox(entity);
+            }
         }
         
-        public float computeThirdPersonScale(Entity entity, float partialTick) {
-            return 1.0f;
+        private static double transformScale(Portal portal, double oldScale) {
+            double result = (double) (oldScale * portal.getScaling());
+            
+            // avoid deviation accumulating
+            if (Math.abs(result - 1.0) < 0.0001) {
+                result = 1;
+            }
+            
+            return result;
         }
         
-        public float computeBlockReachScale(Entity entity) {
-            return computeBlockReachScale(entity, 1.0f);
-        }
-        
-        public float computeBlockReachScale(Entity entity, float partialTick) {
-            return 1.0f;
-        }
-        
-        public float computeMotionScale(Entity entity) {
-            return computeMotionScale(entity, 1.0f);
-        }
-        
-        public float computeMotionScale(Entity entity, float partialTick) {
-            return 1.0f;
+        private static boolean isScaleIllegal(double scale) {
+            return (scale > IPGlobal.scaleLimit) || (scale < (1.0 / (IPGlobal.scaleLimit * 2)));
         }
     }
     
     public static Invoker invoker = new Invoker();
     
-    private static boolean messageShown = false;
-    
-    @Environment(EnvType.CLIENT)
-    private static void showMissingPehkui(Portal portal) {
-        if (portal.hasScaling() && portal.isTeleportChangesScale()) {
-            if (!messageShown) {
-                messageShown = true;
-                Minecraft.getInstance().gui.getChat().addMessage(
-                    Component.translatable("imm_ptl.needs_pehkui")
-                        .append(McHelper.getLinkText("https://modrinth.com/mod/pehkui"))
-                );
-            }
-        }
-    }
     
 }

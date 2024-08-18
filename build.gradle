@@ -89,11 +89,6 @@ dependencies {
     modCompileOnly "maven.modrinth:modmenu:${modmenu_version}"
     modLocalRuntime "maven.modrinth:modmenu:${modmenu_version}"
 
-    modCompileOnly("com.github.Virtuoel:Pehkui:${pehkui_version}", {
-        exclude group: "net.fabricmc.fabric-api"
-        transitive(false)
-    })
-
     modCompileOnly "${project.sodium_path}"
 
     modCompileOnly "${project.iris_path}"
@@ -119,12 +114,6 @@ dependencies {
         implementation "org.anarres:jcpp:1.4.14" // for iris
         implementation 'io.github.douira:glsl-transformer:2.0.0-pre13' // for iris
         implementation 'org.antlr:antlr4-runtime:4.11.1' // for iris
-    }
-
-    if (project.enable_pehkui.equals('true')) {
-        modLocalRuntime("com.github.Virtuoel:Pehkui:${pehkui_version}", {
-            exclude(group: "net.fabricmc.fabric-api")
-        })
     }
 
     if (project.enable_gravity_changer.equals('true')) {
