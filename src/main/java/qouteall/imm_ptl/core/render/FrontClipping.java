@@ -15,7 +15,6 @@ import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.ducks.IEShader;
 import qouteall.imm_ptl.core.portal.Portal;
-import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 import qouteall.q_misc_util.my_util.Plane;
 
@@ -119,25 +118,19 @@ public class FrontClipping {
         };
     }
     
-    public static void setupOuterClipping(PoseStack matrixStack, Portal portalLike) {
+    public static void setupOuterClipping(PoseStack matrixStack, Portal portal) {
         if (!IPCGlobal.useFrontClipping) {
             return;
         }
         
-        if (portalLike instanceof Portal portal) {
-            double[] clipEquationOuter = getClipEquationOuter(portal);
-            
-            if (clipEquationOuter != null) {
-                activeClipPlaneEquationBeforeModelView = clipEquationOuter;
-                activeClipPlaneAfterModelView = transformClipEquation(
-                    activeClipPlaneEquationBeforeModelView, matrixStack.last().pose()
-                );
-                enableClipping();
-            }
-            else {
-                activeClipPlaneEquationBeforeModelView = null;
-                disableClipping();
-            }
+        double[] clipEquationOuter = getClipEquationOuter(portal);
+        
+        if (clipEquationOuter != null) {
+            activeClipPlaneEquationBeforeModelView = clipEquationOuter;
+            activeClipPlaneAfterModelView = transformClipEquation(
+                activeClipPlaneEquationBeforeModelView, matrixStack.last().pose()
+            );
+            enableClipping();
         }
         else {
             activeClipPlaneEquationBeforeModelView = null;

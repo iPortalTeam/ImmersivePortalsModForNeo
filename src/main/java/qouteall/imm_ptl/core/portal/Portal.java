@@ -65,7 +65,6 @@ import qouteall.imm_ptl.core.portal.shape.RectangularPortalShape;
 import qouteall.imm_ptl.core.portal.shape.SpecialFlatPortalShape;
 import qouteall.imm_ptl.core.render.renderer.PortalRenderer;
 import qouteall.q_misc_util.Helper;
-import qouteall.q_misc_util.my_util.BoxPredicate;
 import qouteall.q_misc_util.my_util.DQuaternion;
 import qouteall.q_misc_util.my_util.Mesh2D;
 import qouteall.q_misc_util.my_util.MyTaskList;
