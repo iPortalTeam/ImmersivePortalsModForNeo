@@ -79,6 +79,8 @@ public class IPConfig implements ConfigData {
     public int portalWandCursorAlignment = 2; // zero for no align
     @ConfigEntry.Gui.Excluded
     public boolean saveMemoryInBufferPack = false;
+    @ConfigEntry.Gui.Excluded
+    public boolean initialScreenShown = false;
     
     // common visible configs
     
@@ -203,7 +205,7 @@ public class IPConfig implements ConfigData {
         IPGlobal.chunkPacketDebug = chunkPacketDebug;
         IPGlobal.saveMemoryInBufferPack = saveMemoryInBufferPack;
         
-        Helper.LOGGER.info("IP Config Applied");
+        Helper.LOGGER.info("iPortal Config Applied");
     }
     
     public boolean shouldDisplayWarning(String warningKey) {

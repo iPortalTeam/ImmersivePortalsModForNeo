@@ -24,11 +24,16 @@ import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.ducks.IEMinecraftClient;
 import qouteall.imm_ptl.core.miscellaneous.ClientPerformanceMonitor;
+import qouteall.imm_ptl.core.miscellaneous.IPortalInitialScreen;
+import qouteall.imm_ptl.core.platform_specific.IPConfig;
 import qouteall.imm_ptl.core.portal.animation.ClientPortalAnimationManagement;
 import qouteall.imm_ptl.core.portal.animation.StableClientTimer;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
 import qouteall.imm_ptl.core.render.context_management.WorldRenderInfo;
 import qouteall.imm_ptl.core.teleportation.ClientTeleportationManager;
+
+import java.util.List;
+import java.util.function.Function;
 
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft implements IEMinecraftClient {
@@ -174,6 +179,17 @@ public abstract class MixinMinecraft implements IEMinecraftClient {
     private static void onIsFabulousGraphicsOrBetter(CallbackInfoReturnable<Boolean> cir) {
         if (WorldRenderInfo.isRendering()) {
             cir.setReturnValue(false);
+        }
+    }
+    
+    @Inject(
+        method = "addInitialScreens",
+        at = @At("RETURN")
+    )
+    private void onAddInitialScreens(List<Function<Runnable, Screen>> output, CallbackInfo ci) {
+        IPConfig config = IPConfig.getConfig();
+        if (!config.initialScreenShown) {
+            output.add(IPortalInitialScreen::new);
         }
     }
     
