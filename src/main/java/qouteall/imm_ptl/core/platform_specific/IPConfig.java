@@ -79,6 +79,8 @@ public class IPConfig implements ConfigData {
     public int portalWandCursorAlignment = 2; // zero for no align
     @ConfigEntry.Gui.Excluded
     public boolean saveMemoryInBufferPack = false;
+    @ConfigEntry.Gui.Excluded
+    public boolean initialScreenShown = false;
     
     // common visible configs
     

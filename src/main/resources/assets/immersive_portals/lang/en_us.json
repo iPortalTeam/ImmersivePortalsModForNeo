@@ -289,5 +289,9 @@
   "imm_ptl.server_missing_immptl": "You logged into a server that does not install Immersive Portals mod. Immersive portals mod is designed to work with the server that installs it. All Immersive Portals functionality will not work here. And other issue may arise. It's recommended to log into this server without Immersive Portals.",
   "imm_ptl.low_max_memory": "[Immersive Portals] The game is allocated with only %s MB memory. Portals will load more chunks and require more memory. It's recommended to allocate more memory to the game to get smoother experience. (The official launcher sometimes will only allocate 2GB to the game even if the computer has much more memory.) How to allocate more memory: ",
 
+  "iportal.initial_screen.title": "Immersive Portals",
+  "iportal.initial_screen.content": "Welcome using Immersive Portals mod!\n\n§lAbout Mod Compatibility§r\nImmersive Portals mod is incompatible with some mods. This mod deeply changes the game engine to achieve see-through portal and seamless teleportation. Other mods also use the game engine in a way that interferes with this mod, causing incompatibility. §lMod compatibility issues are NOT intentional§r - please don't blame mod developers for incompatibility.\nFixing compatibility issues usually requires a lot of efforts from the developers of both sides, usually via complex ad-hoc hacking.\n\n§lAbout Performance§r\nSee-through portals will load more chunks and render more things, which will affect performance. You may experience lag when approaching the see-through portals. The mod developer has already put a lot of efforts into optimization and Sodium compatibility.",
+  "iportal.initial_screen.i_know": "I know",
+
   "imm_ptl.put_this_in_the_end_to_avoid_editing_trailing_comma": ""
 }
