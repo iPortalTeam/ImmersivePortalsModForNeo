@@ -23,6 +23,7 @@ body:
     id: mc_version
     attributes:
       label: Minecraft version
+      default: 0
       options:
         - "Select One"
         - "1.21.1"
