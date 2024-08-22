@@ -19,13 +19,6 @@ body:
         If YES: Repeat from step 2 with the current mods.\n
         If NO: Swap out the current mods with the ones set aside, and repeat from step 1.\n
         5. Repeat this process until the problematic mod(s) have been found.\n"
-  - type: textarea
-    id: link-to-incompat-mods
-    attributes:
-      label: "If it's a mod compatibility issue, please provide the link(s) to the incompatible mod(s)"
-      description: "The link to the incompatible mods (can be Modrinth link, CurseForge link, GitHub link, etc.)"
-    validations:
-      required: true
   - type: dropdown
     id: mc_version
     attributes:
@@ -47,14 +40,11 @@ body:
         - "Other (specify below)"
     validations:
       required: true
-  - type: markdown
-    attributes:
-      value: "### Note: Only versions for **MC 1.21.1 and MC 1.20.4** is being maintained for now. It's recommended to use the supported MC versions now. Fixing issues on older MC versions is in low priority (except security issues)."
   - type: textarea
     id: what-happened
     attributes:
-      label: Describe the issue
-      description: Describe the issue. Tell how to reproduce the issue. If it crashes, drag the log and crash report to here. It's recommended to also provide the log here. The log may provide important information that does not exist in crash report. The log is `latest.log` in `logs` folder in the game directory.
+      label: Describe the issue that you encountered
+      description: Please tell how to reproduce the issue. If it crashes, drag the log and crash report to here. It's recommended to also provide the log here. The log may provide important information that does not exist in crash report. The log is `latest.log` in `logs` folder in the game directory.
     validations:
       required: true
   - type: markdown
