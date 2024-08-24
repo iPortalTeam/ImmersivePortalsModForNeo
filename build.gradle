@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.6-SNAPSHOT'
+    id 'fabric-loom' version '1.7-SNAPSHOT'
 
     id 'maven-publish'
 
@@ -246,6 +246,6 @@ publishMods {
     github {
         repository = "iPortalTeam/ImmersivePortalsMod"
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
-        commitish = minecraft_version // the branch name is the same as minecraft version
+        commitish = "${project.git_branch}"
     }
 }
