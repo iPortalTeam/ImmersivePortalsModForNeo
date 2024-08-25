@@ -1,15 +1,15 @@
 package qouteall.imm_ptl.core.compat.mixin.sodium;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import me.jellysquid.mods.sodium.client.render.chunk.RenderSection;
-import me.jellysquid.mods.sodium.client.render.chunk.lists.ChunkRenderList;
-import me.jellysquid.mods.sodium.client.render.chunk.region.RenderRegion;
+import net.caffeinemc.mods.sodium.client.render.chunk.RenderSection;
+import net.caffeinemc.mods.sodium.client.render.chunk.lists.ChunkRenderList;
+import net.caffeinemc.mods.sodium.client.render.chunk.region.RenderRegion;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 import qouteall.q_misc_util.Helper;
 
-import static me.jellysquid.mods.sodium.client.render.chunk.lists.SortedRenderLists.Builder;
+import static net.caffeinemc.mods.sodium.client.render.chunk.lists.SortedRenderLists.Builder;
 
 @Mixin(value = RenderRegion.class, remap = false)
 public class MixinSodiumRenderRegion {

@@ -20,11 +20,11 @@ public class MixinCardinalCompComponentKey {
     // redirect the entity sync packet
     @SuppressWarnings({"unchecked", "rawtypes"})
     @WrapOperation(
-        method = "Ldev/onyxstudios/cca/api/v3/component/ComponentKey;syncWith(Lnet/minecraft/server/level/ServerPlayer;Ldev/onyxstudios/cca/api/v3/component/ComponentProvider;Ldev/onyxstudios/cca/api/v3/component/sync/ComponentPacketWriter;Ldev/onyxstudios/cca/api/v3/component/sync/PlayerSyncPredicate;)V",
-        at = @At(
-            value = "INVOKE",
-            target = "Ldev/onyxstudios/cca/api/v3/component/ComponentProvider;toComponentPacket(Ldev/onyxstudios/cca/api/v3/component/ComponentKey;Ldev/onyxstudios/cca/api/v3/component/sync/ComponentPacketWriter;Lnet/minecraft/server/level/ServerPlayer;)Lnet/minecraft/network/protocol/common/ClientboundCustomPayloadPacket;"
-        )
+            method = "Ldev/onyxstudios/cca/api/v3/component/ComponentKey;syncWith(Lnet/minecraft/server/level/ServerPlayer;Ldev/onyxstudios/cca/api/v3/component/ComponentProvider;Ldev/onyxstudios/cca/api/v3/component/sync/ComponentPacketWriter;Ldev/onyxstudios/cca/api/v3/component/sync/PlayerSyncPredicate;)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ldev/onyxstudios/cca/api/v3/component/ComponentProvider;toComponentPacket(Ldev/onyxstudios/cca/api/v3/component/ComponentKey;Ldev/onyxstudios/cca/api/v3/component/sync/ComponentPacketWriter;Lnet/minecraft/server/level/ServerPlayer;)Lnet/minecraft/network/protocol/common/ClientboundCustomPayloadPacket;"
+            )
     )
     private ClientboundCustomPayloadPacket redirectPacket(
         @Coerce Object instance, @Coerce Object key,

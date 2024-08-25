@@ -41,8 +41,6 @@ import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -54,7 +52,6 @@ import qouteall.imm_ptl.core.mc_utils.MyNbtTextFormatter;
 import qouteall.imm_ptl.core.mc_utils.ServerTaskList;
 import qouteall.imm_ptl.core.miscellaneous.IPVanillaCopy;
 import qouteall.imm_ptl.core.mixin.common.mc_util.IELevelEntityGetterAdapter;
-import qouteall.imm_ptl.core.network.ImmPtlNetworking;
 import qouteall.imm_ptl.core.platform_specific.O_O;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.q_misc_util.Helper;
@@ -85,15 +82,15 @@ public class McHelper {
     public static class Placeholder {}
     
     public static final Placeholder placeholder = new Placeholder();
-    
+
     public static ResourceLocation newResourceLocation(String a, String b) {
         return ResourceLocation.fromNamespaceAndPath(a, b);
     }
-    
+
     public static ResourceLocation newResourceLocation(String a) {
         return ResourceLocation.parse(a);
     }
-    
+
     @Deprecated
     public static IEChunkMap getIEChunkMap(ResourceKey<Level> dimension) {
         return (IEChunkMap) getServerWorld(dimension).getChunkSource().chunkMap;
@@ -296,7 +293,7 @@ public class McHelper {
      */
     public static Vec3 getVehicleOffsetFromPassenger(Entity vehicle, Entity passenger) {
         Vec3 vehicleAttachmentPoint = passenger.getVehicleAttachmentPoint(vehicle);
-        
+
         return vehicleAttachmentPoint;
     }
     

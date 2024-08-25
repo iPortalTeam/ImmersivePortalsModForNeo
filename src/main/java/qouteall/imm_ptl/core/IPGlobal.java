@@ -15,7 +15,6 @@ public class IPGlobal {
     
     
     /**
-     * This is different to {@link ClientTickEvents#END_CLIENT_TICK}
      * It fires right after ticking client world, which is earlier than the Fabric event.
      */
     public static class PostClientTickEvent extends Event {}

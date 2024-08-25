@@ -27,21 +27,27 @@ import qouteall.q_misc_util.dimension.DimensionIntId;
 
 public class MiscNetworking {
     private static final Logger LOGGER = LogUtils.getLogger();
+    
+    public static final ResourceLocation id_stcRemote =
+        ResourceLocation.fromNamespaceAndPath("q_misc_util", "remote_stc");
+    public static final ResourceLocation id_ctsRemote =
+            ResourceLocation.fromNamespaceAndPath("q_misc_util", "remote_cts");
+
+    public static final CustomPacketPayload.Type<CustomPacketPayload> TYPE_STC_REMOTE = new CustomPacketPayload.Type<>(ResourceLocation.parse("q_misc_util:remote_stc"));
+    public static final CustomPacketPayload.Type<CustomPacketPayload> TYPE_CTS_REMOTE = new CustomPacketPayload.Type<>(ResourceLocation.parse("q_misc_util:remote_cts"));
 
     public static record DimIdSyncPacket(
         CompoundTag dimIntIdTag,
         CompoundTag dimTypeTag
     ) implements CustomPacketPayload {
         public static final CustomPacketPayload.Type<DimIdSyncPacket> TYPE =
-            new CustomPacketPayload.Type<>(
-                McHelper.newResourceLocation("imm_ptl:dim_int_id_sync")
-            );
+                new Type<>(ResourceLocation.parse("imm_ptl:dim_int_id_sync"));
 
         public static final StreamCodec<FriendlyByteBuf, DimIdSyncPacket> CODEC =
-            StreamCodec.of(
-                (b, p) -> p.write(b), DimIdSyncPacket::read
-            );
-        
+                StreamCodec.of(
+                        (b, p) -> p.write(b), DimIdSyncPacket::read
+                );
+
         public static DimIdSyncPacket createFromServer(MinecraftServer server) {
             DimIntIdMap rec = DimensionIntId.getServerMap(server);
             CompoundTag dimIntIdTag = rec.toTag(dim -> true);
@@ -73,10 +79,13 @@ public class MiscNetworking {
             return new DimIdSyncPacket(dimIntIdTag, dimIdToDimTypeIdTag);
         }
         
-        public static Packet<ClientCommonPacketListener> createPacket(MinecraftServer server) {
-            return ServerPlayNetworking.createS2CPacket(
-                DimIdSyncPacket.createFromServer(server)
-            );
+        public static DimIdSyncPacket createPacket(MinecraftServer server) {
+            return DimIdSyncPacket.createFromServer(server);
+        }
+
+        @Override
+        public @NotNull Type<? extends CustomPacketPayload> type() {
+            return TYPE;
         }
 
         public void write(FriendlyByteBuf buf) {
@@ -84,21 +93,17 @@ public class MiscNetworking {
             buf.writeNbt(dimTypeTag);
         }
 
-        @Override
-        public @NotNull ResourceLocation id() {
-            return ID;
-        }
-
         public static DimIdSyncPacket read(FriendlyByteBuf buf) {
             CompoundTag idMapTag = buf.readNbt();
             CompoundTag typeTag = buf.readNbt();
-            
+
             return new DimIdSyncPacket(idMapTag, typeTag);
         }
-        
-        public void handle() {
+        // must be handled early
+        // should not be handled in client main thread, otherwise it may be late
+        public void handleOnNetworkingThread() {
             DimIntIdMap rec = DimIntIdMap.fromTag(dimIntIdTag);
-            LOGGER.info("Client received dim id sync packet\n{}", rec);
+            LOGGER.info("Client received dim intId sync packet\n{}", rec);
             DimensionIntId.clientRecord = rec;
             
             ImmutableMap.Builder<ResourceKey<Level>, ResourceKey<DimensionType>> builder =
@@ -124,26 +129,5 @@ public class MiscNetworking {
                 dimTypeMap
             );
         }
-
-        @Override
-        public @NotNull Type<? extends CustomPacketPayload> type() {
-            return TYPE;
-        }
-    }
-    
-    @Environment(EnvType.CLIENT)
-    public static void initClient() {
-        ClientPlayNetworking.registerGlobalReceiver(
-            DimIdSyncPacket.TYPE,
-            (p, c) -> {
-                p.handle();
-            }
-        );
-    }
-
-    public static void init() {
-        PayloadTypeRegistry.playS2C().register(
-            DimIdSyncPacket.TYPE, DimIdSyncPacket.CODEC
-        );
     }
 }

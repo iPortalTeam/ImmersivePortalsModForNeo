@@ -15,7 +15,7 @@ import java.util.TreeMap;
 /**
  * Make this because {@link Gui#setOverlayMessage(Component, boolean)} does not support multi-line
  */
-//@Environment(EnvType.CLIENT)
+//@OnlyIn(Dist.CLIENT)
 public class CustomTextOverlay {
     
     public static record Entry(

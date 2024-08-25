@@ -27,7 +27,6 @@ import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.ducks.IEClientWorld;
 import qouteall.imm_ptl.core.ducks.IEEntity;
-import qouteall.imm_ptl.core.platform_specific.O_O;
 import qouteall.imm_ptl.core.platform_specific.O_OClient;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.q_misc_util.my_util.LimitedLogger;

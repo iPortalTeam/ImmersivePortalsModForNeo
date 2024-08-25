@@ -1,11 +1,6 @@
 package qouteall.imm_ptl.peripheral;
 
 import com.mojang.serialization.MapCodec;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import com.mojang.serialization.Codec;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -16,9 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import qouteall.dimlib.api.DimensionAPI;
-import qouteall.imm_ptl.core.McHelper;
-import qouteall.imm_ptl.peripheral.alternate_dimension.AlternateDimensions;
 import qouteall.imm_ptl.peripheral.alternate_dimension.ChaosBiomeSource;
 import qouteall.imm_ptl.peripheral.alternate_dimension.ErrorTerrainGenerator;
 import qouteall.imm_ptl.peripheral.alternate_dimension.FormulaGenerator;
@@ -32,15 +24,11 @@ import qouteall.imm_ptl.peripheral.wand.PortalWandItem;
 import java.util.function.BiConsumer;
 
 public class PeripheralModMain {
-    
-    public static final Block portalHelperBlock =
-        new Block(FabricBlockSettings.of().noOcclusion().isRedstoneConductor((a, b, c) -> false));
-    
-    public static final BlockItem portalHelperBlockItem =
-        new PortalHelperItem(PeripheralModMain.portalHelperBlock, new Item.Properties());
-    
-    public static final CreativeModeTab TAB =
-        CreativeModeTab.builder()
+
+    // TODO @Nick1st - Rework registry (Best would be at fabrics side)
+    public static Block portalHelperBlock;
+
+    public static final CreativeModeTab TAB = CreativeModeTab.builder()
             .icon(() -> new ItemStack(PortalWandItem.instance))
             .title(Component.translatable("imm_ptl.item_group"))
             .displayItems((enabledFeatures, entries) -> {
@@ -48,7 +36,7 @@ public class PeripheralModMain {
                 
                 CommandStickItem.addIntoCreativeTag(entries);
                 
-                entries.accept(BuiltInRegistries.ITEM.get(new ResourceLocation("immersive_portals", "portal_helper")));
+                entries.accept(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("immersive_portals", "portal_helper")));
             })
             .build();
     
@@ -74,7 +62,7 @@ public class PeripheralModMain {
 //        DimensionAPI.suppressExperimentalWarningForNamespace("immersive_portals");
         
         DimensionAPI.suppressExperimentalWarningForNamespace("immersive_portals");
-        
+
         PortalWandItem.init();
         
         CommandStickItem.init();
@@ -114,7 +102,7 @@ public class PeripheralModMain {
         );
         portalHelperBlock = block;
     }
-    
+
     public static void registerChunkGenerators(
         BiConsumer<ResourceLocation, MapCodec<? extends ChunkGenerator>> regFunc
     ) {
@@ -127,7 +115,7 @@ public class PeripheralModMain {
             NormalSkylandGenerator.MAP_CODEC
         );
     }
-    
+
     public static void registerBiomeSources(
         BiConsumer<ResourceLocation, MapCodec<? extends BiomeSource>> regFunc
     ) {
@@ -136,7 +124,7 @@ public class PeripheralModMain {
             ChaosBiomeSource.MAP_CODEC
         );
     }
-    
+
     public static void registerCreativeTabs(
         BiConsumer<ResourceLocation, CreativeModeTab> regFunc
     ) {

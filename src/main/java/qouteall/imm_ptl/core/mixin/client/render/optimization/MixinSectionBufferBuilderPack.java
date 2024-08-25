@@ -17,7 +17,7 @@ public class MixinSectionBufferBuilderPack {
     // This mixin will reduce memory usage.
     // The initial size cannot be 0, because it resizes in endVertex(), not before putting data.
     @Redirect(
-        method = "method_60896",
+        method = "lambda$new$0",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/RenderType;bufferSize()I"

@@ -2,9 +2,8 @@ package qouteall.imm_ptl.core.render;
 
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
+import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -21,6 +20,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
@@ -68,9 +70,7 @@ public class MyGameRenderer {
     public static boolean enablePortalCaveCulling = true;
     
     public static void init() {
-        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> {
-            secondaryRenderBuffers.clear();
-        });
+        NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> secondaryRenderBuffers.clear());
     }
     
     @Nullable
@@ -164,7 +164,7 @@ public class MyGameRenderer {
         ObjectArrayList<SectionRenderDispatcher.RenderSection> newChunkInfoList =
             VisibleSectionDiscovery.takeList();
         ((IEWorldRenderer) oldWorldRenderer).portal_setChunkInfoList(newChunkInfoList);
-        
+
         Object irisPipeline = IrisInterface.invoker.getPipeline(worldRenderer);
         
         // switch (note: it will no longer switch the world that client player is in )

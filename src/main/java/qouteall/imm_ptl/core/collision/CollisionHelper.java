@@ -16,7 +16,7 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
@@ -430,11 +430,9 @@ public class CollisionHelper {
     }
     
     public static void init() {
-        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
-            if (event.phase == TickEvent.Phase.END) {
-                for (ServerLevel world : event.getServer().getAllLevels()) {
-                    updateCollidingPortalForWorld(world, 0);
-                }
+        NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, event -> {
+            for (ServerLevel world : event.getServer().getAllLevels()) {
+                updateCollidingPortalForWorld(world, 0);
             }
         });
     }

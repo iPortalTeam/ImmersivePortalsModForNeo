@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ public class ServerTeleportationManager {
     }
 
     public static void init() {
-        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
+        NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, event -> {
             of(event.getServer()).tick(event.getServer());
         });
 

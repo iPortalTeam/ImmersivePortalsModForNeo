@@ -30,77 +30,77 @@ import java.util.*;
 
 @Mixin(CreateWorldScreen.class)
 public abstract class MixinCreateWorldScreen_CVB extends Screen implements IECreateWorldScreen {
-    
+
     @Shadow
     @Final
     private static Logger LOGGER;
-    
+
     @Shadow
     @Final
     private WorldCreationUiState uiState;
-    
+
     @Nullable
     private DimStackGuiController ip_dimStackController;
-    
+
     protected MixinCreateWorldScreen_CVB(Component title) {
         super(title);
         throw new RuntimeException();
     }
-    
+
     @Inject(
-        method = "<init>",
-        at = @At("RETURN")
+            method = "<init>",
+            at = @At("RETURN")
     )
     private void onInitEnd(
-        Minecraft minecraft, Screen screen, WorldCreationContext worldCreationContext,
-        Optional<ResourceKey<WorldPreset>> optional, OptionalLong optionalLong, CallbackInfo ci
+            Minecraft minecraft, Screen screen, WorldCreationContext worldCreationContext,
+            Optional<ResourceKey<WorldPreset>> optional, OptionalLong optionalLong, CallbackInfo ci
     ) {
         DimStackManagement.dimStackToApply = DimStackManagement.getDimStackPreset();
         if (DimStackManagement.dimStackToApply != null) {
             LOGGER.info("[ImmPtl] Applying dimension stack preset");
         }
     }
-    
+
     @Override
     public void ip_openDimStackScreen() {
         if (ip_dimStackController == null) {
             CreateWorldScreen this_ = (CreateWorldScreen) (Object) this;
             ip_dimStackController = new DimStackGuiController(
-                this_,
-                () -> portal_getDimensionList(),
-                info -> {
-                    DimStackManagement.dimStackToApply = info;
-                    Minecraft.getInstance().setScreen(this_);
-                }
+                    this_,
+                    () -> portal_getDimensionList(),
+                    info -> {
+                        DimStackManagement.dimStackToApply = info;
+                        Minecraft.getInstance().setScreen(this_);
+                    }
             );
             ip_dimStackController.initializeAsDefault();
         }
-        
+
         Minecraft.getInstance().setScreen(ip_dimStackController.view);
     }
-    
+
     private List<ResourceKey<Level>> portal_getDimensionList() {
         Helper.log("Getting the dimension list");
-        
+
         Set<ResourceKey<Level>> result = new LinkedHashSet<>();
-        
+
         try {
             WorldCreationContext settings = uiState.getSettings();
-            
+
             RegistryAccess.Frozen registryAccess = settings.worldgenLoadContext();
-            
+
             WorldDimensions selectedDimensions = settings.selectedDimensions();
-            
+
             // add vanilla dimensions
             for (var entry : selectedDimensions.dimensions().entrySet()) {
                 result.add(Helper.dimIdToKey(entry.getKey().location()));
             }
-            
+
             // add datapack dimensions
             for (var entry : settings.datapackDimensions().entrySet()) {
                 result.add(Helper.dimIdToKey(entry.getKey().location()));
             }
-            
+
             // add other dimensions via the event
             Collection<ResourceKey<Level>> other =
                     NeoForge.EVENT_BUS.post(new DimensionStackAPI.DimensionStackCandidateCollectionEvent(registryAccess,
@@ -110,14 +110,14 @@ public abstract class MixinCreateWorldScreen_CVB extends Screen implements IECre
 //                        registryAccess, settings.options()
 //                    );
             result.addAll(other);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.error("ImmPtl getting dimension list", e);
             if (result.isEmpty()) {
                 result.add(Helper.dimIdToKey("error:error"));
             }
         }
-        
+
+
         return new ArrayList<>(result);
     }
 }

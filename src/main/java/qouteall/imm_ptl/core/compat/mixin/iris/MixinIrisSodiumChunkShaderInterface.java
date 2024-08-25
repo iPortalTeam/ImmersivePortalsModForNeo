@@ -1,6 +1,6 @@
 package qouteall.imm_ptl.core.compat.mixin.iris;
 
-import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
+import net.caffeinemc.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
 import net.irisshaders.iris.compat.sodium.impl.shader_overrides.IrisChunkShaderInterface;
 import net.irisshaders.iris.compat.sodium.impl.shader_overrides.ShaderBindingContextExt;
 import net.irisshaders.iris.gl.blending.BlendModeOverride;
@@ -20,7 +20,7 @@ import java.util.List;
 @Mixin(value = IrisChunkShaderInterface.class, remap = false)
 public class MixinIrisSodiumChunkShaderInterface {
     private int uIPClippingEquation;
-    
+
     private void ip_init(int shaderId) {
         uIPClippingEquation = GL20C.glGetUniformLocation(shaderId, "imm_ptl_ClippingEquation");
         if (uIPClippingEquation < 0) {
@@ -28,7 +28,7 @@ public class MixinIrisSodiumChunkShaderInterface {
             uIPClippingEquation = -1;
         }
     }
-    
+
     @Inject(
         method = "<init>",
         at = @At("RETURN"),
@@ -39,7 +39,7 @@ public class MixinIrisSodiumChunkShaderInterface {
     ) {
         ip_init(handle);
     }
-    
+
     @Inject(
         method = "setupState",
         at = @At("RETURN")

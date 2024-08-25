@@ -43,7 +43,7 @@ public class CustomPortalGeneration {
     
     public static final Codec<List<ResourceKey<Level>>> DIMENSION_LIST_CODEC =
         Level.RESOURCE_KEY_CODEC.listOf();
-    
+
     public static final Codec<List<String>> STRING_LIST_CODEC =
         Codec.STRING.listOf();
     
@@ -57,11 +57,11 @@ public class CustomPortalGeneration {
     // the contents are in /data/<namespace>/immersive_portals/custom_portal_generation/
     public static final ResourceKey<Registry<CustomPortalGeneration>> REGISTRY_KEY =
         ResourceKey.createRegistryKey(McHelper.newResourceLocation("immersive_portals:custom_portal_generation"));
-    
+
     // for old datapacks, the contents are in /data/<namespace>/custom_portal_generation/
     public static final ResourceKey<Registry<CustomPortalGeneration>> LEGACY_REGISTRY_KEY =
         ResourceKey.createRegistryKey(McHelper.newResourceLocation("custom_portal_generation"));
-    
+
     public static final MapCodec<CustomPortalGeneration> codecV1 =
         RecordCodecBuilder.mapCodec(instance -> {
             return instance.group(
@@ -78,7 +78,7 @@ public class CustomPortalGeneration {
                     .forGetter(o -> o.commandsOnGenerated)
             ).apply(instance, instance.stable(CustomPortalGeneration::new));
         });
-    
+
     private static final MappedRegistry<MapCodec<CustomPortalGeneration>> SCHEMA_REGISTRY =
         Util.make(() -> {
             MappedRegistry<MapCodec<CustomPortalGeneration>> registry = new MappedRegistry<>(
@@ -96,7 +96,7 @@ public class CustomPortalGeneration {
         );
     
     public static final Codec<CustomPortalGeneration> CODEC = MAP_CODEC.codec();
-    
+
     public final List<ResourceKey<Level>> fromDimensions;
     public final ResourceKey<Level> toDimension;
     public final int spaceRatioFrom;
@@ -182,9 +182,9 @@ public class CustomPortalGeneration {
     }
     
     public static sealed interface InitializationResult {}
-    
+
     public static record InitializationOk() implements InitializationResult {}
-    
+
     public static record NotLoadedBecauseOfDstDimensionInvalid(
         ResourceKey<Level> dimId
     ) implements InitializationResult {
@@ -193,7 +193,7 @@ public class CustomPortalGeneration {
             return "Destination dimension %s not loaded".formatted(dimId.location());
         }
     }
-    
+
     public static record NotLoadedBecauseNoSrcDimensionValid(
         Collection<ResourceKey<Level>> srcDimIds
     ) implements InitializationResult {
@@ -203,7 +203,7 @@ public class CustomPortalGeneration {
                 .formatted(srcDimIds.stream().map(ResourceKey::location).collect(Collectors.toList()));
         }
     }
-    
+
     public InitializationResult initAndCheck(MinecraftServer server) {
         // if from dimension is not present, nothing happens
         
@@ -217,11 +217,11 @@ public class CustomPortalGeneration {
         Set<ResourceKey<Level>> effectiveSrcDimensions = fromDimensions.stream()
             .filter(dim -> dim == ANY_DIMENSION || server.getLevel(dim) != null)
             .collect(Collectors.toSet());
-        
+
         if (effectiveSrcDimensions.isEmpty()) {
             return new NotLoadedBecauseNoSrcDimensionValid(fromDimensions);
         }
-        
+
         return new InitializationOk();
     }
     

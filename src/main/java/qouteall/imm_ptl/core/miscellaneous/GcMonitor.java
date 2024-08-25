@@ -5,7 +5,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.IPGlobal;
@@ -67,11 +67,9 @@ public class GcMonitor {
     }
     
     public static void initCommon() {
-        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
-            if (event.phase == TickEvent.Phase.END) {
-                if (event.getServer().isDedicatedServer()) {
-                    update();
-                }
+        NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, event -> {
+            if (event.getServer().isDedicatedServer()) {
+                update();
             }
         });
     }

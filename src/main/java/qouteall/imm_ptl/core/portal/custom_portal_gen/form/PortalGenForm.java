@@ -30,7 +30,7 @@ public abstract class PortalGenForm {
             registry, McHelper.newResourceLocation("imm_ptl:heterogeneous"), HeterogeneousForm.CODEC
         );
         Registry.register(
-            registry, McHelper.newResourceLocation("imm_ptl:flipping_floor_square"), FlippingFloorSquareForm.CODEC
+            registry, McHelper.newResourceLocation("imm_ptl:flipping_floor_square"), FlippingFloorSquareForm.codec
         );
         Registry.register(
             registry, McHelper.newResourceLocation("imm_ptl:scaling_square"), ScalingSquareForm.CODEC
@@ -55,7 +55,7 @@ public abstract class PortalGenForm {
         CODEC_REGISTRY.byNameCodec().dispatchStable(
             PortalGenForm::getCodec, Function.identity()
         );
-    
+
     public abstract MapCodec<? extends PortalGenForm> getCodec();
     
     public abstract PortalGenForm getReverse();

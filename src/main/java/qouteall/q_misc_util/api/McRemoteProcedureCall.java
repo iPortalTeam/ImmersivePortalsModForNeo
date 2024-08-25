@@ -1,26 +1,26 @@
 package qouteall.q_misc_util.api;
 
-import de.nick1st.q_misc_util.networking.ImplRPCPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import qouteall.q_misc_util.MiscNetworking;
+import qouteall.q_misc_util.ImplRemoteProcedureCall;
+
+import java.util.List;
 
 /**
  * <p>
- *     Fabric provides the networking API https://fabricmc.net/wiki/tutorial:networking.
- *     If you want to add a new type of packet, you need to
- *     1. Write packet serialization/deserialization code 2. Write the packet handling code,
- *     which requires sending the task to the client/server thread to execute it 3. Give it
- *      an identifier and register it.
+ * Fabric provides the networking API https://fabricmc.net/wiki/tutorial:networking.
+ * If you want to add a new type of packet, you need to
+ * 1. Write packet serialization/deserialization code 2. Write the packet handling code,
+ * which requires sending the task to the client/server thread to execute it 3. Give it
+ * an identifier and register it.
  * </p>
  *
  * <p>
- *     This Remote Procedure Call API provides an easier way of networking.
- *     Just write a static method, then you can remotely invoke this method.
- *     No need to register the packet, no need to write serialization/deserialization code.
- *     The arguments will be automatically serialized and deserialized.
+ * This Remote Procedure Call API provides an easier way of networking.
+ * Just write a static method, then you can remotely invoke this method.
+ * No need to register the packet, no need to write serialization/deserialization code.
+ * The arguments will be automatically serialized and deserialized.
  * </p>
- *
+ * <p>
  * For example:
  * <pre>
  * {@code
@@ -43,7 +43,7 @@ import qouteall.q_misc_util.MiscNetworking;
  * That method will be invoked on the client thread (render thread).
  *
  * <p></p>
- *
+ * <p>
  * The client can send packet to server using
  * <pre>
  * {@code
@@ -57,10 +57,10 @@ import qouteall.q_misc_util.MiscNetworking;
  * That method will be invoked on the server thread.
  *
  * <p>For security concerns, the class path must contain "RemoteCallable". For example,
- *      the class name can be "XXRemoteCallableYYY" or "RemoteCallables"</p>
+ * the class name can be "XXRemoteCallableYYY" or "RemoteCallables"</p>
  *
  * <p>
- *     The supported argument types are
+ * The supported argument types are
  *     <ul>
  *         <li>The types that Gson can directly serialize/deserialize,
  *          for example {@code int,double,boolean,long,String,int[],Map<String,String>,Enums} </li>
@@ -100,27 +100,21 @@ public class McRemoteProcedureCall {
      * @param arguments The arguments. The types must match the remotely invoked method signature.
      */
     public static void tellClientToInvoke(
-        ServerPlayer player, String methodPath, Object... arguments
+            ServerPlayer player, String methodPath, Object... arguments
     ) {
         var packet = createPacketToSendToClient(methodPath, arguments);
         player.connection.send(packet);
     }
-    
+
     /**
      * Same as the above, but only creates packet and does not send.
      */
-    public static ImplRPCPayload createPacketToSendToClient(
-        String methodPath, Object... arguments
+    public static ImplRemoteProcedureCall.S2CRPCPayload createPacketToSendToClient(
+            String methodPath, Object... arguments
     ) {
-        return new ImplRPCPayload(methodPath, arguments) {
-
-            @Override
-            public ResourceLocation id() {
-                return MiscNetworking.id_stcRemote;
-            }
-        };
+        return new ImplRemoteProcedureCall.S2CRPCPayload(true, methodPath, null, List.of(arguments));
     }
-    
+
     /**
      * For example:
      * <pre>
@@ -142,8 +136,8 @@ public class McRemoteProcedureCall {
      *
      * @param methodPath If you are using Intellij IDEA, right click on the method,
      *                   click "Copy Reference", then you get the method path
-     * @param arguments The arguments. The types must match the remotely invoked method signature.
-     *                  The remote method's first argument must be the player that's sending the packet.
+     * @param arguments  The arguments. The types must match the remotely invoked method signature.
+     *                   The remote method's first argument must be the player that's sending the packet.
      */
     //@OnlyIn(Dist.CLIENT)
     // @Nick1st - Moved to client class
@@ -153,16 +147,10 @@ public class McRemoteProcedureCall {
 //        var packet = createPacketToSendToServer(methodPath, arguments);
 //        Minecraft.getInstance().getConnection().send(packet);
 //    }
-    
-    public static ImplRPCPayload createPacketToSendToServer(
-        String methodPath, Object... arguments
+    public static ImplRemoteProcedureCall.C2SRPCPayload createPacketToSendToServer(
+            String methodPath, Object... arguments
     ) {
-        return new ImplRPCPayload(methodPath, arguments) {
+        return new ImplRemoteProcedureCall.C2SRPCPayload(true, methodPath, null, List.of(arguments));
 
-            @Override
-            public ResourceLocation id() {
-                return MiscNetworking.id_ctsRemote;
-            }
-        };
     }
 }

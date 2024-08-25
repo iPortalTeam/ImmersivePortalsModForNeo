@@ -23,6 +23,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import qouteall.imm_ptl.core.IPCGlobal;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import qouteall.imm_ptl.core.IPMcHelper;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer;
 
@@ -30,8 +34,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PortalWandItem extends Item {
-    public static final PortalWandItem instance = new PortalWandItem(new Properties());
-    
+    public static PortalWandItem instance;
+
+    public static final Codec<Mode> MODE_CODEC = Codec.STRING.xmap(Mode::fromStr, Mode::toStr);
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Mode>> COMPONENT_TYPE
+            = PeripheralModEntry.DATA_COMPONENTS_REGISTRAR.registerComponentType(
+            "portal_wand_data",
+            b -> b.persistent(MODE_CODEC)
+    );
+
     public static void init() {
         NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.LeftClickBlock.class, event -> {
             if (event.getEntity().getMainHandItem().getItem() == instance) {
@@ -45,16 +57,13 @@ public class PortalWandItem extends Item {
     }
     
     public static void initClient() {
-        NeoForge.EVENT_BUS.addListener(TickEvent.PlayerTickEvent.class, event -> {
-            if (event.side == LogicalSide.CLIENT) {
-                if (event.player != null) {
-                    ItemStack itemStack = event.player.getMainHandItem();
-                    if (itemStack.getItem() == instance) {
-                        updateDisplay(itemStack);
-                    }
-                    else {
-                        ClientPortalWandPortalCreation.clearCursorPointing();
-                    }
+        NeoForge.EVENT_BUS.addListener(PlayerTickEvent.Post.class, event -> {
+            if (event.getEntity() != null && event.getEntity().level().isClientSide()) {
+                ItemStack itemStack = event.getEntity().getMainHandItem();
+                if (itemStack.getItem() == instance) {
+                    updateDisplay(itemStack);
+                } else {
+                    ClientPortalWandPortalCreation.clearCursorPointing();
                 }
                 ClientPortalWandPortalDrag.tick();
             }
@@ -84,12 +93,12 @@ public class PortalWandItem extends Item {
         CREATE_PORTAL,
         DRAG_PORTAL,
         COPY_PORTAL;
-        
+
         public static final Mode FALLBACK = CREATE_PORTAL;
 
         public static Mode fromTag(CompoundTag tag) {
             String mode = tag.getString("mode");
-            
+
             return fromStr(mode);
         }
 
@@ -134,7 +143,7 @@ public class PortalWandItem extends Item {
         }
         
     }
-    
+
     public static final Codec<Mode> MODE_CODEC = Codec.STRING.xmap(Mode::fromStr, Mode::toStr);
 
     public static final DataComponentType<Mode> COMPONENT_TYPE =
@@ -145,28 +154,29 @@ public class PortalWandItem extends Item {
     public PortalWandItem(Properties properties) {
         super(properties);
     }
-    
-    @Environment(EnvType.CLIENT)
-    public static void onClientLeftClick(LocalPlayer player, ItemStack itemStack) {
-        if (player.isShiftKeyDown()) {
-            showSettings(player);
-        }
-        else {
-            Mode mode = itemStack.getOrDefault(COMPONENT_TYPE, Mode.FALLBACK);
-            
-            switch (mode) {
-                case CREATE_PORTAL -> {
-                    ClientPortalWandPortalCreation.onLeftClick();
-                }
-                case DRAG_PORTAL -> {
-                    ClientPortalWandPortalDrag.onLeftClick();
-                }
-                case COPY_PORTAL -> {
-                    ClientPortalWandPortalCopy.onLeftClick();
-                }
-            }
-        }
-    }
+
+    // @Nick1st - Moved to client class
+//    @OnlyIn(Dist.CLIENT)
+//    public static void onClientLeftClick(LocalPlayer player, ItemStack itemStack) {
+//        if (player.isShiftKeyDown()) {
+//            showSettings(player);
+//        }
+//        else {
+//            Mode mode = Mode.fromTag(itemStack.getOrCreateTag());
+//
+//            switch (mode) {
+//                case CREATE_PORTAL -> {
+//                    ClientPortalWandPortalCreation.onLeftClick();
+//                }
+//                case DRAG_PORTAL -> {
+//                    ClientPortalWandPortalDrag.onLeftClick();
+//                }
+//                case COPY_PORTAL -> {
+//                    ClientPortalWandPortalCopy.onLeftClick();
+//                }
+//            }
+//        }
+//    }
     
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {

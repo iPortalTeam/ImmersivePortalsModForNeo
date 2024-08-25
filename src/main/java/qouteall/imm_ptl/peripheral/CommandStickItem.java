@@ -25,10 +25,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.commands.PortalCommand;
+import qouteall.imm_ptl.peripheral.platform_specific.PeripheralModEntry;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -39,18 +41,19 @@ public class CommandStickItem extends Item {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public static final Codec<Data> DATA_CODEC = RecordCodecBuilder.create(
-        instance -> instance.group(
-            Codec.STRING.fieldOf("command").forGetter(Data::command),
-            Codec.STRING.fieldOf("nameTranslationKey").forGetter(Data::nameTranslationKey),
-            Codec.STRING.listOf().fieldOf("descriptionTranslationKeys")
-                .forGetter(Data::descriptionTranslationKeys)
-        ).apply(instance, Data::new)
+            instance -> instance.group(
+                    Codec.STRING.fieldOf("command").forGetter(Data::command),
+                    Codec.STRING.fieldOf("nameTranslationKey").forGetter(Data::nameTranslationKey),
+                    Codec.STRING.listOf().fieldOf("descriptionTranslationKeys")
+                            .forGetter(Data::descriptionTranslationKeys)
+            ).apply(instance, Data::new)
     );
 
-    public static final DataComponentType<Data> COMPONENT_TYPE =
-        DataComponentType.<Data>builder()
-            .persistent(DATA_CODEC)
-            .build();
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Data>> COMPONENT_TYPE
+            = PeripheralModEntry.DATA_COMPONENTS_REGISTRAR.registerComponentType(
+            "command_stick_data",
+            b -> b.persistent(DATA_CODEC)
+    );
 
     public record Data(
         String command, String nameTranslationKey, List<String> descriptionTranslationKeys
@@ -91,11 +94,9 @@ public class CommandStickItem extends Item {
     public static void registerBuiltInCommandStick(Data data) {
         BUILT_IN_COMMAND_STICK_TYPES.put(data.command, data);
     }
-    
-    public static final CommandStickItem instance = new CommandStickItem(
-        new Item.Properties()
-    );
-    
+
+    public static CommandStickItem instance;
+
     public CommandStickItem(Properties settings) {
         super(settings);
     }
@@ -124,13 +125,13 @@ public class CommandStickItem extends Item {
                 LOGGER.error("Missing component in command stick item {}", stack);
                 return;
             }
-            
+
             CommandSourceStack commandSource = player.createCommandSourceStack().withPermission(2);
-            
+
             MinecraftServer server = player.getServer();
             assert server != null;
             Commands commandManager = server.getCommands();
-            
+
             String command = data.command;
             
             if (command.startsWith("/")) {
@@ -160,7 +161,7 @@ public class CommandStickItem extends Item {
         List<Component> tooltip, TooltipFlag tooltipFlag
     ) {
         super.appendHoverText(stack, tooltipContext, tooltip, tooltipFlag);
-        
+
         Data data = stack.get(COMPONENT_TYPE);
 
         if (data == null) {
@@ -196,12 +197,6 @@ public class CommandStickItem extends Item {
     }
     
     public static void init() {
-        Registry.register(
-            BuiltInRegistries.DATA_COMPONENT_TYPE,
-            "iportal:command_stick_data",
-            COMPONENT_TYPE
-        );
-
         PortalCommand.createCommandStickCommandSignal.connect((player, command) -> {
             ItemStack itemStack = new ItemStack(instance, 1);
             Data data = new Data(
@@ -209,7 +204,7 @@ public class CommandStickItem extends Item {
             );
 
             itemStack.set(COMPONENT_TYPE, data);
-            
+
             player.getInventory().add(itemStack);
             player.inventoryMenu.broadcastChanges();
         });
@@ -344,7 +339,7 @@ public class CommandStickItem extends Item {
             "imm_ptl.command.block_on_feet",
             List.of()
         ));
-        
+
         registerPortalSubCommandStick(
             "goback"
         );

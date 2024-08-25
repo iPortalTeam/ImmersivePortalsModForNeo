@@ -17,6 +17,7 @@ public interface MixinContainer {
     @Inject(
         method = "stillValidBlockEntity(Lnet/minecraft/world/level/block/entity/BlockEntity;Lnet/minecraft/world/entity/player/Player;F)Z",
         at = @At("RETURN"),
+        remap = false,
         cancellable = true
     )
     private static void onStillValidBlockEntity(

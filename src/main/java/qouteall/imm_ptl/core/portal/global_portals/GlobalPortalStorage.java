@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.HolderLookup;
 import de.nick1st.imm_ptl.events.ClientCleanupEvent;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -23,7 +24,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,33 +66,33 @@ public class GlobalPortalStorage extends SavedData {
     public BlockState bedrockReplacement;
     
     public static void init() {
-        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
+        NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, event -> {
             event.getServer().getAllLevels().forEach(world1 -> {
                 GlobalPortalStorage gps = GlobalPortalStorage.get(world1);
                 gps.tick();
             });
         });
 
-        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
+        NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, event -> {
             MinecraftServer s = event.getServer();
             for (ServerLevel world : s.getAllLevels()) {
                 get(world).onServerClose();
             }
         });
         // @Nick1st - DimLib removal
-//        DimensionAPI.SERVER_DIMENSION_DYNAMIC_UPDATE_EVENT.register((server, dims) -> {
+//        NeoForge.EVENT_BUS.addListener(DimensionEvents.ServerDimensionDynamicUpdateEvent.class, event -> {
 //            for (ServerLevel world : server.getAllLevels()) {
 //                GlobalPortalStorage gps = get(world);
 //                gps.clearAbnormalPortals(server);
 //                gps.syncToAllPlayers();
 //            }
 //        });
-        
+
         if (!O_O.isDedicatedServer()) {
             initClient();
         }
     }
-    
+
     public static GlobalPortalStorage get(
         ServerLevel world
     ) {
@@ -111,8 +112,8 @@ public class GlobalPortalStorage extends SavedData {
             "global_portal"
         );
     }
-    
-    //@Environment(EnvType.CLIENT)
+
+    //@OnlyIn(Dist.CLIENT)
     private static void initClient() {
         NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> GlobalPortalStorageClient.onClientCleanup());
     }
@@ -151,11 +152,9 @@ public class GlobalPortalStorage extends SavedData {
         ServerLevel world, GlobalPortalStorage storage
     ) { // TODO @Nick1st Check
         return new ClientboundCustomPayloadPacket(
-            new ImmPtlNetworking.GlobalPortalSyncPacket(
-                PortalAPI.serverDimKeyToInt(world.getServer(), world.dimension()),
-                storage.save(new CompoundTag(), world.registryAccess())
-            )
-        );
+                new ImmPtlNetworking.GlobalPortalSyncPacket(
+                        PortalAPI.serverDimKeyToInt(world.getServer(), world.dimension()),
+                        storage.save(new CompoundTag(), world.registryAccess())));
     }
     
     public void onDataChanged() {

@@ -1,12 +1,13 @@
 package qouteall.imm_ptl.core.network;
 
-import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.ProtocolInfo;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.BundleDelimiterPacket;
 import net.minecraft.network.protocol.BundlePacket;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -20,8 +21,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,20 +49,16 @@ public class PacketRedirection {
     
     private static final ThreadLocal<ResourceKey<Level>> serverPacketRedirection =
         ThreadLocal.withInitial(() -> null);
-    
+
     public static interface ForceBundleCallback {
         void accept(
             ServerCommonPacketListenerImpl listener,
             Packet<ClientGamePacketListener> packet
         );
     }
-    
+
     private static final ThreadLocal<ForceBundleCallback> forceBundle =
         ThreadLocal.withInitial(() -> null);
-
-    public static void init() {
-        PayloadTypeRegistry.playS2C().register(Payload.TYPE, Payload.CODEC);
-    }
 
     public static void withForceRedirect(ServerLevel world, Runnable func) {
         withForceRedirectAndGet(world, () -> {
@@ -177,8 +174,17 @@ public class PacketRedirection {
         ResourceKey<Level> dimension,
         Packet<ClientGamePacketListener> packet
     ) {
-        PacketDistributor.PLAYER.with(player).send(createRedirectedMessage(player.server, dimension, packet));
+        player.connection.send(createRedirectedMessage(player.server, dimension, packet));
     }
+
+    private static final ProtocolInfo<ClientGamePacketListener> PLACEHOLDER_PROTOCOL_INFO =
+            // the function passed into bind is used for converting ByteBuf to RegistryFriendlyByteBuf
+            // it's a pre-processor
+            // that ProtocolInfo will be used by passing RegistryFriendlyByteBuf
+            // so only a casting is needed
+            GameProtocols.CLIENTBOUND_TEMPLATE.bind(
+                    argBuf -> ((RegistryFriendlyByteBuf) argBuf)
+            );
 
     // Note this doesn't consider bundle packet
     public static boolean isRedirectPacket(Packet<?> packet) {
@@ -193,12 +199,12 @@ public class PacketRedirection {
             // already in force-bundle mode. directly invoke the function
             return func.get();
         }
-        
+
         Map<ServerCommonPacketListenerImpl, List<Packet<ClientGamePacketListener>>>
             map = new HashMap<>();
         forceBundle.set((listener, packet) -> {
-            List<Packet<ClientGamePacketListener>> packetsToBundle =
-                map.computeIfAbsent(listener, k -> new ArrayList<>());
+            List<Packet<? super ClientGamePacketListener>> packetsToBundle =
+                    map.computeIfAbsent(listener, k -> new ArrayList<>());
             if (packet instanceof BundlePacket<?> bundlePacket) {
                 Iterable<? extends Packet<?>> subPackets = bundlePacket.subPackets();
                 for (Packet<?> subPacket : subPackets) {
@@ -209,7 +215,7 @@ public class PacketRedirection {
                 packetsToBundle.add(packet);
             }
         });
-        
+
         try {
             return func.get();
         }
@@ -224,7 +230,7 @@ public class PacketRedirection {
             }
         }
     }
-    
+
     public static @Nullable ForceBundleCallback getForceBundleCallback() {
         return forceBundle.get();
     }
@@ -246,7 +252,7 @@ public class PacketRedirection {
         int dimensionIntId, Packet<? extends ClientGamePacketListener> packet
     ) implements CustomPacketPayload {
         public static final CustomPacketPayload.Type<Payload> TYPE =
-            new CustomPacketPayload.Type<>(payloadId);
+            new Type<>(ResourceLocation.parse(payloadId.toString()));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, Payload> CODEC =
             StreamCodec.of(
@@ -273,19 +279,8 @@ public class PacketRedirection {
             return new Payload(dimensionIntId, packet);
         }
 
-        // @Nick1st Neo Overload
-        public static Payload read(FriendlyByteBuf buf, ChannelHandlerContext context) {
-            int dimensionIntId = buf.readVarInt();
-
-            int packetId = buf.readVarInt();
-            Packet<ClientGamePacketListener> packet =
-                    (Packet<ClientGamePacketListener>) readPacketById(packetId, buf, context);
-
-            return new Payload(dimensionIntId, packet);
-        }
-
         @SuppressWarnings({"unchecked", "rawtypes"})
-        @Environment(EnvType.CLIENT)
+        //@OnlyIn(Dist.CLIENT)
         public void handle(ClientGamePacketListener listener) {
             PacketRedirectionClient.handleRedirectedPacket(
                 dimensionIntId, (Packet) packet, listener

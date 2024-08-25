@@ -14,7 +14,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import qouteall.imm_ptl.core.McHelper;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import qouteall.imm_ptl.core.portal.animation.TimingFunction;
 

@@ -15,7 +15,7 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -256,7 +256,7 @@ public class PortalWandInteraction {
                 .add(secondSideHorizontalAxis.scale(0.5))
                 .add(secondSideVerticalAxis.scale(0.5))
         );
-        
+
         portal.setScaling(secondSideWidth / firstSideWidth);
         
         DQuaternion secondSideOrientation = DQuaternion.matrixToQuaternion(
@@ -316,14 +316,13 @@ public class PortalWandInteraction {
     }
 
     public static void init() {
-        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, event -> {
-            if (event.phase == TickEvent.Phase.END) {
-                of(event.getServer()).draggingSessionMap.entrySet().removeIf(
-                        e -> {
-                            ServerPlayer player = e.getKey();
-                            if (player.isRemoved()) {
-                                return true;
-                            }
+        NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, event -> {
+            of(event.getServer()).draggingSessionMap.entrySet().removeIf(
+                    e -> {
+                        ServerPlayer player = e.getKey();
+                        if (player.isRemoved()) {
+                            return true;
+                        }
 
                             if (player.getMainHandItem().getItem() != PortalWandItem.instance) {
                                 return true;
@@ -450,7 +449,7 @@ public class PortalWandInteraction {
         portal.setPortalState(session.originalState);
         portal.reloadAndSyncToClientNextTick();
         portal.rectifyClusterPortals(true);
-        
+
         portalWandInteraction.draggingSessionMap.remove(player);
     }
     

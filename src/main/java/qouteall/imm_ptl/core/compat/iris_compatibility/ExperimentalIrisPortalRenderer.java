@@ -184,7 +184,7 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
         
         List<Portal> portalsToRender = getPortalsToRender(modelView);
         List<Portal> reallyRenderedPortals = new ArrayList<>();
-        
+
         for (Portal portal : portalsToRender) {
             boolean reallyRendered = doRenderPortal(portal, modelView);
             
@@ -246,7 +246,7 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
         
         if (!portal.isFuseView()) {
             // TODO sync from RendererUsingStencil
-            restoreDepthOfPortalViewArea(portal, modelView);
+            restoreDepthOfPortalViewArea(portal, matrixStack);
         }
         
         clampStencilValue(outerPortalStencilValue);

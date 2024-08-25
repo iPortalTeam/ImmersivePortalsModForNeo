@@ -298,7 +298,7 @@ public class IrisPortalRenderer extends PortalRenderer {
         boolean result = PortalRenderInfo.renderAndDecideVisibility(portal, () -> {
             ViewAreaRenderer.renderPortalArea(
                 portal, Vec3.ZERO,
-                modelView,
+                matrixStack.last().pose(),
                 RenderSystem.getProjectionMatrix(),
                 true, true, true, true
             );
@@ -326,7 +326,7 @@ public class IrisPortalRenderer extends PortalRenderer {
     
     protected void renderPortals(Matrix4f modelView) {
         List<Portal> portalsToRender = getPortalsToRender(modelView);
-    
+
         for (Portal portal : portalsToRender) {
             doRenderPortal(portal, modelView);
         }

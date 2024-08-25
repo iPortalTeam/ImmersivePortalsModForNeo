@@ -38,7 +38,7 @@ public class StaticFieldsSwappingManager<Context> {
     }
     
     private ResourceKey<Level> outerDimension;
-    private final Stack<ContextRecord<Context>> swappedContext = new Stack<>();
+    private Stack<ContextRecord<Context>> swappedContext = new Stack<>();
     
     //this will be managed by other classes
     public final Map<ResourceKey<Level>, ContextRecord<Context>> contextMap = new HashMap<>();

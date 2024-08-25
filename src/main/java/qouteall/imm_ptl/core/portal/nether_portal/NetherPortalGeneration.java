@@ -35,7 +35,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class NetherPortalGeneration {
-    
+
     private static final Logger LOGGER = LogUtils.getLogger();
     
     @Nullable
@@ -148,7 +148,7 @@ public class NetherPortalGeneration {
                 newFrameGenerateFunc.accept(info.toShape);
                 
                 portalEntityGeneratingFunc.accept(info);
-                
+
                 O_O.postPortalSpawnEventForge(info);
             }
         };
@@ -222,7 +222,7 @@ public class NetherPortalGeneration {
                 (info) -> {
                     portalEntityGeneratingFunc.accept(info);
                     finalizer.run();
-                    
+
                     O_O.postPortalSpawnEventForge(info);
                 }, () -> {
                     onGenerateNewFrame.run();

@@ -121,22 +121,22 @@ public abstract class MixinMultiPlayerGameMode implements IEClientPlayerInteract
                     FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
                     ServerboundPlayerActionPacket.STREAM_CODEC.encode(buf, playerActionPacket);
 
-                    return McRemoteProcedureCall.createPacketToSendToServer(
+                    return new ServerboundCustomPayloadPacket(McRemoteProcedureCall.createPacketToSendToServer(
                         "qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer.RemoteCallables.processPlayerActionPacket",
                         dimension,
                         IPMcHelper.bufToBytes(buf)
-                    );
+                    ));
                 }
             }
             else if (packet instanceof ServerboundUseItemOnPacket useItemOnPacket) {
                 FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
                 ServerboundUseItemOnPacket.STREAM_CODEC.encode(buf, useItemOnPacket);
 
-                return McRemoteProcedureCall.createPacketToSendToServer(
+                return new ServerboundCustomPayloadPacket(McRemoteProcedureCall.createPacketToSendToServer(
                     "qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer.RemoteCallables.processUseItemOnPacket",
                     dimension,
                     IPMcHelper.bufToBytes(buf)
-                );
+                ));
             }
             // ServerboundUseItemPacket is not redirected
         }

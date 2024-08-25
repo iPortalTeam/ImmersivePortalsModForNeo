@@ -8,12 +8,6 @@ import com.google.gson.reflect.TypeToken;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import de.nick1st.q_misc_util.networking.ImplRPCPayload;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -101,7 +95,7 @@ public class ImplRemoteProcedureCall {
             })
             .put(byte[].class, (buf, o) -> buf.writeByteArray(((byte[]) o)))
             .build();
-        
+
         deserializerMap = ImmutableMap.<Type, Function<RegistryFriendlyByteBuf, Object>>builder()
             .put(ResourceLocation.class, FriendlyByteBuf::readResourceLocation)
             .put(
@@ -135,216 +129,15 @@ public class ImplRemoteProcedureCall {
             .put(byte[].class, buf -> buf.readByteArray())
             .build();
     }
-    
-    public static record C2SRPCPayload(
-        // only used in receiver side
-        boolean deserializeSuccess,
-        @Nullable String methodPath,
-        // only used in receiver side
-        @Nullable Method method,
-        @Nullable List<Object> args
-    ) implements CustomPacketPayload {
-
-        public static final CustomPacketPayload.Type<C2SRPCPayload> TYPE =
-            new CustomPacketPayload.Type<>(
-                McHelper.newResourceLocation("iportal:remote_c2s")
-            );
-
-        public static final StreamCodec<RegistryFriendlyByteBuf, C2SRPCPayload> CODEC = StreamCodec.of(
-            (b, p) -> p.write(b), C2SRPCPayload::read
-        );
-
-        public static C2SRPCPayload read(RegistryFriendlyByteBuf buf) {
-            String methodPath = null;
-
-            try {
-                methodPath = buf.readUtf();
-
-                Method method = getMethodByPath(methodPath);
-
-                java.lang.reflect.Type[] genericParameterTypes = method.getGenericParameterTypes();
-
-                List<Object> args = new ArrayList<>();
-
-                //the first argument is the player
-                for (int i = 1; i < genericParameterTypes.length; i++) {
-                    java.lang.reflect.Type parameterType = genericParameterTypes[i];
-                    Object obj = deserializeArgument(buf, parameterType);
-                    args.add(obj);
-                }
-
-                return new C2SRPCPayload(true, methodPath, method, args);
-            }
-            catch (Exception e) {
-                if (LOGGING_LIMIT.tryDecrement()) {
-                    LOGGER.error("Failed to parse remote procedure call {}", methodPath, e);
-                }
-                return new C2SRPCPayload(
-                    false, methodPath, null, null
-                );
-            }
-        }
-
-        public void write(RegistryFriendlyByteBuf buf) {
-            Validate.notNull(args, "args must not be null");
-            Validate.notNull(methodPath, "methodPath must not be null");
-            buf.writeUtf(methodPath);
-            for (Object arg : args) {
-                serializeArgument(buf, arg);
-            }
-        }
-
-        public void handle(ServerPlayNetworking.Context c) {
-            if (!deserializeSuccess) {
-                if (ERROR_MESSAGE_LIMIT.tryDecrement()) {
-                    serverTellFailure(c.player());
-                }
-                return;
-            }
-
-            Validate.notNull(args, "args must not be null");
-            Validate.notNull(method, "method must not be null");
-
-            ServerPlayer player = c.player();
-
-            try {
-                Object[] argArray = new Object[args.size() + 1];
-                argArray[0] = player;
-                for (int i = 0; i < args.size(); i++) {
-                    argArray[i + 1] = args.get(i);
-                }
-                method.invoke(null, argArray);
-            }
-            catch (Exception e) {
-                if (LOGGING_LIMIT.tryDecrement()) {
-                    LOGGER.error(
-                        "Failed to invoke remote procedure call {} {}", methodPath, player, e
-                    );
-                    serverTellFailure(c.player());
-                }
-            }
-        }
-
-        @Override
-        public @NotNull Type<? extends CustomPacketPayload> type() {
-            return TYPE;
-        }
-    }
-
-    public static record S2CRPCPayload(
-        // only used in receiver side
-        boolean deserializeSuccess,
-        @Nullable String methodPath,
-        // only used in receiver side
-        @Nullable Method method,
-        @Nullable List<Object> args
-    ) implements CustomPacketPayload {
-
-        public static final CustomPacketPayload.Type<S2CRPCPayload> TYPE =
-            new CustomPacketPayload.Type<>(
-                McHelper.newResourceLocation("iportal:remote_s2c")
-            );
-
-        public static final StreamCodec<RegistryFriendlyByteBuf, S2CRPCPayload> CODEC = StreamCodec.of(
-            (b, p) -> p.write(b), S2CRPCPayload::read
-        );
-
-        public static S2CRPCPayload read(RegistryFriendlyByteBuf buf) {
-            String methodPath = null;
-            try {
-                methodPath = buf.readUtf();
-
-                Method method = getMethodByPath(methodPath);
-
-                java.lang.reflect.Type[] genericParameterTypes = method.getGenericParameterTypes();
-
-                List<Object> args = new ArrayList<>();
-
-                for (java.lang.reflect.Type parameterType : genericParameterTypes) {
-                    Object obj = deserializeArgument(buf, parameterType);
-                    args.add(obj);
-                }
-
-                return new S2CRPCPayload(true, methodPath, method, args);
-            }
-            catch (Exception e) {
-                if (LOGGING_LIMIT.tryDecrement()) {
-                    LOGGER.error("Failed to parse remote procedure call {}", methodPath, e);
-                }
-                return new S2CRPCPayload(
-                    false, methodPath, null, null
-                );
-            }
-        }
-
-        public void write(RegistryFriendlyByteBuf buf) {
-            Validate.notNull(args, "args must not be null");
-            Validate.notNull(methodPath, "methodPath must not be null");
-            buf.writeUtf(methodPath);
-            for (Object arg : args) {
-                serializeArgument(buf, arg);
-            }
-        }
-
-        @Environment(EnvType.CLIENT)
-        public void handle(ClientPlayNetworking.Context c) {
-            if (!deserializeSuccess) {
-                if (ERROR_MESSAGE_LIMIT.tryDecrement()) {
-                    clientTellFailure();
-                }
-                return;
-            }
-
-            Validate.notNull(args, "args must not be null");
-            Validate.notNull(method, "method must not be null");
-            try {
-                Object[] argArray = args.toArray(new Object[0]);
-                method.invoke(null, argArray);
-            }
-            catch (Exception e) {
-                if (LOGGING_LIMIT.tryDecrement()) {
-                    LOGGER.error("Failed to invoke remote procedure call {}", methodPath, e);
-                    clientTellFailure();
-                }
-            }
-        }
-
-        @Override
-        public @NotNull Type<? extends CustomPacketPayload> type() {
-            return TYPE;
-        }
-    }
-
-    public static void init() {
-        PayloadTypeRegistry.playC2S().register(
-            C2SRPCPayload.TYPE, C2SRPCPayload.CODEC
-        );
-
-        PayloadTypeRegistry.playS2C().register(
-            S2CRPCPayload.TYPE, S2CRPCPayload.CODEC
-        );
-
-        ServerPlayNetworking.registerGlobalReceiver(
-            C2SRPCPayload.TYPE, C2SRPCPayload::handle
-        );
-
-    }
-
-    @Environment(EnvType.CLIENT)
-    public static void initClient() {
-        ClientPlayNetworking.registerGlobalReceiver(
-            S2CRPCPayload.TYPE, S2CRPCPayload::handle
-        );
-    }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private static Object deserializeByCodec(RegistryFriendlyByteBuf buf, Codec codec) {
+    private static Object deserializeByCodec(FriendlyByteBuf buf, Codec codec) {
         String jsonString = buf.readUtf();
         JsonElement jsonElement = JsonParser.parseString(jsonString);
-        
+
         return codec.parse(JsonOps.INSTANCE, jsonElement).getOrThrow();
     }
-    
+
     private static Object deserializeArgument(RegistryFriendlyByteBuf buf, Type type) {
         Function<RegistryFriendlyByteBuf, Object> deserializer = deserializerMap.get(type);
         if (deserializer == null) {
@@ -382,35 +175,231 @@ public class ImplRemoteProcedureCall {
         String jsonString = gson.toJson(result);
         buf.writeUtf(jsonString);
     }
-    
-    @Environment(EnvType.CLIENT)
-    public static Packet<ServerCommonPacketListener> createC2SPacket(
-        String methodPath,
-        Object... arguments
-    ) {
-        return ClientPlayNetworking.createC2SPacket(
-            new C2SRPCPayload(
-                true, methodPath, null, List.of(arguments)
-            )
+
+    public static record S2CRPCPayload(
+            // only used in receiver side
+            boolean deserializeSuccess,
+            @Nullable String methodPath,
+            // only used in receiver side
+            @Nullable Method method,
+            @Nullable List<Object> args
+    ) implements CustomPacketPayload {
+
+        public static final CustomPacketPayload.Type<S2CRPCPayload> TYPE =
+                new Type<>(ResourceLocation.parse("iportal:remote_s2c"));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, S2CRPCPayload> CODEC = StreamCodec.of(
+                (b, p) -> p.write(b), S2CRPCPayload::read
         );
+
+        public static S2CRPCPayload read(RegistryFriendlyByteBuf buf) {
+            String methodPath = null;
+            try {
+                methodPath = buf.readUtf();
+
+                Method method = getMethodByPath(methodPath);
+
+                java.lang.reflect.Type[] genericParameterTypes = method.getGenericParameterTypes();
+
+                List<Object> args = new ArrayList<>();
+
+                for (java.lang.reflect.Type parameterType : genericParameterTypes) {
+                    Object obj = deserializeArgument(buf, parameterType);
+                    args.add(obj);
+                }
+
+                return new S2CRPCPayload(true, methodPath, method, args);
+            } catch (Exception e) {
+                if (LOGGING_LIMIT.tryDecrement()) {
+                    LOGGER.error("Failed to parse remote procedure call {}", methodPath, e);
+                }
+                return new S2CRPCPayload(
+                        false, methodPath, null, null
+                );
+            }
+        }
+
+        public void write(RegistryFriendlyByteBuf buf) {
+            Validate.notNull(args, "args must not be null");
+            Validate.notNull(methodPath, "methodPath must not be null");
+            buf.writeUtf(methodPath);
+            for (Object arg : args) {
+                serializeArgument(buf, arg);
+            }
+        }
+
+        @OnlyIn(Dist.CLIENT)
+        public void handle(IPayloadContext c) {
+            if (!deserializeSuccess) {
+                if (ERROR_MESSAGE_LIMIT.tryDecrement()) {
+                    clientTellFailure();
+                }
+                return;
+            }
+
+            Validate.notNull(args, "args must not be null");
+            Validate.notNull(method, "method must not be null");
+            try {
+                Object[] argArray = args.toArray(new Object[0]);
+                method.invoke(null, argArray);
+            } catch (Exception e) {
+                if (LOGGING_LIMIT.tryDecrement()) {
+                    LOGGER.error("Failed to invoke remote procedure call {}", methodPath, e);
+                    clientTellFailure();
+                }
+            }
+        }
+
+        @Override
+        public @NotNull Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
     }
 
-    public static Packet<ClientCommonPacketListener> createS2CPacket(
-        String methodPath,
-        Object... arguments
-    ) {
-        return ServerPlayNetworking.createS2CPacket(
-            new S2CRPCPayload(
-                true, methodPath, null, List.of(arguments)
-            )
-        );
-    }
-    
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private static void clientTellFailure() {
         Minecraft.getInstance().gui.getChat().addMessage(Component.literal(
-            "The client failed to process a packet from server. See the log for details."
+                "The client failed to process a packet from server. See the log for details."
         ).withStyle(ChatFormatting.RED));
+    }
+
+    // @Nick1st split into two methods on Neo Port (serverReadPacket(), handleServerPayload())
+//    public static ImplRPCPayload serverReadPacketAndGetHandler(ServerPlayer player, FriendlyByteBuf buf) {
+//        String methodPath = null;
+//        Runnable r;
+//        try {
+//            methodPath = buf.readUtf();
+//            Method method = getMethodByPath(methodPath);
+//
+//            Type[] genericParameterTypes = method.getGenericParameterTypes();
+//
+//            Object[] arguments = new Object[genericParameterTypes.length];
+//            arguments[0] = player;
+//
+//            //the first argument is the player
+//            for (int i = 1; i < genericParameterTypes.length; i++) {
+//                Type parameterType = genericParameterTypes[i];
+//                Object obj = deserializeArgument(buf, parameterType);
+//                arguments[i] = obj;
+//            }
+//
+//            r = () -> {
+//                try {
+//                    method.invoke(null, arguments);
+//                }
+//                catch (Exception e) {
+//                    LIMITED_LOGGER.invoke(() -> {
+//                        LOGGER.error("Processing remote procedure call {}", player, e);
+//                        serverTellFailure(player);
+//                    });
+//                }
+//            };
+//        }
+//        catch (Exception e) {
+//            String methodPath_ = methodPath;
+//            LIMITED_LOGGER.invoke(() -> {
+//                LOGGER.error("Failed to parse remote procedure call {}", methodPath_, e);
+//                serverTellFailure(player);
+//            });
+//            r = () -> {};
+//        }
+//        return new ImplRPCPayload(r) {
+//            @Override
+//            public ResourceLocation intId() {
+//                return MiscNetworking.id_ctsRemote;
+//            }
+//        };
+//    }
+
+    public static record C2SRPCPayload(
+            // only used in receiver side
+            boolean deserializeSuccess,
+            @Nullable String methodPath,
+            // only used in receiver side
+            @Nullable Method method,
+            @Nullable List<Object> args
+    ) implements CustomPacketPayload {
+
+        public static final CustomPacketPayload.Type<C2SRPCPayload> TYPE =
+                new Type<>(ResourceLocation.parse("iportal:remote_c2s"));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, C2SRPCPayload> CODEC = StreamCodec.of(
+                (b, p) -> p.write(b), C2SRPCPayload::read
+        );
+
+        public static C2SRPCPayload read(RegistryFriendlyByteBuf buf) {
+            String methodPath = null;
+
+            try {
+                methodPath = buf.readUtf();
+
+                Method method = getMethodByPath(methodPath);
+
+                java.lang.reflect.Type[] genericParameterTypes = method.getGenericParameterTypes();
+
+                List<Object> args = new ArrayList<>();
+
+                //the first argument is the player
+                for (int i = 1; i < genericParameterTypes.length; i++) {
+                    java.lang.reflect.Type parameterType = genericParameterTypes[i];
+                    Object obj = deserializeArgument(buf, parameterType);
+                    args.add(obj);
+                }
+
+                return new C2SRPCPayload(true, methodPath, method, args);
+            } catch (Exception e) {
+                if (LOGGING_LIMIT.tryDecrement()) {
+                    LOGGER.error("Failed to parse remote procedure call {}", methodPath, e);
+                }
+                return new C2SRPCPayload(
+                        false, methodPath, null, null
+                );
+            }
+        }
+
+        public void write(RegistryFriendlyByteBuf buf) {
+            Validate.notNull(args, "args must not be null");
+            Validate.notNull(methodPath, "methodPath must not be null");
+            buf.writeUtf(methodPath);
+            for (Object arg : args) {
+                serializeArgument(buf, arg);
+            }
+        }
+
+        public void handle(IPayloadContext c) {
+            if(!(c.player() instanceof ServerPlayer))return;
+            ServerPlayer player = (ServerPlayer) c.player();
+            if (!deserializeSuccess) {
+                if (ERROR_MESSAGE_LIMIT.tryDecrement()) {
+                    serverTellFailure(player);
+                }
+                return;
+            }
+
+            Validate.notNull(args, "args must not be null");
+            Validate.notNull(method, "method must not be null");
+
+            try {
+                Object[] argArray = new Object[args.size() + 1];
+                argArray[0] = player;
+                for (int i = 0; i < args.size(); i++) {
+                    argArray[i + 1] = args.get(i);
+                }
+                method.invoke(null, argArray);
+            } catch (Exception e) {
+                if (LOGGING_LIMIT.tryDecrement()) {
+                    LOGGER.error(
+                            "Failed to invoke remote procedure call {} {}", methodPath, player, e
+                    );
+                    serverTellFailure(player);
+                }
+            }
+        }
+
+        @Override
+        public @NotNull Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
     }
 
     private static void serverTellFailure(ServerPlayer player) {

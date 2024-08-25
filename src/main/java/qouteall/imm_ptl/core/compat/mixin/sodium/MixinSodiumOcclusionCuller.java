@@ -1,8 +1,8 @@
 package qouteall.imm_ptl.core.compat.mixin.sodium;
 
-import me.jellysquid.mods.sodium.client.render.chunk.RenderSection;
-import me.jellysquid.mods.sodium.client.render.chunk.occlusion.OcclusionCuller;
-import me.jellysquid.mods.sodium.client.render.viewport.Viewport;
+import net.caffeinemc.mods.sodium.client.render.chunk.RenderSection;
+import net.caffeinemc.mods.sodium.client.render.chunk.occlusion.OcclusionCuller;
+import net.caffeinemc.mods.sodium.client.render.viewport.Viewport;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -75,7 +75,7 @@ public abstract class MixinSodiumOcclusionCuller {
         method = "init",
         at = @At(
             value = "INVOKE",
-            target = "Lme/jellysquid/mods/sodium/client/render/viewport/Viewport;getChunkCoord()Lnet/minecraft/core/SectionPos;",
+            target = "Lnet/caffeinemc/mods/sodium/client/render/viewport/Viewport;getChunkCoord()Lnet/minecraft/core/SectionPos;",
             remap = true
         ),
         remap = false
@@ -93,7 +93,7 @@ public abstract class MixinSodiumOcclusionCuller {
         method = "initWithinWorld",
         at = @At(
             value = "INVOKE",
-            target = "Lme/jellysquid/mods/sodium/client/render/viewport/Viewport;getChunkCoord()Lnet/minecraft/core/SectionPos;"
+            target = "Lnet/caffeinemc/mods/sodium/client/render/viewport/Viewport;getChunkCoord()Lnet/minecraft/core/SectionPos;"
         ),
         remap = false
     )

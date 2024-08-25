@@ -42,7 +42,6 @@ import net.minecraft.world.level.chunk.DataLayer;
 import net.minecraft.world.level.chunk.EmptyLevelChunk;
 import net.minecraft.world.level.entity.EntityTickList;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.ClientCommandSourceStack;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPCGlobal;
@@ -349,7 +348,7 @@ public class ClientDebugCommand {
                 return 0;
             })
         );
-        
+
         builder.then(Commands
             .literal("report_client_light_status")
             .executes(context -> {

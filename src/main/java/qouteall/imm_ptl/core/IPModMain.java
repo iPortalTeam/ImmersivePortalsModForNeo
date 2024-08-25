@@ -64,9 +64,8 @@ public class IPModMain {
         
         Helper.LOGGER.info("Immersive Portals Mod Initializing");
 
-        eventBus.addListener(RegisterPayloadHandlerEvent.class, Payloads::register);
+        eventBus.addListener(RegisterPayloadHandlersEvent.class, Payloads::register);
         ImmPtlNetworkConfig.init(eventBus);
-        PacketRedirection.init();
 
         NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> IPGlobal.CLIENT_TASK_LIST.processTasks());
 
@@ -99,17 +98,9 @@ public class IPModMain {
         IPPortingLibCompat.init();
         
         BlockManipulationServer.init();
-        
-        CommandRegistrationCallback.EVENT.register(
-            (dispatcher, ctx, environment) -> PortalCommand.register(dispatcher, ctx)
-        );
-        SubCommandArgumentType.init();
-        TimingFunctionArgumentType.init();
-        AxisArgumentType.init();
-        
 
         NeoForge.EVENT_BUS.addListener(RegisterCommandsEvent.class, event -> {
-            PortalCommand.register(event.getDispatcher());
+            PortalCommand.register(event.getDispatcher(), event.getBuildContext());
         });
 
         // @Nick1st moved to IPModEntry (those are registry functions)
@@ -127,7 +118,7 @@ public class IPModMain {
         RotationAnimation.init();
         NormalAnimation.init();
 //        OscillationAnimation.init();
-        
+
         if (!IPFeatureControl.enableVanillaBehaviorChangingByDefault()) {
             LOGGER.info("""
                 iPortal is provided by jar-in-jar.
@@ -178,7 +169,7 @@ public class IPModMain {
     }
 
     public static void registerEntityTypes(BiConsumer<ResourceLocation, EntityType<?>> regFunc) {
-        
+
         regFunc.accept(
             McHelper.newResourceLocation("immersive_portals", "portal"),
             Portal.ENTITY_TYPE
