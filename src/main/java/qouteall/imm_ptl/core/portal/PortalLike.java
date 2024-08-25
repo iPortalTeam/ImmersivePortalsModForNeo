@@ -7,26 +7,15 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import qouteall.q_misc_util.Helper;
-import qouteall.q_misc_util.my_util.BoxPredicate;
 import qouteall.q_misc_util.my_util.DQuaternion;
 import qouteall.q_misc_util.my_util.Plane;
 
 import java.util.UUID;
 
 /**
- * The PortalLike interface is introduced for the merge portal rendering optimization.
- * (A portal or a portal rendering group is a PortalLike)
- * You probably need to manipulate portal entities, not PortalLike
- *
- * TODO remove in 1.21
+ * This is no longer needed. May be deleted in the future.
  */
 public interface PortalLike {
-    @Deprecated
-    //@OnlyIn(Dist.CLIENT)
-    BoxPredicate getInnerFrustumCullingFunc(
-        double cameraX, double cameraY, double cameraZ
-    );
-    
     boolean isConventionalPortal();
     
     AABB getThinBoundingBox();

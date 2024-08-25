@@ -1,7 +1,11 @@
 package qouteall.imm_ptl.core.portal;
 
 import com.mojang.logging.LogUtils;
-import de.nick1st.imm_ptl.events.*;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -43,7 +47,6 @@ import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.api.ImmPtlEntityExtension;
 import qouteall.imm_ptl.core.api.PortalAPI;
-import qouteall.imm_ptl.core.compat.PehkuiInterface;
 import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
 import qouteall.imm_ptl.core.mc_utils.IPEntityEventListenableEntity;
 import qouteall.imm_ptl.core.mc_utils.ServerTaskList;
@@ -61,11 +64,8 @@ import qouteall.imm_ptl.core.portal.shape.PortalShape;
 import qouteall.imm_ptl.core.portal.shape.PortalShapeSerialization;
 import qouteall.imm_ptl.core.portal.shape.RectangularPortalShape;
 import qouteall.imm_ptl.core.portal.shape.SpecialFlatPortalShape;
-import qouteall.imm_ptl.core.render.PortalGroup;
-import qouteall.imm_ptl.core.render.PortalRenderable;
 import qouteall.imm_ptl.core.render.renderer.PortalRenderer;
 import qouteall.q_misc_util.Helper;
-import qouteall.q_misc_util.my_util.BoxPredicate;
 import qouteall.q_misc_util.my_util.DQuaternion;
 import qouteall.q_misc_util.my_util.Mesh2D;
 import qouteall.q_misc_util.my_util.MyTaskList;
@@ -83,7 +83,7 @@ import java.util.stream.Collectors;
  * Portal entity. Global portals are also entities but not added into world.
  */
 public class Portal extends Entity implements
-    PortalLike, IPEntityEventListenableEntity, PortalRenderable {
+    PortalLike, IPEntityEventListenableEntity {
     private static final Logger LOGGER = LogUtils.getLogger();
     
     public static final EntityType<Portal> ENTITY_TYPE = createPortalEntityType(Portal::new);
@@ -219,7 +219,7 @@ public class Portal extends Entity implements
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         // nothing
     }
-
+    
     @Override
     protected void readAdditionalSaveData(CompoundTag compoundTag) {
         width = compoundTag.getDouble("width");
@@ -1053,18 +1053,7 @@ public class Portal extends Entity implements
         Vec3 originalVelocityRelativeToPortal, Entity entity,
         Vec3 oldEntityPos
     ) {
-        Vec3 result;
-        if (PehkuiInterface.invoker.isPehkuiPresent()) {
-            if (teleportChangesScale) {
-                result = transformLocalVecNonScale(originalVelocityRelativeToPortal);
-            }
-            else {
-                result = transformLocalVec(originalVelocityRelativeToPortal);
-            }
-        }
-        else {
-            result = transformLocalVec(originalVelocityRelativeToPortal);
-        }
+        Vec3 result = transformLocalVec(originalVelocityRelativeToPortal);
         
         final int maxVelocity = 15;
         if (originalVelocityRelativeToPortal.length() > maxVelocity) {
@@ -1395,16 +1384,7 @@ public class Portal extends Entity implements
         return getFourVerticesLocalCullable(0);
     }
     
-    
-    //@OnlyIn(Dist.CLIENT)
-    @Deprecated
-    @Override
-    public BoxPredicate getInnerFrustumCullingFunc(
-        double cameraX, double cameraY, double cameraZ
-    ) {
-        throw new UnsupportedOperationException();
-    }
-    
+
     public Matrix4d getFullSpaceTransformation() {
         Vec3 originPos = getOriginPos();
         Vec3 destPos = getDestPos();
@@ -1571,35 +1551,19 @@ public class Portal extends Entity implements
     public void myUnsetRemoved() {
         unsetRemoved();
     }
-    
-    //@OnlyIn(Dist.CLIENT)
-    public PortalLike getRenderingDelegate() {
-        if (IPGlobal.enablePortalRenderingMerge) {
-            PortalGroup group = PortalRenderInfo.getGroupOf(this);
-            if (group != null) {
-                return group;
-            }
-            else {
-                return this;
-            }
-        }
-        else {
-            return this;
-        }
-    }
 
     @Override
     public void refreshDimensions() {
         boundingBoxCache = null;
     }
-
+    
     // Scaling does not interfere camera transformation
     @Override
     @Nullable
     public Matrix4f getAdditionalCameraTransformation() {
         return PortalRenderer.getPortalTransformation(this);
     }
-
+    
     public boolean canDoOuterFrustumCulling() {
         if (isFuseView()) {
             return false;
@@ -1657,7 +1621,11 @@ public class Portal extends Entity implements
     public boolean getTeleportChangesGravity() {
         return teleportChangesGravity;
     }
-    
+
+    public boolean isTeleportChangesGravity() {
+        return teleportChangesGravity;
+    }
+
     public void setTeleportChangesGravity(boolean cond) {
         teleportChangesGravity = cond;
     }
@@ -1976,10 +1944,5 @@ public class Portal extends Entity implements
         }
         return thisSideCollisionExclusion;
     }
-    
-    // for PortalRenderable
-    @Override
-    public PortalLike getPortalLike() {
-        return this;
-    }
+
 }

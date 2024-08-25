@@ -17,7 +17,6 @@ import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.compat.GravityChangerInterface;
 import qouteall.imm_ptl.core.ducks.IEEntity;
 import qouteall.imm_ptl.core.portal.Portal;
-import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.my_util.Plane;
 import qouteall.q_misc_util.my_util.Range;
@@ -190,7 +189,6 @@ public class PortalCollisionHandler {
             ) && collidingPortal.isOnDestinationSide(p.getOriginPos(), 0.1)
         );
         
-        PortalLike collisionHandlingUnit = CollisionHelper.getCollisionHandlingUnit(collidingPortal);
         Direction transformedGravityDirection = collidingPortal.getTransformedGravityDirection(GravityChangerInterface.invoker.getGravityDirection(entity));
         
         Plane innerClipping = collidingPortal.getInnerClipping();

@@ -1,9 +1,7 @@
 package qouteall.imm_ptl.core.render.renderer;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
@@ -27,12 +25,9 @@ import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
 import qouteall.imm_ptl.core.compat.iris_compatibility.IrisPortalRenderer;
 import qouteall.imm_ptl.core.portal.Mirror;
 import qouteall.imm_ptl.core.portal.Portal;
-import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.imm_ptl.core.portal.global_portals.GlobalPortalStorage;
 import qouteall.imm_ptl.core.render.MyGameRenderer;
 import qouteall.imm_ptl.core.render.MyRenderHelper;
-import qouteall.imm_ptl.core.render.PortalGroup;
-import qouteall.imm_ptl.core.render.PortalRenderable;
 import qouteall.imm_ptl.core.render.TransformationManager;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
@@ -67,16 +62,6 @@ public abstract class PortalRenderer {
         }
     }
     
-    public static record PortalGroupToRender(
-        PortalGroup group,
-        List<Portal> portals
-    ) implements PortalRenderable {
-        @Override
-        public PortalLike getPortalLike() {
-            return group;
-        }
-    }
-    
     public static final Minecraft client = Minecraft.getInstance();
     
     public abstract void onBeforeTranslucentRendering(Matrix4f modelView);
@@ -102,7 +87,7 @@ public abstract class PortalRenderer {
     // this will also be called in outer world rendering
     public abstract boolean replaceFrameBufferClearing();
     
-    protected List<PortalRenderable> getPortalsToRender(Matrix4f modelView) {
+    protected List<Portal> getPortalsToRender(Matrix4f modelView) {
         Supplier<Frustum> frustumSupplier = Helper.cached(() -> {
             Frustum frustum = new Frustum(
                 modelView,
@@ -115,7 +100,7 @@ public abstract class PortalRenderer {
             return frustum;
         });
         
-        ObjectArrayList<PortalRenderable> renderables = new ObjectArrayList<>();
+        ObjectArrayList<Portal> renderables = new ObjectArrayList<>();
         
         ClientLevel world = client.level;
         assert world != null;
@@ -126,39 +111,17 @@ public abstract class PortalRenderer {
             }
         }
         
-        Object2ObjectOpenHashMap<PortalGroup, PortalGroupToRender> groupToRenderable =
-            new Object2ObjectOpenHashMap<>();
-        
         world.entitiesForRendering().forEach(e -> {
             if (e instanceof Portal portal) {
                 if (!shouldSkipRenderingPortal(portal, frustumSupplier)) {
-                    PortalLike renderingDelegate = portal.getRenderingDelegate();
-                    
-                    if (renderingDelegate instanceof PortalGroup portalGroup) {
-                        // a portal group
-                        if (groupToRenderable.containsKey(portalGroup)) {
-                            groupToRenderable.get(portalGroup).portals.add(portal);
-                        }
-                        else {
-                            PortalGroupToRender renderable = new PortalGroupToRender(
-                                portalGroup,
-                                Lists.newArrayList(portal)
-                            );
-                            groupToRenderable.put(portalGroup, renderable);
-                            renderables.add(renderable);
-                        }
-                    }
-                    else {
-                        // a normal portal
-                        renderables.add(portal);
-                    }
+                    renderables.add(portal);
                 }
             }
         });
         
         Vec3 cameraPos = CHelper.getCurrentCameraPos();
         renderables.sort(Comparator.comparingDouble(
-            e -> e.getPortalLike().getDistanceToNearestPointInPortal(cameraPos)
+            e -> e.getDistanceToNearestPointInPortal(cameraPos)
         ));
         return renderables;
     }
@@ -184,7 +147,7 @@ public abstract class PortalRenderer {
         }
         
         if (PortalRendering.isRendering()) {
-            PortalLike outerPortal = PortalRendering.getRenderingPortal();
+            Portal outerPortal = PortalRendering.getRenderingPortal();
             
             if (outerPortal.cannotRenderInMe(portal)) {
                 return true;
@@ -234,31 +197,29 @@ public abstract class PortalRenderer {
     }
     
     protected final void renderPortalContent(
-        PortalRenderable portalRenderable
+        Portal portal
     ) {
-        PortalLike portalLike = portalRenderable.getPortalLike();
-        
         if (PortalRendering.getPortalLayer() > PortalRendering.getMaxPortalLayer()) {
             return;
         }
         
-        ClientLevel newWorld = ClientWorldLoader.getWorld(portalLike.getDestDim());
+        ClientLevel newWorld = ClientWorldLoader.getWorld(portal.getDestDim());
         
         PortalRendering.onBeginPortalWorldRendering();
         
-        int renderDistance = getPortalRenderDistance(portalLike);
+        int renderDistance = getPortalRenderDistance(portal);
         
         invokeWorldRendering(
             new WorldRenderInfo.Builder()
                 .setWorld(newWorld)
                 .setCameraPos(PortalRendering.getRenderingCameraPos())
-                .setCameraTransformation(portalLike.getAdditionalCameraTransformation())
+                .setCameraTransformation(portal.getAdditionalCameraTransformation())
                 .setOverwriteCameraTransformation(false)
-                .setDescription(portalLike.getDiscriminator())
+                .setDescription(portal.getDiscriminator())
                 .setRenderDistance(renderDistance)
                 .setDoRenderHand(false)
                 .setEnableViewBobbing(true)
-                .setDoRenderSky(!portalLike.isFuseView())
+                .setDoRenderSky(!portal.isFuseView())
                 .build()
         );
         
@@ -271,7 +232,7 @@ public abstract class PortalRenderer {
         
     }
     
-    private static int getPortalRenderDistance(PortalLike portal) {
+    private static int getPortalRenderDistance(Portal portal) {
         int mcRenderDistance = client.options.getEffectiveRenderDistance();
         
         if (portal.getScale() > 2) {
@@ -340,7 +301,7 @@ public abstract class PortalRenderer {
         return null;
     }
     
-    public static boolean shouldApplyScaleToModelView(PortalLike portal) {
+    public static boolean shouldApplyScaleToModelView(Portal portal) {
         return portal.hasScaling() && portal.isFuseView();
     }
     

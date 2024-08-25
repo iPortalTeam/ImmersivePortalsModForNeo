@@ -93,6 +93,7 @@ import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class PortalCommand {
@@ -998,6 +999,59 @@ public class PortalCommand {
         );
         
         builder.then(shapeBuilder);
+        
+        var toggleBuilder = Commands.literal("toggle");
+        
+        registerToggleCommand(
+            toggleBuilder, "interactable",
+            Portal::isInteractable, Portal::setInteractable
+        );
+        registerToggleCommand(
+            toggleBuilder, "teleportable",
+            Portal::isTeleportable, Portal::setTeleportable
+        );
+        registerToggleCommand(
+            toggleBuilder, "teleportChangesScale",
+            Portal::isTeleportChangesScale, Portal::setTeleportChangesScale
+        );
+        registerToggleCommand(
+            toggleBuilder, "teleportChangesGravity",
+            Portal::isTeleportChangesGravity, Portal::setTeleportChangesGravity
+        );
+        registerToggleCommand(
+            toggleBuilder, "fuseView",
+            Portal::isFuseView, Portal::setFuseView
+        );
+        registerToggleCommand(
+            toggleBuilder, "visible",
+            Portal::isVisible, Portal::setIsVisible
+        );
+        registerToggleCommand(
+            toggleBuilder, "crossPortalCollisionEnabled",
+            Portal::isCrossPortalCollisionEnabled, Portal::setCrossPortalCollisionEnabled
+        );
+        registerToggleCommand(
+            toggleBuilder, "doRenderPayer",
+            Portal::getDoRenderPlayer, Portal::setDoRenderPlayer
+        );
+        
+        builder.then(toggleBuilder);
+    }
+    
+    private static void registerToggleCommand(
+        LiteralArgumentBuilder<CommandSourceStack> builder,
+        String property, Function<Portal, Boolean> getter, BiConsumer<Portal, Boolean> setter
+    ) {
+        builder.then(Commands.literal(property)
+            .executes(context -> processPortalTargetedCommand(context, portal -> {
+                boolean newValue = !getter.apply(portal);
+                setter.accept(portal, newValue);
+                reloadPortal(portal);
+                sendMessage(
+                    context, "Set %s to %s".formatted(property, newValue)
+                );
+            }))
+        );
     }
     
     private static void invokeSetPortalNbt(

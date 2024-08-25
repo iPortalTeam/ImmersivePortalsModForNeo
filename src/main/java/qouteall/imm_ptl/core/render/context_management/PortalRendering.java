@@ -5,12 +5,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.portal.Mirror;
 import qouteall.imm_ptl.core.portal.Portal;
-import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.imm_ptl.core.portal.shape.BoxPortalShape;
 import qouteall.imm_ptl.core.render.VisibleSectionDiscovery;
 import qouteall.imm_ptl.core.render.renderer.PortalRenderer;
@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
 
 //@OnlyIn(Dist.CLIENT)
 public class PortalRendering {
-    private static final Stack<PortalLike> portalLayers = new Stack<>();
+    private static final Stack<Portal> portalLayers = new Stack<>();
     private static boolean isRenderingCache = false;
     private static boolean isRenderingOddNumberOfMirrorsCache = false;
     
-    public static void pushPortalLayer(PortalLike portal) {
+    public static void pushPortalLayer(Portal portal) {
         portalLayers.push(portal);
         updateCache();
     }
@@ -42,7 +42,7 @@ public class PortalRendering {
         isRenderingCache = getPortalLayer() != 0;
         
         int mirrorNum = 0;
-        for (PortalLike portal : portalLayers) {
+        for (Portal portal : portalLayers) {
             if (portal instanceof Mirror) {
                 mirrorNum++;
             }
@@ -76,18 +76,18 @@ public class PortalRendering {
      * @return The innermost portal that's currently being rendered.
      * Must use after checking {@link #isRendering()}
      */
-    public static PortalLike getRenderingPortal() {
+    public static @NotNull Portal getRenderingPortal() {
         return portalLayers.peek();
     }
     
     public static void onBeginPortalWorldRendering() {
-        List<WeakReference<PortalLike>> currRenderInfo = portalLayers.stream().map(
-            (Function<PortalLike, WeakReference<PortalLike>>) WeakReference::new
+        List<WeakReference<Portal>> currRenderInfo = portalLayers.stream().map(
+            (Function<Portal, WeakReference<Portal>>) WeakReference::new
         ).collect(Collectors.toList());
         RenderStates.portalRenderInfos.add(currRenderInfo);
         RenderStates.portalsRenderedThisFrame++;
         
-        if (portalLayers.stream().anyMatch(PortalLike::hasScaling)) {
+        if (portalLayers.stream().anyMatch(Portal::hasScaling)) {
             RenderStates.renderedScalingPortal = true;
         }
         
@@ -102,7 +102,7 @@ public class PortalRendering {
     
     public static Vec3 getRenderingCameraPos() {
         Vec3 pos = RenderStates.originalCamera.getPosition();
-        for (PortalLike portal : portalLayers) {
+        for (Portal portal : portalLayers) {
             pos = portal.transformPoint(pos);
         }
         return pos;
@@ -110,7 +110,7 @@ public class PortalRendering {
     
     public static double getExtraModelViewScaling() {
         double scale = 1.0;
-        for (PortalLike portal : portalLayers) {
+        for (Portal portal : portalLayers) {
             if (!PortalRenderer.shouldApplyScaleToModelView(portal)) {
                 scale *= portal.getScale();
             }
@@ -131,12 +131,10 @@ public class PortalRendering {
      */
     public static boolean shouldEnableSodiumCaveCulling() {
         if (isRendering()) {
-            PortalLike renderingPortal = getRenderingPortal();
+            Portal renderingPortal = getRenderingPortal();
             
-            if (renderingPortal instanceof Portal portal) {
-                if (portal.getPortalShape() instanceof BoxPortalShape) {
-                    return false;
-                }
+            if (renderingPortal.getPortalShape() instanceof BoxPortalShape) {
+                return false;
             }
             
             Vec3 currentCameraPos = CHelper.getCurrentCameraPos();
@@ -157,7 +155,7 @@ public class PortalRendering {
                 return false;
             }
             
-            PortalLike renderingPortal = getRenderingPortal();
+            Portal renderingPortal = getRenderingPortal();
             if (renderingPortal instanceof Mirror) {
                 return false;
             }
@@ -177,7 +175,7 @@ public class PortalRendering {
     
     public static @Nullable Plane getActiveClippingPlane() {
         
-        PortalLike renderingPortal = getRenderingPortal();
+        Portal renderingPortal = getRenderingPortal();
         
         Plane plane = renderingPortal.getInnerClipping();
         
@@ -188,14 +186,14 @@ public class PortalRendering {
                 // Then we need to inherit clipping plane from outer layers
                 int i = portalLayers.size() - 2;
                 while (i >= 0) {
-                    PortalLike portal = portalLayers.get(i);
+                    Portal portal = portalLayers.get(i);
                     Plane outerPlane = portal.getInnerClipping();
                     
                     if (outerPlane != null) {
                         // transform that plane to the current rendering coordinate
                         // the inner clipping plane should be in the outermost portal's destination coordinate
                         for (int j = i + 1; j < portalLayers.size(); j++) {
-                            PortalLike portal1 = portalLayers.get(j);
+                            Portal portal1 = portalLayers.get(j);
                             outerPlane = new Plane(
                                 portal1.transformPoint(outerPlane.pos()),
                                 portal1.transformLocalVecNonScale(outerPlane.normal())
@@ -220,13 +218,9 @@ public class PortalRendering {
             return false;
         }
         
-        PortalLike last = portalLayers.get(portalLayers.size() - 1);
-        PortalLike secondLast = portalLayers.get(portalLayers.size() - 2);
+        Portal last = portalLayers.get(portalLayers.size() - 1);
+        Portal secondLast = portalLayers.get(portalLayers.size() - 2);
         
-        if (last instanceof Portal lastPortal) {
-            return toRender == secondLast && Portal.isReversePortal(toRender, lastPortal);
-        }
-        
-        return false;
+        return toRender == secondLast && Portal.isReversePortal(toRender, last);
     }
 }

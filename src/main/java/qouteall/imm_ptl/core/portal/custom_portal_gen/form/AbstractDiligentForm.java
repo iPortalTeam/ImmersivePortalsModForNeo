@@ -30,8 +30,8 @@ public abstract class AbstractDiligentForm extends NetherPortalLikeForm {
                 FastBlockPortalShape template = matchableShapeVariant.fastTransformedShape;
                 boolean matches = template.matchShape(
                     x, y, z,
-                    (px, py, pz) -> areaPredicate.test(blockAccess.getBlockState(px, py, pz)),
-                    (px, py, pz) -> otherSideFramePredicate.test(blockAccess.getBlockState(px, py, pz))
+                    (px, py, pz) -> otherSideFramePredicate.test(blockAccess.getBlockState(px, py, pz)),
+                    (px, py, pz) -> areaPredicate.test(blockAccess.getBlockState(px, py, pz))
                 );
                 
                 if (matches) {

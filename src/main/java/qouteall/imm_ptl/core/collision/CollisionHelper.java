@@ -2,6 +2,7 @@ package qouteall.imm_ptl.core.collision;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -18,16 +19,15 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TickEvent;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.CHelper;
+import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.McHelper;
-import qouteall.imm_ptl.core.compat.PehkuiInterface;
+import qouteall.imm_ptl.core.ScaleUtils;
 import qouteall.imm_ptl.core.ducks.IEEntity;
 import qouteall.imm_ptl.core.miscellaneous.IPVanillaCopy;
 import qouteall.imm_ptl.core.mixin.common.collision.IEEntity_Collision;
 import qouteall.imm_ptl.core.portal.Portal;
-import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.imm_ptl.core.portal.global_portals.GlobalPortalStorage;
-import qouteall.imm_ptl.core.render.PortalGroup;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.MiscHelper;
 import qouteall.q_misc_util.my_util.LimitedLogger;
@@ -246,6 +246,7 @@ public class CollisionHelper {
      * Vanilla copy {@link Entity#collide(Vec3)}
      * But filters collisions behind the clipping plane and handles stepping with rotated gravity.
      */
+    @SuppressWarnings("JavadocReference")
     @IPVanillaCopy
     public static Vec3 handleCollisionWithShapeProcessor(
         Entity entity,
@@ -271,8 +272,7 @@ public class CollisionHelper {
         boolean collidesWithFloor = collidesOnGravityAxis && attemptToMoveAlongGravity;
         boolean touchGround = entity.onGround() || collidesWithFloor;
         boolean collidesHorizontally = movesOnNonGravityAxis(collisionDelta, gravityAxis);
-        float maxUpStep = entity.maxUpStep()
-            * PehkuiInterface.invoker.getBaseScale(entity);
+        double maxUpStep = entity.maxUpStep();
         if (steppingScale > 1) {
             maxUpStep *= steppingScale;
         }
@@ -378,7 +378,7 @@ public class CollisionHelper {
         return IEEntity_Collision.ip_CollideWithShapes(vec, collisionBox, builder.build());
     }
     
-    public static AABB transformBox(PortalLike portal, AABB originalBox) {
+    public static AABB transformBox(Portal portal, AABB originalBox) {
         if (portal.getRotation() == null && portal.getScale() == 1) {
             return originalBox.move(portal.getDestPos().subtract(portal.getOriginPos()));
         }
@@ -507,7 +507,7 @@ public class CollisionHelper {
             .expandTowards(backwardExpand);
         
         // when the scale is big, the entity could move quickly abruptly
-        float scale = PehkuiInterface.invoker.getBaseScale(entity);
+        double scale = ScaleUtils.getScale(entity);
         if (scale > 4) {
             box = box.inflate(scale);
         }
@@ -542,24 +542,7 @@ public class CollisionHelper {
         lastTickStagnate = thisTickStagnate;
         thisTickStagnate = false;
     }
-    
-    public static PortalLike getCollisionHandlingUnit(Portal portal) {
-        if (portal.getIsGlobal()) {
-            return portal;
-        }
-        if (portal.level().isClientSide()) {
-            return getCollisionHandlingUnitClient(portal);
-        }
-        else {
-            return portal;
-        }
-    }
-    
-    //@OnlyIn(Dist.CLIENT)
-    public static PortalLike getCollisionHandlingUnitClient(Portal portal) {
-        return PortalGroup.getPortalUnit(portal);
-    }
-    
+
     @Nullable
     public static AABB getTotalBlockCollisionBox(Entity entity, AABB box, Function<VoxelShape, VoxelShape> shapeFilter) {
         Iterable<VoxelShape> collisions = entity.level().getBlockCollisions(entity, box);

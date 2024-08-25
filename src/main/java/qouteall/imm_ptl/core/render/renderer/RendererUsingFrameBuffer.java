@@ -13,7 +13,6 @@ import qouteall.imm_ptl.core.ducks.IEMinecraftClient;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.render.FrontClipping;
 import qouteall.imm_ptl.core.render.MyRenderHelper;
-import qouteall.imm_ptl.core.render.PortalRenderable;
 import qouteall.imm_ptl.core.render.QueryManager;
 import qouteall.imm_ptl.core.render.SecondaryFrameBuffer;
 import qouteall.imm_ptl.core.render.ViewAreaRenderer;
@@ -57,7 +56,7 @@ public class RendererUsingFrameBuffer extends PortalRenderer {
     }
     
     protected void doRenderPortal(
-        PortalRenderable portal,
+        Portal portal,
         Matrix4f modelView
     ) {
         if (PortalRendering.isRendering()) {
@@ -69,7 +68,7 @@ public class RendererUsingFrameBuffer extends PortalRenderer {
             return;
         }
         
-        PortalRendering.pushPortalLayer(portal.getPortalLike());
+        PortalRendering.pushPortalLayer(portal);
         
         RenderTarget oldFrameBuffer = client.getMainRenderTarget();
         
@@ -109,7 +108,7 @@ public class RendererUsingFrameBuffer extends PortalRenderer {
     }
     
     private boolean testShouldRenderPortal(
-        PortalRenderable portal,
+        Portal portal,
         Matrix4f modelView
     ) {
         FrontClipping.updateInnerClipping(modelView);
@@ -124,7 +123,7 @@ public class RendererUsingFrameBuffer extends PortalRenderer {
         });
     }
     
-    private void renderSecondBufferIntoMainBuffer(PortalRenderable portal, Matrix4f modelView) {
+    private void renderSecondBufferIntoMainBuffer(Portal portal, Matrix4f modelView) {
         MyRenderHelper.drawPortalAreaWithFramebuffer(
             portal,
             secondaryFrameBuffer.fb,
@@ -134,9 +133,9 @@ public class RendererUsingFrameBuffer extends PortalRenderer {
     }
     
     protected void renderPortals(Matrix4f modelView) {
-        List<PortalRenderable> portalsToRender = getPortalsToRender(modelView);
+        List<Portal> portalsToRender = getPortalsToRender(modelView);
     
-        for (PortalRenderable portal : portalsToRender) {
+        for (Portal portal : portalsToRender) {
             doRenderPortal(portal, modelView);
         }
     }

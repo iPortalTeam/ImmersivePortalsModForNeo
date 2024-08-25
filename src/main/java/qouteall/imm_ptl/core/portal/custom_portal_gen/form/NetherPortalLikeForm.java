@@ -119,8 +119,8 @@ public abstract class NetherPortalLikeForm extends PortalGenForm {
         return (blockAccess, x, y, z) -> {
             boolean matches = fastFromShape.matchShape(
                 x, y, z,
-                (px, py, pz) -> areaPredicate.test(blockAccess.getBlockState(px, py, pz)),
-                (px, py, pz) -> otherSideFramePredicate.test(blockAccess.getBlockState(px, py, pz))
+                (px, py, pz) -> otherSideFramePredicate.test(blockAccess.getBlockState(px, py, pz)),
+                (px, py, pz) -> areaPredicate.test(blockAccess.getBlockState(px, py, pz))
             );
             if (matches) {
                 boolean matchToSelf = fromWorld == toWorld

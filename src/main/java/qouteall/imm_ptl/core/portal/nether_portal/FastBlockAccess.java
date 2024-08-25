@@ -10,8 +10,10 @@ import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.level.chunk.EmptyLevelChunk;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import qouteall.imm_ptl.core.McHelper;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -50,23 +52,34 @@ public record FastBlockAccess(
     @NotNull
     public static FastBlockAccess from(
         Level world,
-        int lowerCX, int upperCX,
-        int lowerCY, int upperCY,
-        int lowerCZ, int upperCZ
+        int lowerCX, int upperCXExclusive,
+        int lowerCY, int upperCYExclusive,
+        int lowerCZ, int upperCZExclusive
     ) {
-        int lX = upperCX - lowerCX + 1;
-        int lY = upperCY - lowerCY + 1;
-        int lZ = upperCZ - lowerCZ + 1;
+        int lX = upperCXExclusive - lowerCX;
+        int lY = upperCYExclusive - lowerCY;
+        int lZ = upperCZExclusive - lowerCZ;
+        
+        int minSectionY = world.getMinSection();
+        int maxSectionYExclusive = world.getMaxSection();
+        Validate.isTrue(
+            lowerCY >= minSectionY,
+            "Min section Y out of range"
+        );
+        Validate.isTrue(
+            upperCYExclusive <= maxSectionYExclusive,
+            "Max section Y out of range"
+        );
         
         ChunkSource chunkSource = world.getChunkSource();
         LevelChunkSection[] sections = new LevelChunkSection[lX * lY * lZ];
-        for (int cx = lowerCX; cx <= upperCX; cx++) {
-            for (int cz = lowerCZ; cz <= upperCZ; cz++) {
+        for (int cx = lowerCX; cx < upperCXExclusive; cx++) {
+            for (int cz = lowerCZ; cz < upperCZExclusive; cz++) {
                 LevelChunk chunk = chunkSource.getChunk(cx, cz, false);
                 if (chunk != null && !(chunk instanceof EmptyLevelChunk)) {
                     LevelChunkSection[] column = chunk.getSections();
-                    for (int cy = lowerCY; cy <= upperCY; cy++) {
-                        LevelChunkSection section = column[cy];
+                    for (int cy = lowerCY; cy < upperCYExclusive; cy++) {
+                        LevelChunkSection section = column[cy - minSectionY];
                         if (section != null && !section.hasOnlyAir()) {
                             int index = (cx - lowerCX) +
                                 (cy - lowerCY) * lX +

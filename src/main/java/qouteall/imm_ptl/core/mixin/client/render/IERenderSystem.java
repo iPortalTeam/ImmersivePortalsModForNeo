@@ -8,13 +8,13 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(RenderSystem.class)
 public interface IERenderSystem {
-    @Accessor("modelViewStack")
+    @Accessor(value = "modelViewStack", remap = false)
     public static Matrix4fStack ip_getModelViewStack() {
         throw new RuntimeException();
     }
     
     @Mutable
-    @Accessor("modelViewStack")
+    @Accessor(value = "modelViewStack", remap = false)
     public static void ip_setModelViewStack(Matrix4fStack arg) {
         throw new RuntimeException();
     }

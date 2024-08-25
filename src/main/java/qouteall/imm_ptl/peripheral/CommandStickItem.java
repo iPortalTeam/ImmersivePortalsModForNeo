@@ -325,18 +325,23 @@ public class CommandStickItem extends Item {
         );
         
         registerBuiltInCommandStick(new Data(
-            "/scale set pehkui:base 1",
-            "imm_ptl.command.reset_scale",
-            Lists.newArrayList("imm_ptl.command_desc.reset_scale")
+            "/attribute @s minecraft:generic.scale modifier remove iportal:scaling",
+            "imm_ptl.command.reset_iportal_scale",
+            Lists.newArrayList("imm_ptl.command_desc.reset_iportal_scale")
         ));
         registerBuiltInCommandStick(new Data(
-            "/scale set pehkui:reach 5",
+            "/attribute @s minecraft:player.block_interaction_range base set 100",
             "imm_ptl.command.long_reach",
             Lists.newArrayList("imm_ptl.command_desc.long_reach")
         ));
         registerBuiltInCommandStick(new Data(
             "/effect give @s minecraft:night_vision 9999 1 true",
             "imm_ptl.command.night_vision",
+            List.of()
+        ));
+        registerBuiltInCommandStick(new Data(
+            "/setblock ~ ~ ~ minecraft:grass_block",
+            "imm_ptl.command.block_on_feet",
             List.of()
         ));
         

@@ -8,6 +8,7 @@
     "common.alternate_dimension.IEChunkGenerator_AlternateDim",
     "common.alternate_dimension.IENoiseGeneratorSettings",
     "common.alternate_dimension.IENoiseRouterData",
+    "common.dfu.MixinItemStackComponentizationFix",
     "common.dim_stack.MixinChunkStatusTasks_BedrockReplacement",
     "common.dim_stack.MixinMinecraftServer_DimStack_CVB",
     "common.end_portal.MixinEnderEyeItem_CVB",

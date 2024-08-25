@@ -43,11 +43,11 @@ public class IPModEntry {
         IPModMain.init(eventBus);
         RequiemCompat.init();
         
-//        IPModMain.registerEntityTypes(
-//            (intId, entityType) -> Registry.register(BuiltInRegistries.ENTITY_TYPE, intId, entityType)
-//        );
+        IPModMain.registerEntityTypes(
+            (id, entityType) -> Registry.register(BuiltInRegistries.ENTITY_TYPE, id, entityType)
+        );
         
-//        IPModMain.registerBlocks((intId, obj) -> Registry.register(BuiltInRegistries.BLOCK, intId, obj));
+        IPModMain.registerBlocks((id, obj) -> Registry.register(BuiltInRegistries.BLOCK, id, obj));
         
         if (ModList.get().isLoaded("dimthread")) {
             O_O.isDimensionalThreadingPresent = true;
@@ -55,14 +55,6 @@ public class IPModEntry {
         }
         else {
             Helper.log("Dimensional Threading is not present");
-        }
-        
-        if (O_O.getIsPehkuiPresent()) {
-            PehkuiInterfaceInitializer.init();
-            Helper.log("Pehkui is present");
-        }
-        else {
-            Helper.log("Pehkui is not present");
         }
         
         if (ModList.get().isLoaded("gravity_changer_q")) {

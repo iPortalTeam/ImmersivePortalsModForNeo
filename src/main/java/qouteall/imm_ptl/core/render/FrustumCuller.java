@@ -9,7 +9,6 @@ import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
 import qouteall.imm_ptl.core.compat.sodium_compatibility.SodiumInterface;
 import qouteall.imm_ptl.core.portal.Mirror;
 import qouteall.imm_ptl.core.portal.Portal;
-import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.imm_ptl.core.portal.animation.UnilateralPortalState;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 import qouteall.q_misc_util.my_util.BoxPredicateF;
@@ -86,15 +85,13 @@ public class FrustumCuller {
         }
         
         if (PortalRendering.isRendering()) {
-            PortalLike renderingPortal = PortalRendering.getRenderingPortal();
+            Portal renderingPortal = PortalRendering.getRenderingPortal();
             
             // do inner frustum culling
             
-            if (renderingPortal instanceof Portal portal) {
-                return portal.getPortalShape().getInnerFrustumCullingFunc(
-                    portal, new Vec3(cameraX, cameraY, cameraZ)
-                );
-            }
+            return renderingPortal.getPortalShape().getInnerFrustumCullingFunc(
+                renderingPortal, new Vec3(cameraX, cameraY, cameraZ)
+            );
         }
         else {
             if (!IPCGlobal.useSuperAdvancedFrustumCulling) {

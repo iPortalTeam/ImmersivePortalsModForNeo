@@ -26,7 +26,6 @@ import qouteall.imm_ptl.core.ducks.IEGameRenderer;
 import qouteall.imm_ptl.core.miscellaneous.ClientPerformanceMonitor;
 import qouteall.imm_ptl.core.mixin.client.particle.IEParticle;
 import qouteall.imm_ptl.core.portal.Portal;
-import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.imm_ptl.core.portal.animation.StableClientTimer;
 import qouteall.imm_ptl.core.render.ForceMainThreadRebuild;
 import qouteall.imm_ptl.core.render.MyRenderHelper;
@@ -58,8 +57,8 @@ public class RenderStates {
     private static float partialTick = 0;
     
     public static Set<ResourceKey<Level>> renderedDimensions = new HashSet<>();
-    public static List<List<WeakReference<PortalLike>>> lastPortalRenderInfos = new ArrayList<>();
-    public static List<List<WeakReference<PortalLike>>> portalRenderInfos = new ArrayList<>();
+    public static List<List<WeakReference<Portal>>> lastPortalRenderInfos = new ArrayList<>();
+    public static List<List<WeakReference<Portal>>> portalRenderInfos = new ArrayList<>();
     public static int portalsRenderedThisFrame = 0;// mixins to sodium use that
     
     public static Vec3 lastCameraPos = Vec3.ZERO;
@@ -237,7 +236,7 @@ public class RenderStates {
             return false;
         }
         if (PortalRendering.isRendering()) {
-            PortalLike renderingPortal = PortalRendering.getRenderingPortal();
+            Portal renderingPortal = PortalRendering.getRenderingPortal();
             Vec3 particlePos = particle.getBoundingBox().getCenter();
             return renderingPortal.isOnDestinationSide(particlePos, 0.5);
         }

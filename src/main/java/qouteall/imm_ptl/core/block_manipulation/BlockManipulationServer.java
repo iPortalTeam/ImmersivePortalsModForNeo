@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.IPMcHelper;
-import qouteall.imm_ptl.core.compat.PehkuiInterface;
+import qouteall.imm_ptl.core.ScaleUtils;
 import qouteall.imm_ptl.core.miscellaneous.IPVanillaCopy;
 import qouteall.imm_ptl.core.network.PacketRedirection;
 import qouteall.imm_ptl.core.portal.Portal;
@@ -92,7 +92,7 @@ public class BlockManipulationServer {
             return false;
         }
         
-        Float playerScale = PehkuiInterface.invoker.computeBlockReachScale(player);
+        double playerScale = ScaleUtils.computeBlockReachScale(player);
         
         Vec3 pos = Vec3.atCenterOf(requestPos);
         Vec3 playerPos = player.position();

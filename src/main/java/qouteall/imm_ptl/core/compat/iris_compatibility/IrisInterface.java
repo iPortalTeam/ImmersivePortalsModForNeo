@@ -1,8 +1,8 @@
 package qouteall.imm_ptl.core.compat.iris_compatibility;
 
 import net.irisshaders.iris.Iris;
-import net.irisshaders.iris.shadows.ShadowRenderer;
 import net.irisshaders.iris.pipeline.WorldRenderingPipeline;
+import net.irisshaders.iris.shadows.ShadowRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import org.jetbrains.annotations.Nullable;
 import qouteall.q_misc_util.Helper;

@@ -17,7 +17,6 @@ import qouteall.imm_ptl.core.chunk_loading.PerformanceLevel;
 import qouteall.imm_ptl.core.ducks.IERenderSection;
 import qouteall.imm_ptl.core.miscellaneous.ClientPerformanceMonitor;
 import qouteall.imm_ptl.core.portal.Portal;
-import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.imm_ptl.core.portal.nether_portal.BlockTraverse;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 import qouteall.imm_ptl.core.render.context_management.WorldRenderInfo;
@@ -67,11 +66,9 @@ public class VisibleSectionDiscovery {
         
         SectionPos modifiedVisibleSectionIterationOrigin = null;
         if (PortalRendering.isRendering()) {
-            PortalLike renderingPortal = PortalRendering.getRenderingPortal();
-            if (renderingPortal instanceof Portal portal) {
-                modifiedVisibleSectionIterationOrigin = portal.getPortalShape()
-                    .getModifiedVisibleSectionIterationOrigin(portal, cameraPos);
-            }
+            Portal renderingPortal = PortalRendering.getRenderingPortal();
+            modifiedVisibleSectionIterationOrigin = renderingPortal.getPortalShape()
+                .getModifiedVisibleSectionIterationOrigin(renderingPortal, cameraPos);
         }
         
         if (modifiedVisibleSectionIterationOrigin != null) {

@@ -238,6 +238,18 @@ public abstract class MixinEntity implements IEEntity, ImmPtlEntityExtension {
         }
     }
     
+//    // IDEA's conditional breakpoint hurts performance
+//    @Inject(
+//        method = "setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V",
+//        at = @At("HEAD")
+//    )
+//    private void debug_onSetDeltaMovement(Vec3 deltaMovement, CallbackInfo ci) {
+//        Entity this_ = (Entity) (Object) this;
+//        if (this_ instanceof Player && this_.level().isClientSide()) {
+//            int i = 0;
+//        }
+//    }
+    
     @Override
     public Portal ip_getCollidingPortal() {
         if (ip_portalCollisionHandler == null) {

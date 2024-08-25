@@ -1,6 +1,5 @@
 package qouteall.imm_ptl.core.commands;
 
-import com.google.common.collect.Streams;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -56,12 +55,9 @@ import qouteall.imm_ptl.core.platform_specific.IPConfig;
 import qouteall.imm_ptl.core.platform_specific.IPConfigGUI;
 import qouteall.imm_ptl.core.platform_specific.O_O;
 import qouteall.imm_ptl.core.portal.Portal;
-import qouteall.imm_ptl.core.portal.PortalLike;
-import qouteall.imm_ptl.core.portal.PortalRenderInfo;
 import qouteall.imm_ptl.core.render.ForceMainThreadRebuild;
 import qouteall.imm_ptl.core.render.ImmPtlViewArea;
 import qouteall.imm_ptl.core.render.MyGameRenderer;
-import qouteall.imm_ptl.core.render.PortalGroup;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
 import qouteall.imm_ptl.core.teleportation.ClientTeleportationManager;
 import qouteall.q_misc_util.Helper;
@@ -74,12 +70,9 @@ import java.lang.ref.WeakReference;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 //@OnlyIn(Dist.CLIENT)
 public class ClientDebugCommand {
@@ -197,9 +190,9 @@ public class ClientDebugCommand {
             .literal("report_rendering")
             .executes(context -> {
                 StringBuilder sb = new StringBuilder();
-                for (List<WeakReference<PortalLike>> rendering : RenderStates.lastPortalRenderInfos) {
+                for (List<WeakReference<Portal>> rendering : RenderStates.lastPortalRenderInfos) {
                     sb.append("----------\n");
-                    for (WeakReference<PortalLike> portalLikeWeakReference : rendering) {
+                    for (WeakReference<Portal> portalLikeWeakReference : rendering) {
                         sb.append(portalLikeWeakReference.get().toString());
                         sb.append("\n");
                     }
@@ -357,31 +350,6 @@ public class ClientDebugCommand {
             })
         );
         
-        builder.then(Commands
-            .literal("report_portal_groups")
-            .executes(context -> {
-                for (ClientLevel clientWorld : ClientWorldLoader.getClientWorlds()) {
-                    Map<Optional<PortalGroup>, List<Portal>> result =
-                        Streams.stream(clientWorld.entitiesForRendering())
-                            .flatMap(
-                                entity -> entity instanceof Portal ?
-                                    Stream.of(((Portal) entity)) : Stream.empty()
-                            )
-                            .collect(Collectors.groupingBy(
-                                p -> Optional.ofNullable(PortalRenderInfo.getGroupOf(p))
-                            ));
-                    
-                    CHelper.printChat("\n" + clientWorld.dimension().location().toString());
-                    result.forEach((g, l) -> {
-                        CHelper.printChat("\n" + g.toString());
-                        CHelper.printChat(l.stream()
-                            .map(Portal::toString).collect(Collectors.joining("\n"))
-                        );
-                    });
-                }
-                return 0;
-            })
-        );
         builder.then(Commands
             .literal("report_client_light_status")
             .executes(context -> {

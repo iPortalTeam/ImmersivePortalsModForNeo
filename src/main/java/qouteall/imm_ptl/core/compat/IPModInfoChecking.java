@@ -34,9 +34,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("resource")
 public class IPModInfoChecking {
     
     private static final Logger LOGGER = LogUtils.getLogger();
+    
+    private static final boolean IS_TEST = false;
     
     public static record ModIncompatInfo(
         String modId,
@@ -60,7 +63,7 @@ public class IPModInfoChecking {
                 }
             }
             else {
-                Validate.notNull(endVersion);
+                Validate.notNull(endVersion, "invalid version range");
                 return "-" + endVersion;
             }
         }
@@ -93,6 +96,20 @@ public class IPModInfoChecking {
     // NOTE do not run it on render thread
     @Nullable
     public static ImmPtlInfo fetchImmPtlInfoFromInternet() {
+        if (IS_TEST) {
+            return new ImmPtlInfo(
+                "1.0.0",
+                List.of(
+                    new ModIncompatInfo(
+                        "fabric-api", "modname",
+                        "1.0.0", "1.1.0", "desc",
+                        "https://github.com/iPortalTeam/ImmersivePortalsMod/discussions"
+                    )
+                ),
+                List.of()
+            );
+        }
+        
         String url = O_O.getImmPtlModInfoUrl();
         
         if (url == null) {
@@ -137,11 +154,6 @@ public class IPModInfoChecking {
             if (immPtlInfo == null) {
                 return;
             }
-            
-            // test
-//            immPtlInfo.severelyIncompatible.add(new ModIncompatInfo(
-//                "fabric-api", "Test", null, null, "desc", "https://github.com/iPortalTeam/ImmersivePortalsMod/issues"
-//            ));
             
             incompatibleShaderpacks = immPtlInfo.incompatibleShaderpacks;
             

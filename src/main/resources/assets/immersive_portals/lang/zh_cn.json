@@ -273,5 +273,18 @@
   "text.autoconfig.immersive_portals.option.indirectLoadingRadiusCap.@Tooltip": "控制传送门对区块加载的距离上限。",
   "text.autoconfig.immersive_portals.option.easeCreativePermission.@Tooltip": "若启用，创造模式玩家可使用/portal命令",
   "text.autoconfig.immersive_portals.option.easeCommandStickPermission.@Tooltip": "若启用，所有玩家都可以使用命令杖。若关闭，只有创造模式玩家和具有2级权限的玩家可使用。",
-  "imm_ptl.low_max_memory": "[沉浸传送门] 游戏仅被分配 %s MB 内存。传送门会加载更多区块并需要更多内存。建议对游戏分配更多内存以获得更流畅体验。 (使用官方启动器时，电脑内存极大的情况下也可能只对游戏分配2GB内存) 如何分配内存: "
+  "imm_ptl.low_max_memory": "[沉浸传送门] 游戏仅被分配 %s MB 内存。传送门会加载更多区块并需要更多内存。建议对游戏分配更多内存以获得更流畅体验。 (使用官方启动器时，电脑内存极大的情况下也可能只对游戏分配2GB内存) 如何分配内存: ",
+  "imm_ptl.command.move_portal_back_a_little": "将传送门向后移动一点",
+  "imm_ptl.command_desc.move_portal_back_a_little": "可用于避免z-fighting",
+  "imm_ptl.command.reset_iportal_scale": "将你的由传送门带来的缩放重置",
+  "imm_ptl.command_desc.reset_iportal_scale": "仅重置传送门带来的缩放，不重置基础缩放。",
+  "imm_ptl.command.block_on_feet": "脚下放置草方块",
+  "text.autoconfig.immersive_portals.option.portalWandUsableOnSurvivalMode": "无法在生存模式使用传送门杖。",
+  "iportal.initial_screen.title": "沉浸传送门",
+  "iportal.initial_screen.content.0": "欢迎使用沉浸传送门模组！\n\n§l关于模组兼容性§r\n注意：沉浸传送门模组与一些模组不兼容！\n因为该模组需要深入修改游戏引擎以实现可透视传送门以及无缝传送。其他的模组也会以某种方式使用游戏引擎，可能与本模组的修改冲突，可能导致不兼容。\n§b模组兼容性问题不是故意引入的 - 请勿责怪模组开发者。§r\n修复兼容性问题往往需要双方的模组开发者付出大量努力。\n\n不建议在不仔细检查兼容性的情况下在大的整合包中使用本模组。",
+  "iportal.initial_screen.content.1": "§l关于性能§r\n可透视的传送门将会导致更多区块加载以及更多内容渲染，会影响性能。\n§b因此，在使用可透视传送门的时候可能会遇到游戏卡顿。§r\n模组开发者已经付出很多努力进行优化以及Sodium兼容。",
+  "iportal.initial_screen.content.2": "§l关于Sodium兼容性§r\n本模组仅与一个特定版本的Sodium兼容。\n因为，为了使传送门渲染与Sodium兼容，本模组需要修改与使用Sodium代码，因此依赖特定版本的Sodium代码，在Sodium更新后可能会失效。\n\n§b在未来，如果你想要将本模组与Sodium一起使用，可能需要使用旧版本的Sodium。§r",
+  "iportal.initial_screen.content.3": "§l关于Iris兼容性§r\n类似地，本模组只大致兼容一个特定版本的Iris。\n传送门渲染大致与某些光影兼容。传送门渲染无法完美兼容光影，因为技术限制：通用的光影着色器标准在设计中并未适配传送门渲染。本模组的开发者已经付出很多努力使传送门渲染与某些光影大致兼容。\n推荐与本模组使用的的光影为BSL。\n",
+  "iportal.initial_screen.prev": "上一个",
+  "iportal.initial_screen.i_know": "我知道了"
 }

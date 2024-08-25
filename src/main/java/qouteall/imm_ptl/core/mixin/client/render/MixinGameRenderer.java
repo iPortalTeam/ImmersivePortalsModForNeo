@@ -298,7 +298,8 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
         method = "renderLevel",
         at = @At(
             value = "INVOKE",
-            target = "Lorg/joml/Matrix4f;rotation(Lorg/joml/Quaternionfc;)Lorg/joml/Matrix4f;"
+            target = "Lorg/joml/Matrix4f;rotation(Lorg/joml/Quaternionfc;)Lorg/joml/Matrix4f;",
+            remap = false
         )
     )
     private Matrix4f wrapCameraTransformation(

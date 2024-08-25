@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.portal.Portal;
-import qouteall.imm_ptl.core.portal.PortalLike;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 
 @Mixin(OcclusionCuller.class)
@@ -50,21 +49,20 @@ public abstract class MixinSodiumOcclusionCuller {
         ip_tolerantInitialFrustumTestFail = false;
         
         if (PortalRendering.isRendering()) {
-            PortalLike renderingPortal = PortalRendering.getRenderingPortal();
-            if (renderingPortal instanceof Portal portal) {
-                Vec3 cameraPos = CHelper.getCurrentCameraPos();
-                ip_modifiedStartPoint = portal.getPortalShape().getModifiedVisibleSectionIterationOrigin(
-                    portal, cameraPos
+            Portal portal = PortalRendering.getRenderingPortal();
+            
+            Vec3 cameraPos = CHelper.getCurrentCameraPos();
+            ip_modifiedStartPoint = portal.getPortalShape().getModifiedVisibleSectionIterationOrigin(
+                portal, cameraPos
+            );
+            if (ip_modifiedStartPoint != null) {
+                doUseOcclusionCulling = false;
+                
+                RenderSection renderSection = getRenderSection(
+                    ip_modifiedStartPoint.x(), ip_modifiedStartPoint.y(), ip_modifiedStartPoint.z()
                 );
-                if (ip_modifiedStartPoint != null) {
-                    doUseOcclusionCulling = false;
-                    
-                    RenderSection renderSection = getRenderSection(
-                        ip_modifiedStartPoint.x(), ip_modifiedStartPoint.y(), ip_modifiedStartPoint.z()
-                    );
-                    if (renderSection != null && !isWithinFrustum(viewport, renderSection)) {
-                        ip_tolerantInitialFrustumTestFail = true;
-                    }
+                if (renderSection != null && !isWithinFrustum(viewport, renderSection)) {
+                    ip_tolerantInitialFrustumTestFail = true;
                 }
             }
         }

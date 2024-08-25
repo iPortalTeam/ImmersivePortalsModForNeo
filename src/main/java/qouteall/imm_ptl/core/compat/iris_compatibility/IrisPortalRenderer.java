@@ -18,7 +18,6 @@ import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.PortalRenderInfo;
 import qouteall.imm_ptl.core.render.MyGameRenderer;
 import qouteall.imm_ptl.core.render.MyRenderHelper;
-import qouteall.imm_ptl.core.render.PortalRenderable;
 import qouteall.imm_ptl.core.render.SecondaryFrameBuffer;
 import qouteall.imm_ptl.core.render.ViewAreaRenderer;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
@@ -231,7 +230,7 @@ public class IrisPortalRenderer extends PortalRenderer {
         CHelper.checkGlError();
     }
     
-    protected void doRenderPortal(PortalRenderable portal, Matrix4f modelView) {
+    protected void doRenderPortal(Portal portal, Matrix4f modelView) {
         nextFramePortalRenderingNeeded = true;
         
         if (!portalRenderingNeeded) {
@@ -246,7 +245,7 @@ public class IrisPortalRenderer extends PortalRenderer {
             return;
         }
         
-        PortalRendering.pushPortalLayer(portal.getPortalLike());
+        PortalRendering.pushPortalLayer(portal);
         
         // this is important
         client.getMainRenderTarget().bindWrite(true);
@@ -281,7 +280,7 @@ public class IrisPortalRenderer extends PortalRenderer {
     }
     
     private boolean tryRenderViewAreaInDeferredBufferAndIncreaseStencil(
-        PortalRenderable portal, Matrix4f modelView
+        Portal portal, Matrix4f modelView
     ) {
         
         int portalLayer = PortalRendering.getPortalLayer();
@@ -296,7 +295,7 @@ public class IrisPortalRenderer extends PortalRenderer {
         
         GlStateManager._enableDepthTest();
         
-        boolean result = PortalRenderInfo.renderAndDecideVisibility(portal.getPortalLike(), () -> {
+        boolean result = PortalRenderInfo.renderAndDecideVisibility(portal, () -> {
             ViewAreaRenderer.renderPortalArea(
                 portal, Vec3.ZERO,
                 modelView,
@@ -326,9 +325,9 @@ public class IrisPortalRenderer extends PortalRenderer {
     }
     
     protected void renderPortals(Matrix4f modelView) {
-        List<PortalRenderable> portalsToRender = getPortalsToRender(modelView);
+        List<Portal> portalsToRender = getPortalsToRender(modelView);
     
-        for (PortalRenderable portal : portalsToRender) {
+        for (Portal portal : portalsToRender) {
             doRenderPortal(portal, modelView);
         }
     }
