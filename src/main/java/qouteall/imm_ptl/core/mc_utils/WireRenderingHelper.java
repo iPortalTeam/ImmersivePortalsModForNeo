@@ -10,6 +10,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.animation.StableClientTimer;
@@ -237,30 +238,26 @@ public class WireRenderingHelper {
             
             if (isBegin) {
                 vertexConsumer
-                    .vertex(matrix, (float) (lineStart.x), (float) (lineStart.y), (float) (lineStart.z))
-                    .color(0)
-                    .normal((float) normal.x, (float) normal.y, (float) normal.z)
-                    .endVertex();
+                    .addVertex(matrix, (float) (lineStart.x), (float) (lineStart.y), (float) (lineStart.z))
+                    .setColor(0)
+                    .setNormal((float) normal.x, (float) normal.y, (float) normal.z);
                 
                 vertexConsumer
-                    .vertex(matrix, (float) (lineStart.x), (float) (lineStart.y), (float) (lineStart.z))
-                    .color(color)
-                    .normal((float) normal.x, (float) normal.y, (float) normal.z)
-                    .endVertex();
+                    .addVertex(matrix, (float) (lineStart.x), (float) (lineStart.y), (float) (lineStart.z))
+                    .setColor(color)
+                    .setNormal((float) normal.x, (float) normal.y, (float) normal.z);
             }
             
             vertexConsumer
-                .vertex(matrix, (float) (lineEnd.x), (float) (lineEnd.y), (float) (lineEnd.z))
-                .color(color)
-                .normal((float) normal.x, (float) normal.y, (float) normal.z)
-                .endVertex();
+                .addVertex(matrix, (float) (lineEnd.x), (float) (lineEnd.y), (float) (lineEnd.z))
+                .setColor(color)
+                .setNormal((float) normal.x, (float) normal.y, (float) normal.z);
             
             if (isEnd) {
                 vertexConsumer
-                    .vertex(matrix, (float) (lineEnd.x), (float) (lineEnd.y), (float) (lineEnd.z))
-                    .color(0)
-                    .normal((float) normal.x, (float) normal.y, (float) normal.z)
-                    .endVertex();
+                    .addVertex(matrix, (float) (lineEnd.x), (float) (lineEnd.y), (float) (lineEnd.z))
+                    .setColor(0)
+                    .setNormal((float) normal.x, (float) normal.y, (float) normal.z);
             }
         }
         
@@ -355,17 +352,22 @@ public class WireRenderingHelper {
         int color, Vec3 normal, Matrix4f matrix, Matrix3f normalMatrix,
         Vec3 lineStart, Vec3 lineEnd
     ) {
-        vertexConsumer
-            .vertex(matrix, (float) (lineStart.x), (float) (lineStart.y), (float) (lineStart.z))
-            .color(color)
-            .normal(normalMatrix, (float) normal.x, (float) normal.y, (float) normal.z)
-            .endVertex();
+        Vector3f normalTemp = new Vector3f();
+        
+        normalTemp.set(normal.x(), normal.y(), normal.z());
+        normalMatrix.transform(normalTemp);
         
         vertexConsumer
-            .vertex(matrix, (float) (lineEnd.x), (float) (lineEnd.y), (float) (lineEnd.z))
-            .color(color)
-            .normal(normalMatrix, (float) normal.x, (float) normal.y, (float) normal.z)
-            .endVertex();
+            .addVertex(matrix, (float) (lineStart.x), (float) (lineStart.y), (float) (lineStart.z))
+            .setColor(color)
+            .setNormal(normalTemp.x(), normalTemp.y(), normalTemp.z())
+            ;
+        
+        vertexConsumer
+            .addVertex(matrix, (float) (lineEnd.x), (float) (lineEnd.y), (float) (lineEnd.z))
+            .setColor(color)
+            .setNormal(normalTemp.x(), normalTemp.y(), normalTemp.z())
+            ;
     }
     
     private static void putLineToLineStrip(
@@ -374,28 +376,28 @@ public class WireRenderingHelper {
     ) {
         // use alpha 0 vertices to "jump" without leaving visible line
         vertexConsumer
-            .vertex(matrix, (float) (lineStart.x), (float) (lineStart.y), (float) (lineStart.z))
-            .color(0)
-            .normal((float) normal.x, (float) normal.y, (float) normal.z)
-            .endVertex();
+            .addVertex(matrix, (float) (lineStart.x), (float) (lineStart.y), (float) (lineStart.z))
+            .setColor(0)
+            .setNormal((float) normal.x, (float) normal.y, (float) normal.z)
+            ;
         
         vertexConsumer
-            .vertex(matrix, (float) (lineStart.x), (float) (lineStart.y), (float) (lineStart.z))
-            .color(color)
-            .normal((float) normal.x, (float) normal.y, (float) normal.z)
-            .endVertex();
+            .addVertex(matrix, (float) (lineStart.x), (float) (lineStart.y), (float) (lineStart.z))
+            .setColor(color)
+            .setNormal((float) normal.x, (float) normal.y, (float) normal.z)
+            ;
         
         vertexConsumer
-            .vertex(matrix, (float) (lineEnd.x), (float) (lineEnd.y), (float) (lineEnd.z))
-            .color(color)
-            .normal((float) normal.x, (float) normal.y, (float) normal.z)
-            .endVertex();
+            .addVertex(matrix, (float) (lineEnd.x), (float) (lineEnd.y), (float) (lineEnd.z))
+            .setColor(color)
+            .setNormal((float) normal.x, (float) normal.y, (float) normal.z)
+            ;
         
         vertexConsumer
-            .vertex(matrix, (float) (lineEnd.x), (float) (lineEnd.y), (float) (lineEnd.z))
-            .color(0)
-            .normal((float) normal.x, (float) normal.y, (float) normal.z)
-            .endVertex();
+            .addVertex(matrix, (float) (lineEnd.x), (float) (lineEnd.y), (float) (lineEnd.z))
+            .setColor(0)
+            .setNormal((float) normal.x, (float) normal.y, (float) normal.z)
+            ;
     }
     
     public static void renderRectLine(
@@ -565,26 +567,26 @@ public class WireRenderingHelper {
                 if (isFirst) {
                     // use transparent vertices to jump in line strip
                     vertexConsumer
-                        .vertex(matrix, (float) (x), (float) (y), (float) (z))
-                        .color(transparentColor)
-                        .normal(0, 1, 0)
-                        .endVertex();
+                        .addVertex(matrix, (float) (x), (float) (y), (float) (z))
+                        .setColor(transparentColor)
+                        .setNormal(0, 1, 0)
+                        ;
                 }
                 
                 vertexConsumer
-                    .vertex(matrix, (float) (x), (float) (y), (float) (z))
-                    .color(color)
-                    .normal(0, 1, 0)
-                    .endVertex();
+                    .addVertex(matrix, (float) (x), (float) (y), (float) (z))
+                    .setColor(color)
+                    .setNormal(0, 1, 0)
+                    ;
                 
                 boolean isLast = j == vertexNum - 1;
                 if (isLast) {
                     // use transparent vertices to jump in line strip
                     vertexConsumer
-                        .vertex(matrix, (float) (x), (float) (y), (float) (z))
-                        .color(transparentColor)
-                        .normal(0, 1, 0)
-                        .endVertex();
+                        .addVertex(matrix, (float) (x), (float) (y), (float) (z))
+                        .setColor(transparentColor)
+                        .setNormal(0, 1, 0)
+                        ;
                 }
             }
         }
@@ -610,26 +612,26 @@ public class WireRenderingHelper {
                 if (isFirst) {
                     // use transparent vertices to jump in line strip
                     vertexConsumer
-                        .vertex(matrix, (float) (x), (float) (y), (float) (z))
-                        .color(transparentColor)
-                        .normal(0, 1, 0)
-                        .endVertex();
+                        .addVertex(matrix, (float) (x), (float) (y), (float) (z))
+                        .setColor(transparentColor)
+                        .setNormal(0, 1, 0)
+                        ;
                 }
                 
                 vertexConsumer
-                    .vertex(matrix, (float) (x), (float) (y), (float) (z))
-                    .color(color)
-                    .normal(0, 1, 0)
-                    .endVertex();
+                    .addVertex(matrix, (float) (x), (float) (y), (float) (z))
+                    .setColor(color)
+                    .setNormal(0, 1, 0)
+                    ;
                 
                 boolean isLast = j == vertexNum;
                 if (isLast) {
                     // use transparent vertices to jump in line strip
                     vertexConsumer
-                        .vertex(matrix, (float) (x), (float) (y), (float) (z))
-                        .color(transparentColor)
-                        .normal(0, 1, 0)
-                        .endVertex();
+                        .addVertex(matrix, (float) (x), (float) (y), (float) (z))
+                        .setColor(transparentColor)
+                        .setNormal(0, 1, 0)
+                        ;
                 }
             }
         }

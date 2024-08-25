@@ -8,6 +8,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.util.Tuple;
 import org.apache.commons.lang3.Validate;
 import qouteall.imm_ptl.core.portal.nether_portal.BlockPortalShape;
+import qouteall.imm_ptl.core.portal.nether_portal.FastBlockPortalShape;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.my_util.AARotation;
 import qouteall.q_misc_util.my_util.IntBox;
@@ -24,12 +25,18 @@ public class DiligentMatcher {
         public final BlockPortalShape transformedShape;
         public final IntMatrix3 rotation;
         public final double scale;
+        public final FastBlockPortalShape fastOriginalShape;
+        public final FastBlockPortalShape fastTransformedShape;
         
-        public TransformedShape(BlockPortalShape originalShape, BlockPortalShape transformedShape, IntMatrix3 rotation, double scale) {
+        public TransformedShape(
+            BlockPortalShape originalShape, BlockPortalShape transformedShape, IntMatrix3 rotation, double scale
+        ) {
             this.originalShape = originalShape;
             this.transformedShape = transformedShape;
             this.rotation = rotation;
             this.scale = scale;
+            this.fastOriginalShape = FastBlockPortalShape.fromBlockPortalShape(originalShape);
+            this.fastTransformedShape = FastBlockPortalShape.fromBlockPortalShape(transformedShape);
         }
     }
     

@@ -113,7 +113,7 @@ public class ServerTeleportationManager {
         if (entity.isRemoved()) {
             return;
         }
-        if (!entity.canChangeDimensions()) {
+        if (!entity.canChangeDimensions(entity.level(), portal.getDestinationWorld())) {
             return;
         }
         if (isJustTeleported(entity, 1)) {
@@ -411,7 +411,7 @@ public class ServerTeleportationManager {
     }
     
     /**
-     * {@link ServerPlayer#changeDimension(ServerLevel)}
+     * {@link ServerPlayer#changeDimension}
      */
     private void changePlayerDimension(
         ServerPlayer player,
@@ -439,7 +439,7 @@ public class ServerTeleportationManager {
         player.setServerLevel(toWorld);
         
         // adds the player
-        toWorld.addDuringPortalTeleport(player);
+        toWorld.addDuringTeleport(player);
         
         if (vehicle != null) {
             Vec3 offset = McHelper.getVehicleOffsetFromPassenger(vehicle, player);
@@ -602,10 +602,11 @@ public class ServerTeleportationManager {
     }
     
     /**
-     * {@link Entity#changeDimension(ServerLevel)}
+     * {@link Entity#changeDimension}
      * Sometimes resuing the same entity object is problematic
      * because entity's AI related things may have world reference inside
      */
+    @SuppressWarnings({"resource", "UnnecessaryLocalVariable"})
     public Entity changeEntityDimension(
         Entity entity,
         ResourceKey<Level> toDimension,

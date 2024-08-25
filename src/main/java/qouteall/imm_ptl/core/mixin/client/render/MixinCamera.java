@@ -19,7 +19,7 @@ import qouteall.imm_ptl.core.render.context_management.WorldRenderInfo;
 
 @Mixin(Camera.class)
 public abstract class MixinCamera implements IECamera {
-    private static double lastClipSpaceResult = 1;
+    private static float lastClipSpaceResult = 1;
     
     @Shadow
     private Vec3 position;
@@ -44,7 +44,7 @@ public abstract class MixinCamera implements IECamera {
     )
     private void onUpdateFinished(
         BlockGetter area, Entity focusedEntity, boolean thirdPerson,
-        boolean inverseView, float tickDelta, CallbackInfo ci
+        boolean inverseView, float partialTick, CallbackInfo ci
     ) {
         Camera this_ = (Camera) (Object) this;
         WorldRenderInfo.adjustCameraPos(this_);
@@ -62,16 +62,17 @@ public abstract class MixinCamera implements IECamera {
         }
     }
     
-    @Inject(method = "Lnet/minecraft/client/Camera;getMaxZoom(D)D", at = @At("HEAD"), cancellable = true)
-    private void onClipToSpaceHead(double double_1, CallbackInfoReturnable<Double> cir) {
+    @Inject(method = "getMaxZoom", at = @At("HEAD"), cancellable = true)
+    private void onGetMaxZoomHead(float f, CallbackInfoReturnable<Float> cir) {
         if (PortalRendering.isRendering()) {
             cir.setReturnValue(lastClipSpaceResult);
             cir.cancel();
         }
     }
     
-    @Inject(method = "Lnet/minecraft/client/Camera;getMaxZoom(D)D", at = @At("RETURN"), cancellable = true)
-    private void onClipToSpaceReturn(double double_1, CallbackInfoReturnable<Double> cir) {
+    // TODO using global variable to pass may be problematic when multiple camera objects are used
+    @Inject(method = "getMaxZoom", at = @At("RETURN"), cancellable = true)
+    private void onGetMaxZoomReturn(float f, CallbackInfoReturnable<Float> cir) {
         lastClipSpaceResult = cir.getReturnValue();
     }
     

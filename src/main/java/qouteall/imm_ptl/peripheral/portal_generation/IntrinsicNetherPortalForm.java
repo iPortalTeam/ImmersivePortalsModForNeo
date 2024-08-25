@@ -1,6 +1,6 @@
 package qouteall.imm_ptl.peripheral.portal_generation;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -91,7 +91,7 @@ public class IntrinsicNetherPortalForm extends NetherPortalLikeForm {
     }
     
     @Override
-    public Codec<? extends PortalGenForm> getCodec() {
+    public MapCodec<? extends PortalGenForm> getCodec() {
         throw new RuntimeException();
     }
     

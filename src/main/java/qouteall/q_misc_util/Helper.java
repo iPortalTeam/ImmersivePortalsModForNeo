@@ -24,6 +24,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import qouteall.imm_ptl.core.McHelper;
 import qouteall.q_misc_util.my_util.DQuaternion;
 import qouteall.q_misc_util.my_util.IntBox;
 import qouteall.q_misc_util.my_util.LongBlockPos;
@@ -485,7 +486,7 @@ public class Helper {
     }
     
     public static ResourceKey<Level> dimIdToKey(String str) {
-        return dimIdToKey(new ResourceLocation(str));
+        return dimIdToKey(McHelper.newResourceLocation(str));
     }
     
     public static void putWorldId(CompoundTag tag, String tagName, ResourceKey<Level> dim) {
@@ -587,11 +588,6 @@ public class Helper {
     @Deprecated
     public static void err(Object str) {
         LOGGER.error(str);
-    }
-    
-    @Deprecated
-    public static void dbg(Object str) {
-        LOGGER.debug(str);
     }
     
     public static Vec3[] eightVerticesOf(AABB box) {

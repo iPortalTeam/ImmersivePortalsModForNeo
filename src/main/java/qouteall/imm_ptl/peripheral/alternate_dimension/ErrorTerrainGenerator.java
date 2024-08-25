@@ -3,8 +3,9 @@ package qouteall.imm_ptl.peripheral.alternate_dimension;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -25,16 +26,16 @@ import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.blending.Blender;
+import org.jetbrains.annotations.NotNull;
 import qouteall.q_misc_util.Helper;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 public class ErrorTerrainGenerator extends DelegatedChunkGenerator {
     
-    public static final Codec<ErrorTerrainGenerator> codec = RecordCodecBuilder.create(
+    public static final MapCodec<ErrorTerrainGenerator> MAP_CODEC = RecordCodecBuilder.mapCodec(
         instance -> instance.group(
                 RegistryOps.retrieveGetter(Registries.BIOME),
                 RegistryOps.retrieveGetter(Registries.NOISE_SETTINGS)
@@ -93,12 +94,12 @@ public class ErrorTerrainGenerator extends DelegatedChunkGenerator {
     }
     
     @Override
-    protected Codec<? extends ChunkGenerator> codec() {
-        return codec;
+    protected @NotNull MapCodec<? extends ChunkGenerator> codec() {
+        return MAP_CODEC;
     }
     
     @Override
-    public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunkAccess) {
+    public @NotNull CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunkAccess) {
         LevelChunkSection[] sectionArray = chunkAccess.getSections();
         ArrayList<LevelChunkSection> locked = new ArrayList<>();
         for (LevelChunkSection chunkSection : sectionArray) {
@@ -110,13 +111,13 @@ public class ErrorTerrainGenerator extends DelegatedChunkGenerator {
         return CompletableFuture.supplyAsync(() -> {
             doPopulateNoise(chunkAccess);
             return chunkAccess;
-        }, executor).thenApplyAsync((chunkx) -> {
+        }, Util.backgroundExecutor()).thenApplyAsync((chunkx) -> {
             for (LevelChunkSection chunkSection : locked) {
                 chunkSection.release();
             }
             
             return chunkx;
-        }, executor);
+        }, Util.backgroundExecutor());
     }
     
     public void doPopulateNoise(ChunkAccess chunk) {

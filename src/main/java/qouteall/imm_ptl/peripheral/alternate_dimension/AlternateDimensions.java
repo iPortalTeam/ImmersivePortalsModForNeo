@@ -1,13 +1,13 @@
 package qouteall.imm_ptl.peripheral.alternate_dimension;
 
 // TODO @Nick1st - DynDim removal
+//import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 //import net.minecraft.core.Holder;
 //import net.minecraft.core.HolderSet;
 //import net.minecraft.core.Registry;
 //import net.minecraft.core.RegistryAccess;
 //import net.minecraft.core.registries.Registries;
 //import net.minecraft.resources.ResourceKey;
-//import net.minecraft.resources.ResourceLocation;
 //import net.minecraft.server.MinecraftServer;
 //import net.minecraft.server.level.ServerLevel;
 //import net.minecraft.world.level.Level;
@@ -20,8 +20,6 @@ package qouteall.imm_ptl.peripheral.alternate_dimension;
 //import net.minecraft.world.level.levelgen.FlatLevelSource;
 //import net.minecraft.world.level.levelgen.flat.FlatLayerInfo;
 //import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
-//import net.neoforged.neoforge.common.NeoForge;
-//import net.neoforged.neoforge.event.TickEvent;
 //import org.jetbrains.annotations.Nullable;
 //import qouteall.dimlib.DimensionTemplate;
 //import qouteall.dimlib.api.DimensionAPI;
@@ -37,37 +35,37 @@ package qouteall.imm_ptl.peripheral.alternate_dimension;
 //
 //    public static final ResourceKey<DimensionType> SURFACE_TYPE = ResourceKey.create(
 //        Registries.DIMENSION_TYPE,
-//        new ResourceLocation("immersive_portals:surface_type")
+//        McHelper.newResourceLocation("immersive_portals:surface_type")
 //    );
 //
 //    public static final ResourceKey<DimensionType> SURFACE_TYPE_BRIGHT = ResourceKey.create(
 //        Registries.DIMENSION_TYPE,
-//        new ResourceLocation("immersive_portals:surface_type_bright")
+//        McHelper.newResourceLocation("immersive_portals:surface_type_bright")
 //    );
 //
 //    public static final ResourceKey<Level> SKYLAND = ResourceKey.create(
 //        Registries.DIMENSION,
-//        new ResourceLocation("immersive_portals:skyland")
+//        McHelper.newResourceLocation("immersive_portals:skyland")
 //    );
 //
 //    public static final ResourceKey<Level> BRIGHT_SKYLAND = ResourceKey.create(
 //        Registries.DIMENSION,
-//        new ResourceLocation("immersive_portals:bright_skyland")
+//        McHelper.newResourceLocation("immersive_portals:bright_skyland")
 //    );
 //
 //    public static final ResourceKey<Level> CHAOS = ResourceKey.create(
 //        Registries.DIMENSION,
-//        new ResourceLocation("immersive_portals:chaos")
+//        McHelper.newResourceLocation("immersive_portals:chaos")
 //    );
 //
 //    public static final ResourceKey<Level> VOID = ResourceKey.create(
 //        Registries.DIMENSION,
-//        new ResourceLocation("immersive_portals:void")
+//        McHelper.newResourceLocation("immersive_portals:void")
 //    );
 //
 //    public static final ResourceKey<Level> BRIGHT_VOID = ResourceKey.create(
 //        Registries.DIMENSION,
-//        new ResourceLocation("immersive_portals:bright_void")
+//        McHelper.newResourceLocation("immersive_portals:bright_void")
 //    );
 //
 //    public static final DimensionTemplate SKYLAND_TEMPLATE = new DimensionTemplate(
@@ -111,19 +109,17 @@ package qouteall.imm_ptl.peripheral.alternate_dimension;
 //
 //
 //    public static void init() {
-//        NeoForge.EVENT_BUS.addListener(DimensionStackAPI.DimensionStackCandidateCollectionEvent.class, event -> {
-//            event.addToResult(List.of(BRIGHT_SKYLAND, SKYLAND, CHAOS, VOID));
-//        });
-//
-//        NeoForge.EVENT_BUS.addListener(DimensionStackAPI.DimensionStackPreUpdateEvent.class, event -> {
-//            AlternateDimensions.addAltDimsIfUsedInDimStack(event.server, event.dimStackInfo);
-//        });
-//
-//        NeoForge.EVENT_BUS.addListener(TickEvent.ServerTickEvent.class, serverTickEvent -> {
-//            if (serverTickEvent.phase == TickEvent.Phase.END) {
-//                AlternateDimensions.tick(serverTickEvent.getServer());
+//        DimensionStackAPI.DIMENSION_STACK_CANDIDATE_COLLECTION_EVENT.register(
+//            (registryAccess, options) -> {
+//                return List.of(BRIGHT_SKYLAND, SKYLAND, CHAOS, VOID);
 //            }
-//        });
+//        );
+//
+//        DimensionStackAPI.DIMENSION_STACK_PRE_UPDATE_EVENT.register(
+//            AlternateDimensions::addAltDimsIfUsedInDimStack
+//        );
+//
+//        ServerTickEvents.END_SERVER_TICK.register(AlternateDimensions::tick);
 //
 //        DimensionTemplate.registerDimensionTemplate(
 //            "skyland", SKYLAND_TEMPLATE
@@ -189,7 +185,7 @@ package qouteall.imm_ptl.peripheral.alternate_dimension;
 //    }
 //
 //    public static boolean isAlternateDimension(Level world) {
-//        ResourceKey<DimensionType> dimensionTypeId = world.dimensionTypeId();
+//        ResourceKey<DimensionType> dimensionTypeId = world.dimensionTypeRegistration().unwrapKey().orElseThrow();
 //        return dimensionTypeId == SURFACE_TYPE
 //            || dimensionTypeId == SURFACE_TYPE_BRIGHT;
 //    }

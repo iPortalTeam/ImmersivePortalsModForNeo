@@ -3,6 +3,7 @@ package qouteall.imm_ptl.peripheral.alternate_dimension;
 import com.google.common.base.Suppliers;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -33,6 +34,7 @@ import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 import net.minecraft.world.level.storage.LevelStorageSource;
+import org.jetbrains.annotations.NotNull;
 import qouteall.imm_ptl.peripheral.mixin.common.alternate_dimension.IEChunkAccess_AlternateDim;
 import qouteall.imm_ptl.peripheral.mixin.common.alternate_dimension.IEChunkGenerator_AlternateDim;
 import qouteall.imm_ptl.peripheral.mixin.common.alternate_dimension.IENoiseRouterData;
@@ -51,7 +53,7 @@ import java.util.stream.Stream;
  */
 public class NormalSkylandGenerator extends NoiseBasedChunkGenerator {
     
-    public static final Codec<NormalSkylandGenerator> codec = RecordCodecBuilder.create(
+    public static final MapCodec<NormalSkylandGenerator> MAP_CODEC = RecordCodecBuilder.mapCodec(
         instance -> instance.group(
                 RegistryOps.retrieveGetter(Registries.BIOME),
                 RegistryOps.retrieveGetter(Registries.DENSITY_FUNCTION),
@@ -174,16 +176,19 @@ public class NormalSkylandGenerator extends NoiseBasedChunkGenerator {
     private final NoiseBasedChunkGenerator delegate;
     
     @Override
-    protected Codec<? extends ChunkGenerator> codec() {
-        return codec;
+    protected @NotNull MapCodec<? extends ChunkGenerator> codec() {
+        return MAP_CODEC;
     }
     
     @Override
-    public CompletableFuture<ChunkAccess> fillFromNoise(Executor executor, Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunkAccess) {
+    public CompletableFuture<ChunkAccess> fillFromNoise(
+        Blender blender, RandomState pRandomState,
+        StructureManager structureManager, ChunkAccess chunkAccess
+    ) {
         ((IEChunkAccess_AlternateDim) chunkAccess).ip_setNoiseChunk(null);
         
         return delegate.fillFromNoise(
-            executor, blender, delegatedRandomState, structureManager, chunkAccess
+            blender, delegatedRandomState, structureManager, chunkAccess
         ).thenApply(c -> {
             ((IEChunkAccess_AlternateDim) c).ip_setNoiseChunk(null);
             return c;

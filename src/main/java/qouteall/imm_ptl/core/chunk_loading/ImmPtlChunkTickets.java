@@ -1,6 +1,5 @@
 package qouteall.imm_ptl.core.chunk_loading;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import de.nick1st.imm_ptl.events.DimensionEvents;
 import de.nick1st.imm_ptl.events.ServerCleanupEvent;
@@ -11,6 +10,7 @@ import it.unimi.dsi.fastutil.longs.LongPredicate;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ChunkMap;
+import net.minecraft.server.level.ChunkResult;
 import net.minecraft.server.level.ChunkTaskPriorityQueue;
 import net.minecraft.server.level.ChunkTaskPriorityQueueSorter;
 import net.minecraft.server.level.DistanceManager;
@@ -194,10 +194,21 @@ public class ImmPtlChunkTickets {
                 return true;
             }
             
-            Either<LevelChunk, ChunkHolder.ChunkLoadingFailure> resultNow =
-                chunkHolder.getEntityTickingChunkFuture().getNow(null);
+            ChunkResult<LevelChunk> resultNow = chunkHolder.getEntityTickingChunkFuture()
+                .getNow(null);
             
-            return resultNow != null && resultNow.left().isPresent();
+            if (resultNow == null) {
+                return false;
+            }
+            
+            if (!resultNow.isSuccess()) {
+                LOGGER.error(
+                    "Chunk loading failure {} {} {}",
+                    world, new ChunkPos(chunkPos)
+                );
+            }
+            
+            return true;
         });
         
         // flush the pending-add-ticket queues

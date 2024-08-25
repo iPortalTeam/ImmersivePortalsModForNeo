@@ -1,7 +1,7 @@
 package qouteall.imm_ptl.core.portal.custom_portal_gen.form;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.ListCodec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,14 +24,16 @@ import qouteall.imm_ptl.core.portal.nether_portal.NetherPortalGeneration;
 import qouteall.q_misc_util.my_util.DQuaternion;
 import qouteall.q_misc_util.my_util.IntBox;
 
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 public class FlippingFloorSquareForm extends PortalGenForm {
     
-    public static final ListCodec<Block> blockListCodec = new ListCodec<>(BuiltInRegistries.BLOCK.byNameCodec());
+    public static final Codec<List<Block>> blockListCodec =
+        BuiltInRegistries.BLOCK.byNameCodec().listOf();
     
-    public static final Codec<FlippingFloorSquareForm> codec = RecordCodecBuilder.create(instance -> {
+    public static final MapCodec<FlippingFloorSquareForm> CODEC = RecordCodecBuilder.mapCodec(instance -> {
         return instance.group(
             Codec.INT.fieldOf("length").forGetter(o -> o.length),
             
@@ -64,8 +66,8 @@ public class FlippingFloorSquareForm extends PortalGenForm {
     }
     
     @Override
-    public Codec<? extends PortalGenForm> getCodec() {
-        return codec;
+    public MapCodec<? extends PortalGenForm> getCodec() {
+        return CODEC;
     }
     
     @Override

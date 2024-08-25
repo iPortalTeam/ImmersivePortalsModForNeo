@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import qouteall.imm_ptl.core.IPGlobal;
+import qouteall.imm_ptl.core.miscellaneous.IPVanillaCopy;
 import qouteall.imm_ptl.core.render.context_management.CloudContext;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
 
@@ -50,15 +51,14 @@ public abstract class MixinLevelRenderer_Clouds {
         at = @At("HEAD")
     )
     private void onBeginRenderClouds(
-        PoseStack matrices, Matrix4f matrix4f,
-        float tickDelta, double cameraX, double cameraY, double cameraZ, CallbackInfo ci
+        PoseStack poseStack, Matrix4f projectionMatrix, Matrix4f frustrumMatrix, float partialTick, double camX, double camY, double camZ, CallbackInfo ci
     ) {
         if (RenderStates.getRenderedPortalNum() == 0) {
             return;
         }
         
         if (IPGlobal.cloudOptimization) {
-            portal_onBeginCloudRendering(tickDelta, cameraX, cameraY, cameraZ);
+            portal_onBeginCloudRendering(partialTick, camX, camY, camZ);
         }
     }
     
@@ -66,7 +66,7 @@ public abstract class MixinLevelRenderer_Clouds {
         method = "renderClouds",
         at = @At("RETURN")
     )
-    private void onEndRenderClouds(PoseStack matrices, Matrix4f matrix4f, float f, double d, double e, double g, CallbackInfo ci) {
+    private void onEndRenderClouds(PoseStack poseStack, Matrix4f projectionMatrix, Matrix4f frustrumMatrix, float partialTick, double camX, double camY, double camZ, CallbackInfo ci) {
         if (RenderStates.getRenderedPortalNum() == 0) {
             return;
         }
@@ -101,23 +101,27 @@ public abstract class MixinLevelRenderer_Clouds {
         generateClouds = false;
     }
     
+    /**
+     * {@link LevelRenderer#renderClouds}
+     */
+    @IPVanillaCopy
     private void portal_onBeginCloudRendering(
-        float tickDelta, double cameraX, double cameraY, double cameraZ
+        float partialTick, double cameraX, double cameraY, double cameraZ
     ) {
         float f = this.level.effects().getCloudHeight();
         float g = 12.0F;
         float h = 4.0F;
         double d = 2.0E-4D;
-        double e = ((float) this.ticks + tickDelta) * 0.03F;
+        double e = (double) (((float) this.ticks + partialTick) * 0.03F);
         double i = (cameraX + e) / 12.0D;
-        double j = f - (float) cameraY + 0.33F;
+        double j = (double) (f - (float) cameraY + 0.33F);
         double k = cameraZ / 12.0D + 0.33000001311302185D;
-        i -= Mth.floor(i / 2048.0D) * 2048;
-        k -= Mth.floor(k / 2048.0D) * 2048;
+        i -= (double) (Mth.floor(i / 2048.0D) * 2048);
+        k -= (double) (Mth.floor(k / 2048.0D) * 2048);
         float l = (float) (i - (double) Mth.floor(i));
         float m = (float) (j / 4.0D - (double) Mth.floor(j / 4.0D)) * 4.0F;
         float n = (float) (k - (double) Mth.floor(k));
-        Vec3 cloudsColor = this.level.getCloudColor(tickDelta);
+        Vec3 cloudsColor = this.level.getCloudColor(partialTick);
         int kx = (int) Math.floor(i);
         int ky = (int) Math.floor(j / 4.0D);
         int kz = (int) Math.floor(k);

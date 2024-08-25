@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.imm_ptl.core.IPPerServerInfo;
+import qouteall.imm_ptl.core.McHelper;
 import qouteall.q_misc_util.MiscNetworking;
 
 import java.util.HashSet;
@@ -22,43 +23,50 @@ import java.util.HashSet;
 public class DimensionIntId {
     private static final Logger LOGGER = LogUtils.getLogger();
 //    public static final ResourceLocation DYNAMIC_UPDATE_EVENT_EARLY_PHASE =
-//        new ResourceLocation("iportal:early_phase");
+//        McHelper.newResourceLocation("iportal:early_phase");
     
     public static DimIntIdMap clientRecord;
     
     public static void init() {
-        // make sure that dimension int intId updates before global portal storage update
-        // @Nick1st DynDimLib is not used in the Neo Port
-//        DimensionAPI.SERVER_DIMENSION_DYNAMIC_UPDATE_EVENT.addPhaseOrdering(
-//            DYNAMIC_UPDATE_EVENT_EARLY_PHASE,
-//            Event.DEFAULT_PHASE
-//        );
-//
-//        DimensionAPI.SERVER_DIMENSION_DYNAMIC_UPDATE_EVENT.register(
-//            DYNAMIC_UPDATE_EVENT_EARLY_PHASE,
-//            (server, dimensions) -> {
-//                onServerDimensionChanged(server);
-//            }
-//        );
+        // make sure that dimension int id updates before global portal storage update
+ //       DimensionAPI.SERVER_DIMENSION_DYNAMIC_UPDATE_EVENT.addPhaseOrdering(
+ //           DYNAMIC_UPDATE_EVENT_EARLY_PHASE,
+ //           Event.DEFAULT_PHASE
+ //       );
+ //
+ //       DimensionAPI.SERVER_DIMENSION_DYNAMIC_UPDATE_EVENT.register(
+ //           DYNAMIC_UPDATE_EVENT_EARLY_PHASE,
+ //           (server, dimensions) -> {
+ //               onServerDimensionChanged(server);
+ //           }
+ //       );
     }
-
+    
+    //@Environment(EnvType.CLIENT)
     public static void initClient() {
         NeoForge.EVENT_BUS.addListener(ClientExitEvent.class, (e) -> DimensionIntId.onClientExit());
     }
-
+    
+    //@Environment(EnvType.CLIENT)
     private static void onClientExit() {
         clientRecord = null;
     }
 
+    /**
+     * Note this should not be used in networking thread.
+     */
+    //@Environment(EnvType.CLIENT)
     public static @NotNull DimIntIdMap getClientMap() {
-        Validate.notNull(clientRecord, "Client dim intId record is not yet synced");
+        Validate.notNull(clientRecord,
+            "Client dim id record is not yet synced. This should not be used in networking thread."
+        );
         return clientRecord;
     }
     
     public static @NotNull DimIntIdMap getServerMap(MinecraftServer server) {
         IPPerServerInfo perServerInfo = IPPerServerInfo.of(server);
         DimIntIdMap rec = perServerInfo.dimIntIdMap;
-        Validate.notNull(rec, "Server dim intId record is not yet initialized");
+        Validate.notNull(rec, "Server dim id record is not yet initialized");
         return rec;
     }
     
@@ -76,7 +84,7 @@ public class DimensionIntId {
         
         IPPerServerInfo perServerInfo = IPPerServerInfo.of(server);
         perServerInfo.dimIntIdMap = rec;
-        LOGGER.info("Server dimension integer intId mapping:\n{}", rec);
+        LOGGER.info("Server dimension integer id mapping:\n{}", rec);
     }
     
     private static void fillInVanillaDimIds(DimIntIdMap rec) {
@@ -109,7 +117,7 @@ public class DimensionIntId {
         
         map.removeUnused(usedDimKeys);
         
-        LOGGER.info("Current dimension integer intId mapping:\n{}", map);
+        LOGGER.info("Current dimension integer id mapping:\n{}", map);
         
         var packet = MiscNetworking.DimIdSyncPacket.createPacket(server);
         

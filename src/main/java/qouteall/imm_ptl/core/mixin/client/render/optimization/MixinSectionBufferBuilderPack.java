@@ -12,11 +12,12 @@ public class MixinSectionBufferBuilderPack {
     // The buffer can grow size on demand.
     // There is no need to allocate a large buffer at the beginning.
     // That's not an issue of vanilla,
-    // but with ImmPtl, each loaded dimension will have some buffer packs.
-    // This will reduce memory usage.
+    // but with ImmPtl, each loaded dimension will have some buffer packs,
+    // so memory could be exhausted.
+    // This mixin will reduce memory usage.
     // The initial size cannot be 0, because it resizes in endVertex(), not before putting data.
     @Redirect(
-        method = "lambda$new$1",
+        method = "method_60896",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/RenderType;bufferSize()I"

@@ -1,5 +1,6 @@
 package qouteall.q_misc_util;
 
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
@@ -14,10 +15,10 @@ import java.util.TreeMap;
 /**
  * Make this because {@link Gui#setOverlayMessage(Component, boolean)} does not support multi-line
  */
-//@OnlyIn(Dist.CLIENT)
+//@Environment(EnvType.CLIENT)
 public class CustomTextOverlay {
     
-    public record Entry(
+    public static record Entry(
         Component component,
         long clearingTime
     ) {}
@@ -60,7 +61,7 @@ public class CustomTextOverlay {
      * {@link Gui#render(GuiGraphics, float)}
      * {@link net.minecraft.client.gui.screens.AlertScreen}
      */
-    public static void render(GuiGraphics guiGraphics, float partialTick) {
+    public static void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         long currTime = System.nanoTime();
         
         boolean removes = ENTRIES.entrySet().removeIf(e -> e.getValue().clearingTime < currTime);

@@ -1,6 +1,6 @@
 package qouteall.imm_ptl.peripheral.portal_generation;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
@@ -52,7 +52,7 @@ public class DiligentNetherPortalForm extends AbstractDiligentForm {
     }
     
     @Override
-    public Codec<? extends PortalGenForm> getCodec() {
+    public MapCodec<? extends PortalGenForm> getCodec() {
         throw new RuntimeException();
     }
     

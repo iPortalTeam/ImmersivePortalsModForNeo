@@ -401,7 +401,7 @@ public class CollisionHelper {
         return ((IEEntity) entity).ip_getCollidingPortal() != null;
     }
     
-    public static void updateCollidingPortalForWorld(Level world, float tickDelta) {
+    public static void updateCollidingPortalForWorld(Level world, float partialTick) {
         world.getProfiler().push("update_colliding_portal");
         
         List<Portal> globalPortals = GlobalPortalStorage.getGlobalPortals(world);
@@ -411,14 +411,14 @@ public class CollisionHelper {
             if (entity instanceof Portal portal) {
                 // the colliding portal update must happen after all entities finishes ticking,
                 // because the entity moves during ticking.
-                CollisionHelper.notifyCollidingPortals(portal, tickDelta);
+                CollisionHelper.notifyCollidingPortals(portal, partialTick);
             }
             else {
                 AABB entityBoundingBoxStretched = getStretchedBoundingBox(entity);
                 for (Portal globalPortal : globalPortals) {
                     AABB globalPortalBoundingBox = globalPortal.getBoundingBox();
                     if (entityBoundingBoxStretched.intersects(globalPortalBoundingBox)) {
-                        if (canCollideWithPortal(entity, globalPortal, tickDelta)) {
+                        if (canCollideWithPortal(entity, globalPortal, partialTick)) {
                             ((IEEntity) entity).ip_notifyCollidingWithPortal(globalPortal);
                         }
                     }

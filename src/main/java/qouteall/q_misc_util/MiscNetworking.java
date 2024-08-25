@@ -7,6 +7,9 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -18,22 +21,26 @@ import net.minecraft.world.level.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.ClientWorldLoader;
+import qouteall.imm_ptl.core.McHelper;
 import qouteall.q_misc_util.dimension.DimIntIdMap;
 import qouteall.q_misc_util.dimension.DimensionIntId;
 
 public class MiscNetworking {
     private static final Logger LOGGER = LogUtils.getLogger();
-    
-    public static final ResourceLocation id_stcRemote =
-        new ResourceLocation("q_misc_util", "remote_stc");
-    public static final ResourceLocation id_ctsRemote =
-        new ResourceLocation("q_misc_util", "remote_cts");
-    
+
     public static record DimIdSyncPacket(
         CompoundTag dimIntIdTag,
         CompoundTag dimTypeTag
     ) implements CustomPacketPayload {
-        public static final ResourceLocation ID = new ResourceLocation("q_misc_util", "dim_int_id_sync");
+        public static final CustomPacketPayload.Type<DimIdSyncPacket> TYPE =
+            new CustomPacketPayload.Type<>(
+                McHelper.newResourceLocation("imm_ptl:dim_int_id_sync")
+            );
+
+        public static final StreamCodec<FriendlyByteBuf, DimIdSyncPacket> CODEC =
+            StreamCodec.of(
+                (b, p) -> p.write(b), DimIdSyncPacket::read
+            );
         
         public static DimIdSyncPacket createFromServer(MinecraftServer server) {
             DimIntIdMap rec = DimensionIntId.getServerMap(server);
@@ -66,11 +73,12 @@ public class MiscNetworking {
             return new DimIdSyncPacket(dimIntIdTag, dimIdToDimTypeIdTag);
         }
         
-        public static DimIdSyncPacket createPacket(MinecraftServer server) {
-            return DimIdSyncPacket.createFromServer(server);
+        public static Packet<ClientCommonPacketListener> createPacket(MinecraftServer server) {
+            return ServerPlayNetworking.createS2CPacket(
+                DimIdSyncPacket.createFromServer(server)
+            );
         }
-        
-        @Override
+
         public void write(FriendlyByteBuf buf) {
             buf.writeNbt(dimIntIdTag);
             buf.writeNbt(dimTypeTag);
@@ -87,12 +95,10 @@ public class MiscNetworking {
             
             return new DimIdSyncPacket(idMapTag, typeTag);
         }
-
-        // must be handled early
-        // should not be handled in client main thread, otherwise it may be late
-        public void handleOnNetworkingThread() {
+        
+        public void handle() {
             DimIntIdMap rec = DimIntIdMap.fromTag(dimIntIdTag);
-            LOGGER.info("Client received dim intId sync packet\n{}", rec);
+            LOGGER.info("Client received dim id sync packet\n{}", rec);
             DimensionIntId.clientRecord = rec;
             
             ImmutableMap.Builder<ResourceKey<Level>, ResourceKey<DimensionType>> builder =
@@ -101,12 +107,12 @@ public class MiscNetworking {
             for (String key : dimTypeTag.getAllKeys()) {
                 ResourceKey<Level> dimId = ResourceKey.create(
                     Registries.DIMENSION,
-                    new ResourceLocation(key)
+                    McHelper.newResourceLocation(key)
                 );
                 String dimTypeId = dimTypeTag.getString(key);
                 ResourceKey<DimensionType> dimType = ResourceKey.create(
                     Registries.DIMENSION_TYPE,
-                    new ResourceLocation(dimTypeId)
+                    McHelper.newResourceLocation(dimTypeId)
                 );
                 builder.put(dimId, dimType);
             }
@@ -118,5 +124,26 @@ public class MiscNetworking {
                 dimTypeMap
             );
         }
+
+        @Override
+        public @NotNull Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+    }
+    
+    @Environment(EnvType.CLIENT)
+    public static void initClient() {
+        ClientPlayNetworking.registerGlobalReceiver(
+            DimIdSyncPacket.TYPE,
+            (p, c) -> {
+                p.handle();
+            }
+        );
+    }
+
+    public static void init() {
+        PayloadTypeRegistry.playS2C().register(
+            DimIdSyncPacket.TYPE, DimIdSyncPacket.CODEC
+        );
     }
 }

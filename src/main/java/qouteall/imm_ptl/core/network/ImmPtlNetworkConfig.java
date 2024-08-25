@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -25,13 +26,13 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.IPMcHelper;
+import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.mixin.common.other_sync.IEServerConfigurationPacketListenerImpl;
 import qouteall.imm_ptl.core.platform_specific.IPConfig;
 import qouteall.imm_ptl.core.platform_specific.O_O;
 
 import java.util.function.Consumer;
 
-@SuppressWarnings("UnstableApiUsage")
 public class ImmPtlNetworkConfig {
     private static final Logger LOGGER = LogUtils.getLogger();
     
@@ -73,8 +74,8 @@ public class ImmPtlNetworkConfig {
     public static record ImmPtlConfigurationTask(
     ) implements ICustomConfigurationTask {
         public static final ConfigurationTask.Type TYPE =
-            new ConfigurationTask.Type("immersive_portals_core:config");
-
+            new ConfigurationTask.Type("iportal:config");
+        
         @Override
         public void run(Consumer<CustomPacketPayload> sender) {
             sender.accept(
@@ -91,8 +92,12 @@ public class ImmPtlNetworkConfig {
     public static record S2CConfigStartPacket(
         ModVersion versionFromServer
     ) implements CustomPacketPayload {
-        public static final ResourceLocation ID = new ResourceLocation("immersive_portals_core:config_packet");
-        
+        public static final ResourceLocation ID = new ResourceLocation("iportal:config_packet");
+
+        public static final StreamCodec<FriendlyByteBuf, S2CConfigStartPacket> CODEC = StreamCodec.of(
+                (b, p) -> p.write(b), S2CConfigStartPacket::read
+        );
+
         public static S2CConfigStartPacket read(FriendlyByteBuf buf) {
             ModVersion info = ModVersion.read(buf);
             return new S2CConfigStartPacket(info);
@@ -125,8 +130,12 @@ public class ImmPtlNetworkConfig {
         ModVersion versionFromClient,
         boolean clientTolerantVersionMismatch
     ) implements CustomPacketPayload {
-        public static final ResourceLocation ID = new ResourceLocation("immersive_portals_core:configure_complete");
-        
+        public static final ResourceLocation ID = new ResourceLocation("iportal:configure_complete");
+
+        public static final StreamCodec<FriendlyByteBuf, C2SConfigCompletePacket> CODEC = StreamCodec.of(
+                (b, p) -> p.write(b), C2SConfigCompletePacket::read
+        );
+
         public static C2SConfigCompletePacket read(FriendlyByteBuf buf) {
             ModVersion info = ModVersion.read(buf);
             boolean clientTolerantVersionMismatch = buf.readBoolean();

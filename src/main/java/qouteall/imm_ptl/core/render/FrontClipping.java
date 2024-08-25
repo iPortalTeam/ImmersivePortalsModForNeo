@@ -47,10 +47,15 @@ public class FrontClipping {
     }
     
     public static void updateInnerClipping(PoseStack matrixStack) {
+        Matrix4f modelView = matrixStack.last().pose();
+        updateInnerClipping(modelView);
+    }
+    
+    public static void updateInnerClipping(Matrix4f modelView) {
         if (PortalRendering.isRendering()) {
             setupInnerClipping(
                 PortalRendering.getActiveClippingPlane(),
-                matrixStack.last().pose(), 0
+                modelView, 0
             );
         }
         else {

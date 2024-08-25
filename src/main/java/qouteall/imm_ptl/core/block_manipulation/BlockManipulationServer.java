@@ -151,15 +151,16 @@ public class BlockManipulationServer {
     
     public static class RemoteCallables {
         /**
-         * {@link qouteall.imm_ptl.core.mixin.client.interaction.MixinMultiPlayerGameMode}
+         * {@link qouteall.imm_ptl.core.mixin.client.interaction.MixinMultiPlayerGameMode#ip_redirectPacket}
          */
+        @SuppressWarnings("JavadocReference")
         public static void processPlayerActionPacket(
             ServerPlayer player,
             ResourceKey<Level> dimension,
             byte[] packetBytes
         ) {
             FriendlyByteBuf buf = IPMcHelper.bytesToBuf(packetBytes);
-            ServerboundPlayerActionPacket packet = new ServerboundPlayerActionPacket(buf);
+            ServerboundPlayerActionPacket packet = ServerboundPlayerActionPacket.STREAM_CODEC.decode(buf);
             
             ServerLevel world = player.server.getLevel(dimension);
             Validate.notNull(world, "missing %s", dimension.location());
@@ -172,13 +173,17 @@ public class BlockManipulationServer {
             );
         }
         
+        /**
+         * {@link qouteall.imm_ptl.core.mixin.client.interaction.MixinMultiPlayerGameMode#ip_redirectPacket}
+         */
+        @SuppressWarnings("JavadocReference")
         public static void processUseItemOnPacket(
             ServerPlayer player,
             ResourceKey<Level> dimension,
             byte[] packetBytes
         ) {
             FriendlyByteBuf buf = IPMcHelper.bytesToBuf(packetBytes);
-            ServerboundUseItemOnPacket packet = new ServerboundUseItemOnPacket(buf);
+            ServerboundUseItemOnPacket packet = ServerboundUseItemOnPacket.STREAM_CODEC.decode(buf);
             
             ServerLevel world = player.server.getLevel(dimension);
             Validate.notNull(world, "missing %s", dimension.location());

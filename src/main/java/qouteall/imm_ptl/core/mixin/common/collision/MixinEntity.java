@@ -73,12 +73,10 @@ public abstract class MixinEntity implements IEEntity, ImmPtlEntityExtension {
     private BlockPos blockPosition;
     
     @Shadow
-    @Nullable
-    private BlockState feetBlockState;
-    @Shadow
     private ChunkPos chunkPosition;
     
     @Shadow @Final private static Logger LOGGER;
+    @Shadow private @Nullable BlockState inBlockState;
     @Unique
     private static final CountDownInt IMM_PTL_LOG_COUNTER = new CountDownInt(20);
     
@@ -216,8 +214,8 @@ public abstract class MixinEntity implements IEEntity, ImmPtlEntityExtension {
     }
     
     // fix climbing onto ladder cross portal
-    @Inject(method = "Lnet/minecraft/world/entity/Entity;getFeetBlockState()Lnet/minecraft/world/level/block/state/BlockState;", at = @At("HEAD"), cancellable = true)
-    private void onGetBlockState(CallbackInfoReturnable<BlockState> cir) {
+    @Inject(method = "getInBlockState", at = @At("HEAD"), cancellable = true)
+    private void onGetInBlockState(CallbackInfoReturnable<BlockState> cir) {
         Portal collidingPortal = ((IEEntity) this).ip_getCollidingPortal();
         Entity this_ = (Entity) (Object) this;
         if (collidingPortal != null) {
@@ -319,7 +317,7 @@ public abstract class MixinEntity implements IEEntity, ImmPtlEntityExtension {
                 || bz != this.blockPosition.getZ()
             ) {
                 this.blockPosition = new BlockPos(bx, by, bz);
-                this.feetBlockState = null;
+                this.inBlockState = null;
                 if (SectionPos.blockToSectionCoord(bx) != this.chunkPosition.x
                     || SectionPos.blockToSectionCoord(bz) != this.chunkPosition.z
                 ) {

@@ -2,12 +2,12 @@ package qouteall.imm_ptl.core.compat.iris_compatibility;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.irisshaders.iris.Iris;
-import net.irisshaders.iris.pipeline.WorldRenderingPipeline;
 import net.irisshaders.iris.pipeline.IrisRenderingPipeline;
+import net.irisshaders.iris.pipeline.WorldRenderingPipeline;
 import net.irisshaders.iris.uniforms.SystemTimeUniforms;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import qouteall.imm_ptl.core.compat.IPPortingLibCompat;
 import qouteall.imm_ptl.core.portal.Portal;
@@ -51,17 +51,17 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
     }
     
     @Override
-    public void onBeforeTranslucentRendering(PoseStack matrixStack) {
+    public void onBeforeTranslucentRendering(Matrix4f modelView) {
 //        doPortalRendering(matrixStack);
     }
     
     @Override
-    public void onBeginIrisTranslucentRendering(PoseStack matrixStack) {
+    public void onBeginIrisTranslucentRendering(Matrix4f modelView) {
         // Iris's buffers are deferred, changing a render layer won't cause it to draw
         // TODO switch to a separate buffer source for Iris
         client.renderBuffers().bufferSource().endBatch();
         
-        doPortalRendering(matrixStack);
+        doPortalRendering(modelView);
         
         // Resume Iris world rendering
         ((IEIrisNewWorldRenderingPipeline) (Object) Iris.getPipelineManager().getPipeline().get())
@@ -69,12 +69,12 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
     }
     
     @Override
-    public void onAfterTranslucentRendering(PoseStack matrixStack) {
+    public void onAfterTranslucentRendering(Matrix4f modelView) {
     
     }
     
     @Override
-    public void onHandRenderingEnded(PoseStack matrixStack) {
+    public void onHandRenderingEnded() {
         //nothing
     }
     
@@ -99,7 +99,9 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
         myFinishRendering();
     }
     
-    protected void restoreDepthOfPortalViewArea(PortalRenderable portal, PoseStack matrixStack) {
+    protected void restoreDepthOfPortalViewArea(
+        PortalRenderable portal, Matrix4f modelView
+    ) {
         client.getMainRenderTarget().bindWrite(false);
         
         setStencilStateForWorldRendering();
@@ -110,7 +112,7 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
         
         ViewAreaRenderer.renderPortalArea(
             portal, Vec3.ZERO,
-            matrixStack.last().pose(),
+            modelView,
             RenderSystem.getProjectionMatrix(),
             false,
             false,
@@ -160,12 +162,12 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
 //        }
     }
     
-    protected void doPortalRendering(PoseStack matrixStack) {
+    protected void doPortalRendering(Matrix4f modelView) {
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);
         
         client.getProfiler().popPush("render_portal_total");
-        renderPortals(matrixStack);
+        renderPortals(modelView);
     }
     
     private void myFinishRendering() {
@@ -176,17 +178,17 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
         GlStateManager._enableDepthTest();
     }
     
-    protected void renderPortals(PoseStack matrixStack) {
+    protected void renderPortals(Matrix4f modelView) {
         // The main depth buffer that Iris use should not contain the depth of portal itself,
         //  otherwise it can't read the correct depth, things may not render normally.
         // However, portals can occlude portals. So we need another framebuffer to hold the
         //  world depth + portal depth
         
-        List<PortalRenderable> portalsToRender = getPortalsToRender(matrixStack);
+        List<PortalRenderable> portalsToRender = getPortalsToRender(modelView);
         List<PortalRenderable> reallyRenderedPortals = new ArrayList<>();
         
         for (PortalRenderable portal : portalsToRender) {
-            boolean reallyRendered = doRenderPortal(portal, matrixStack);
+            boolean reallyRendered = doRenderPortal(portal, modelView);
             
             if (reallyRendered) {
                 reallyRenderedPortals.add(portal);
@@ -199,7 +201,7 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
         // to limit the area of Iris deferred composite rendering
         for (PortalRenderable reallyRenderedPortal : reallyRenderedPortals) {
             if (!reallyRenderedPortal.getPortalLike().isFuseView()) {
-                renderPortalViewAreaToStencil(reallyRenderedPortal, matrixStack);
+                renderPortalViewAreaToStencil(reallyRenderedPortal, modelView);
             }
         }
         
@@ -209,7 +211,7 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
     // return true if it really rendered the portal
     private boolean doRenderPortal(
         PortalRenderable portal,
-        PoseStack matrixStack
+        Matrix4f modelView
     ) {
         PortalLike portalLike = portal.getPortalLike();
         if (RendererUsingStencil.shouldSkipRenderingInsideFuseViewPortal(portal)) {
@@ -221,7 +223,7 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
         client.getProfiler().push("render_view_area");
         
         boolean anySamplePassed = PortalRenderInfo.renderAndDecideVisibility(portalLike, () -> {
-            renderPortalViewAreaToStencil(portal, matrixStack);
+            renderPortalViewAreaToStencil(portal, modelView);
         });
         
         client.getProfiler().pop();
@@ -247,7 +249,7 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
         
         if (!portalLike.isFuseView()) {
             // TODO sync from RendererUsingStencil
-            restoreDepthOfPortalViewArea(portal, matrixStack);
+            restoreDepthOfPortalViewArea(portal, modelView);
         }
         
         clampStencilValue(outerPortalStencilValue);
@@ -270,7 +272,7 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
     }
     
     private void renderPortalViewAreaToStencil(
-        PortalRenderable portal, PoseStack matrixStack
+        PortalRenderable portal, Matrix4f modelView
     ) {
         int outerPortalStencilValue = PortalRendering.getPortalLayer();
         
@@ -286,11 +288,11 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
         GL11.glStencilMask(0xFF);
         
         // update it before pushing
-        FrontClipping.updateInnerClipping(matrixStack);
+        FrontClipping.updateInnerClipping(modelView);
         
         ViewAreaRenderer.renderPortalArea(
             portal, Vec3.ZERO,
-            matrixStack.last().pose(),
+            modelView,
             RenderSystem.getProjectionMatrix(),
             true,
             false, // don't modify color

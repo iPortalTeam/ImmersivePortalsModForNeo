@@ -2,14 +2,18 @@ package qouteall.imm_ptl.core.render;
 
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.Util;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.FogRenderer;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.PostChain;
+import net.minecraft.client.renderer.RenderBuffers;
+import net.minecraft.client.renderer.SectionBufferBuilderPack;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.resources.ResourceKey;
@@ -17,11 +21,12 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
+import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationClient;
 import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
@@ -31,8 +36,13 @@ import qouteall.imm_ptl.core.ducks.IEMinecraftClient;
 import qouteall.imm_ptl.core.ducks.IEParticleManager;
 import qouteall.imm_ptl.core.ducks.IEWorldRenderer;
 import qouteall.imm_ptl.core.miscellaneous.IPVanillaCopy;
+import qouteall.imm_ptl.core.mixin.client.render.IERenderSystem;
 import qouteall.imm_ptl.core.mixin.client.render.IESectionRenderDispatcher;
-import qouteall.imm_ptl.core.render.context_management.*;
+import qouteall.imm_ptl.core.render.context_management.DimensionRenderHelper;
+import qouteall.imm_ptl.core.render.context_management.FogRendererContext;
+import qouteall.imm_ptl.core.render.context_management.PortalRendering;
+import qouteall.imm_ptl.core.render.context_management.RenderStates;
+import qouteall.imm_ptl.core.render.context_management.WorldRenderInfo;
 import qouteall.q_misc_util.my_util.LimitedLogger;
 
 import java.util.Stack;
@@ -47,10 +57,10 @@ public class MyGameRenderer {
     public static final int MAX_SECONDARY_BUFFER_NUM = 2;
     
     // portal rendering and outer world rendering uses different buffer builder storages
-    private static final Stack<RenderBuffers> secondaryRenderBuffers = new Stack<>();
+    private static Stack<RenderBuffers> secondaryRenderBuffers = new Stack<>();
     private static int usingRenderBuffersObjectNum = 0;
     
-    // the vanilla visibility sections discovery code is multi-threaded
+    // the vanilla visibility sections discovery code is multithreaded
     // when the player teleports through a portal, on the first frame it will not work normally
     // so use IP's non-multi-threaded algorithm at the first frame
     public static int vanillaTerrainSetupOverride = 0;
@@ -122,9 +132,7 @@ public class MyGameRenderer {
         LevelRenderer worldRenderer = ClientWorldLoader.getWorldRenderer(newDimension);
         
         CHelper.checkGlError();
-        
-        float tickDelta = RenderStates.getPartialTick();
-        
+
         IEGameRenderer ieGameRenderer = (IEGameRenderer) client.gameRenderer;
         DimensionRenderHelper helper =
             ClientWorldLoader.getDimensionRenderHelper(newDimension);
@@ -151,10 +159,12 @@ public class MyGameRenderer {
         // the projection matrix contains view bobbing.
         // the view bobbing is related with scale
         Matrix4f oldProjectionMatrix = RenderSystem.getProjectionMatrix();
-        
-        ObjectArrayList<SectionRenderDispatcher.RenderSection> newChunkInfoList = VisibleSectionDiscovery.takeList();
-        ((IEWorldRenderer) oldWorldRenderer).portal_setChunkInfoList(newChunkInfoList);
+        Matrix4fStack oldModelViewStack = IERenderSystem.ip_getModelViewStack();
 
+        ObjectArrayList<SectionRenderDispatcher.RenderSection> newChunkInfoList =
+            VisibleSectionDiscovery.takeList();
+        ((IEWorldRenderer) oldWorldRenderer).portal_setChunkInfoList(newChunkInfoList);
+        
         Object irisPipeline = IrisInterface.invoker.getPipeline(worldRenderer);
         
         // switch (note: it will no longer switch the world that client player is in )
@@ -205,6 +215,8 @@ public class MyGameRenderer {
         
         ((IEWorldRenderer) worldRenderer).portal_setTransparencyShader(null);
 
+        IERenderSystem.ip_setModelViewStack(new Matrix4fStack(16));
+
         IrisInterface.invoker.setPipeline(worldRenderer, null);
         
         //update lightmap
@@ -216,9 +228,7 @@ public class MyGameRenderer {
         invokeWrapper.accept(() -> {
             client.getProfiler().push("render_portal_content");
             client.gameRenderer.renderLevel(
-                tickDelta,
-                Util.getNanos(),
-                new PoseStack()
+                client.getTimer()
             );
             client.getProfiler().pop();
         });
@@ -256,6 +266,7 @@ public class MyGameRenderer {
         ((IEWorldRenderer) worldRenderer).portal_setFrustum(oldFrustum);
         
         client.gameRenderer.resetProjectionMatrix(oldProjectionMatrix);
+        IERenderSystem.ip_setModelViewStack(oldModelViewStack);
 
         IrisInterface.invoker.setPipeline(worldRenderer, irisPipeline);
         
@@ -272,7 +283,7 @@ public class MyGameRenderer {
     }
     
     /**
-     * {@link LevelRenderer#renderLevel(PoseStack, float, long, boolean, Camera, GameRenderer, LightTexture, Matrix4f)}
+     * {@link LevelRenderer#renderLevel}
      */
     @IPVanillaCopy
     public static void resetFogState() {
@@ -304,15 +315,17 @@ public class MyGameRenderer {
     }
     
     /**
-     * {@link LevelRenderer#renderLevel(PoseStack, float, long, boolean, Camera, GameRenderer, LightTexture, Matrix4f)}
+     * {@link LevelRenderer#renderLevel}
      */
     @IPVanillaCopy
-    public static void resetDiffuseLighting(PoseStack matrixStack) {
-        if (client.level.effects().constantAmbientLight()) {
-            Lighting.setupNetherLevel(matrixStack.last().pose());
+    public static void resetDiffuseLighting() {
+        ClientLevel world = client.level;
+        assert world != null;
+        if (world.effects().constantAmbientLight()) {
+            Lighting.setupNetherLevel();
         }
         else {
-            Lighting.setupLevel(matrixStack.last().pose());
+            Lighting.setupLevel();
         }
     }
     

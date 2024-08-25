@@ -111,28 +111,24 @@ public class ViewAreaRenderer {
     
     public static void buildPortalViewAreaTrianglesBuffer(
         Vec3 fogColor, PortalRenderable portalRenderable,
-        Vec3 cameraPos, float tickDelta
+        Vec3 cameraPos, float partialTick
     ) {
         Tesselator tessellator = RenderSystem.renderThreadTesselator();
-        BufferBuilder bufferBuilder = tessellator.getBuilder();
-        
-        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferBuilder = tessellator
+            .begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         
         Vec3 originRelativeToCamera = portalRenderable.getPortalLike().getOriginPos().subtract(cameraPos);
         
         TriangleConsumer vertexOutput = (p0x, p0y, p0z, p1x, p1y, p1z, p2x, p2y, p2z) -> {
             bufferBuilder
-                .vertex(p0x, p0y, p0z)
-                .color((float) fogColor.x, (float) fogColor.y, (float) fogColor.z, 1.0f)
-                .endVertex();
+                .addVertex((float) p0x, (float) p0y, (float) p0z)
+                .setColor((float) fogColor.x, (float) fogColor.y, (float) fogColor.z, 1.0f);
             bufferBuilder
-                .vertex(p1x, p1y, p1z)
-                .color((float) fogColor.x, (float) fogColor.y, (float) fogColor.z, 1.0f)
-                .endVertex();
+                .addVertex((float) p1x, (float) p1y, (float) p1z)
+                .setColor((float) fogColor.x, (float) fogColor.y, (float) fogColor.z, 1.0f);
             bufferBuilder
-                .vertex(p2x, p2y, p2z)
-                .color((float) fogColor.x, (float) fogColor.y, (float) fogColor.z, 1.0f)
-                .endVertex();
+                .addVertex((float) p2x, (float) p2y, (float) p2z)
+                .setColor((float) fogColor.x, (float) fogColor.y, (float) fogColor.z, 1.0f);
         };
         
         if (portalRenderable instanceof Portal portal) {
@@ -149,7 +145,7 @@ public class ViewAreaRenderer {
             }
         }
         
-        BufferUploader.draw(bufferBuilder.end());
+        BufferUploader.draw(bufferBuilder.build());
     }
     
     public static void outputTriangle(

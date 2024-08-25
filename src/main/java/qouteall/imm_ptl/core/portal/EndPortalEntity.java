@@ -16,7 +16,9 @@ import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.EndPortalBlock;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
+import net.minecraft.world.level.levelgen.feature.EndPlatformFeature;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.Validate;
@@ -81,7 +83,7 @@ public class EndPortalEntity extends Portal {
         
         // for toObsidianPlatform mode, if the platform does not get generated before
         // going through portal, the player may fall into void
-        ServerLevel.makeObsidianPlatform(world);
+        doCreateEndPlatform(world);
         
         // update dragon fight info
         EndDragonFight dragonFight = world.getDragonFight();
@@ -91,6 +93,16 @@ public class EndPortalEntity extends Portal {
         if (((IEEndDragonFight) dragonFight).ip_getNeedsStateScanning()) {
             ((IEEndDragonFight) dragonFight).ip_scanState();
         }
+    }
+    
+    /**
+     * {@link EndPortalBlock#getPortalDestination}
+     */
+    private static void doCreateEndPlatform(ServerLevel world) {
+        EndPlatformFeature.createEndPlatform(
+            world, BlockPos.containing(ServerLevel.END_SPAWN_POINT.getBottomCenter()).below(),
+            true
+        );
     }
     
     private static void generateClassicalEndPortal(ServerLevel world, Vec3 destination, Vec3 portalCenter) {
@@ -253,7 +265,7 @@ public class EndPortalEntity extends Portal {
         assert server != null;
         ServerLevel endWorld = server.getLevel(Level.END);
         if (endWorld != null) {
-            ServerLevel.makeObsidianPlatform(endWorld);
+            doCreateEndPlatform(endWorld);
         }
     }
     
@@ -330,7 +342,7 @@ public class EndPortalEntity extends Portal {
                     assert server != null;
                     ServerLevel endWorld = server.getLevel(Level.END);
                     if (endWorld != null) {
-                        ServerLevel.makeObsidianPlatform(endWorld);
+                        doCreateEndPlatform(endWorld);
                     }
                 }
             }

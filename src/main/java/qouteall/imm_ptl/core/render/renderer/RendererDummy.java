@@ -1,10 +1,9 @@
 package qouteall.imm_ptl.core.render.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import org.joml.Matrix4f;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.render.PortalRenderable;
-
-import java.util.List;
 
 public class RendererDummy extends PortalRenderer {
     @Override
@@ -18,17 +17,17 @@ public class RendererDummy extends PortalRenderer {
     }
     
     @Override
-    public void onBeforeTranslucentRendering(PoseStack matrixStack) {
+    public void onBeforeTranslucentRendering(Matrix4f modelView) {
     
     }
     
     @Override
-    public void onAfterTranslucentRendering(PoseStack matrixStack) {
+    public void onAfterTranslucentRendering(Matrix4f modelView) {
     
     }
     
     @Override
-    public void onHandRenderingEnded(PoseStack matrixStack) {
+    public void onHandRenderingEnded() {
     
     }
     
@@ -47,13 +46,5 @@ public class RendererDummy extends PortalRenderer {
     @Override
     public void renderPortalInEntityRenderer(Portal portal) {
     
-    }
-    
-    protected void renderPortals(PoseStack matrixStack) {
-        List<PortalRenderable> portalsToRender = getPortalsToRender(matrixStack);
-    
-        for (PortalRenderable portal : portalsToRender) {
-            doRenderPortal(portal, matrixStack);
-        }
     }
 }

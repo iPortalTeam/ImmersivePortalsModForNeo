@@ -35,7 +35,7 @@ import qouteall.q_misc_util.my_util.animation.RenderedPlane;
  * The process and relevant marking rendering is handled purely on client side.
  * When it finishes, it performs a remote procedure call to create the portal.
  */
-//@OnlyIn(Dist.CLIENT)
+//@Environment(EnvType.CLIENT)
 public class ClientPortalWandPortalCreation {
     
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -59,7 +59,7 @@ public class ClientPortalWandPortalCreation {
     public static ProtoPortal protoPortal = new ProtoPortal();
     
     public static void reset() {
-        protoPortal.reset();
+        protoPortal = new ProtoPortal();
         renderedPlane.clearTarget();
     }
     
@@ -194,7 +194,7 @@ public class ClientPortalWandPortalCreation {
         
         McRemoteProcedureCallClient.tellServerToInvoke(
             "qouteall.imm_ptl.peripheral.wand.PortalWandInteraction.RemoteCallables.finishPortalCreation",
-            protoPortal.copy() // Copy required as Neo does no serializing in client only game
+            protoPortal.copy()
         );
         
         reset();

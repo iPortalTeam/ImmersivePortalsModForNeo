@@ -14,6 +14,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
+import org.joml.Matrix4f;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPGlobal;
@@ -77,13 +78,13 @@ public class CrossPortalEntityRenderer {
         }
     }
     
-    public static void onBeginRenderingEntitiesAndBlockEntities(PoseStack matrixStack) {
+    public static void onBeginRenderingEntitiesAndBlockEntities(Matrix4f modelView) {
         isRenderingEntityNormally = true;
         
         if (PortalRendering.isRendering()) {
             FrontClipping.setupInnerClipping(
                 PortalRendering.getActiveClippingPlane(),
-                matrixStack.last().pose(), 0
+                modelView, 0
             );
         }
     }

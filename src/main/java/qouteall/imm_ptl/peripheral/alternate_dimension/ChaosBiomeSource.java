@@ -1,18 +1,18 @@
 package qouteall.imm_ptl.peripheral.alternate_dimension;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.LinearCongruentialGenerator;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Climate;
 import org.jetbrains.annotations.NotNull;
+import qouteall.imm_ptl.core.McHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +85,7 @@ public class ChaosBiomeSource extends BiomeSource {
         "minecraft:wooded_badlands"
     };
     
-    public static final Codec<ChaosBiomeSource> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<ChaosBiomeSource> MAP_CODEC = RecordCodecBuilder.mapCodec(
         instance -> instance.group(
                 Biome.LIST_CODEC.fieldOf("biomes")
                     .forGetter(checkerboardColumnBiomeSource -> checkerboardColumnBiomeSource.allowedBiomes)
@@ -100,13 +100,13 @@ public class ChaosBiomeSource extends BiomeSource {
     }
     
     @NotNull
-    static ChaosBiomeSource createChaosBiomeSource(HolderGetter<Biome> biomeHolderGetter) {
+    public static ChaosBiomeSource createChaosBiomeSource(HolderGetter<Biome> biomeHolderGetter) {
         List<Holder<Biome>> holders = new ArrayList<>();
     
         for (String vanillaBiomeId : vanillaBiomes) {
             biomeHolderGetter.get(ResourceKey.create(
                 Registries.BIOME,
-                new ResourceLocation(vanillaBiomeId)
+                McHelper.newResourceLocation(vanillaBiomeId)
             )).ifPresent(holders::add);
         }
         
@@ -124,8 +124,8 @@ public class ChaosBiomeSource extends BiomeSource {
     }
     
     @Override
-    protected Codec<? extends BiomeSource> codec() {
-        return CODEC;
+    protected MapCodec<? extends BiomeSource> codec() {
+        return MAP_CODEC;
     }
     
     @Override

@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -30,7 +29,10 @@ import qouteall.q_misc_util.my_util.LimitedLogger;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class NetherPortalGeneration {
     
@@ -117,8 +119,7 @@ public class NetherPortalGeneration {
         Supplier<PortalGenInfo> newFramePlacer,
         BooleanSupplier portalIntegrityChecker,
         
-        //currying
-        Function<WorldGenRegion, Function<BlockPos.MutableBlockPos, PortalGenInfo>> matchShapeByFramePos
+        FrameSearching.FrameSearchingFunc<PortalGenInfo> matchShapeByFramePos
     ) {
         ResourceKey<Level> fromDimension = fromWorld.dimension();
         ResourceKey<Level> toDimension = toWorld.dimension();
@@ -204,25 +205,26 @@ public class NetherPortalGeneration {
                 return true;
             }
             
-            WorldGenRegion chunkRegion = new ChunkLoader(
+            ChunkLoader chunkLoader1 = new ChunkLoader(
                 chunkLoader.getCenter(), frameSearchingRadius
-            ).createChunkRegion(server);
+            );
+            ServerLevel world = McHelper.getServerWorld(server, chunkLoader1.dimension());
+
+            FastBlockAccess chunkRegion = chunkLoader1.createFastBlockAccess(world);
             
             indicatorEntity.inform(Component.translatable("imm_ptl.searching_for_frame"));
-            
-            BlockPos.MutableBlockPos temp1 = new BlockPos.MutableBlockPos();
-            
+
             FrameSearching.startSearchingPortalFrameAsync(
-                chunkRegion, frameSearchingRadius,
-                toPos, otherSideFramePredicate,
-                matchShapeByFramePos.apply(chunkRegion),
+                chunkRegion,
+                frameSearchingRadius, toPos,
+                otherSideFramePredicate,
+                matchShapeByFramePos,
                 (info) -> {
                     portalEntityGeneratingFunc.accept(info);
                     finalizer.run();
                     
                     O_O.postPortalSpawnEventForge(info);
-                },
-                () -> {
+                }, () -> {
                     onGenerateNewFrame.run();
                     finalizer.run();
                 });

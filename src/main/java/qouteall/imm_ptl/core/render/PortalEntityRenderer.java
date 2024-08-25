@@ -24,7 +24,7 @@ public class PortalEntityRenderer extends EntityRenderer<Portal> {
     public void render(
         Portal portal,
         float yaw,
-        float tickDelta,
+        float partialTick,
         PoseStack matrixStack,
         MultiBufferSource bufferSource,
         int light
@@ -43,7 +43,7 @@ public class PortalEntityRenderer extends EntityRenderer<Portal> {
             );
         }
         
-        super.render(portal, yaw, tickDelta, matrixStack, bufferSource, light);
+        super.render(portal, yaw, partialTick, matrixStack, bufferSource, light);
     }
     
     @Override

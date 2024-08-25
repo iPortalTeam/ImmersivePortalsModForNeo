@@ -1,6 +1,8 @@
 package qouteall.imm_ptl.core.platform_specific;
 
 import net.minecraft.SharedConstants;
+import net.minecraft.client.multiplayer.ClientChunkCache;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -22,9 +24,12 @@ import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import qouteall.imm_ptl.core.McHelper;
+import qouteall.imm_ptl.core.chunk_loading.ImmPtlClientChunkMap;
 import qouteall.imm_ptl.core.network.ImmPtlNetworkConfig;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.custom_portal_gen.PortalGenInfo;
+import qouteall.q_misc_util.Helper;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -232,7 +237,7 @@ public class O_O {
 //        if (parts.length != 2) {
 //            return null;
 //        }
-//        return new ResourceLocation(parts[0], parts[1]);
+//        return McHelper.newResourceLocation(parts[0], parts[1]);
     }
     
     @Nullable
@@ -254,7 +259,7 @@ public class O_O {
         // ForgeHooks.onTravelToDimension() on Forge
         return true;
     }
-
+    
     public static boolean isDevEnv() {
         return !FMLEnvironment.production;
     }

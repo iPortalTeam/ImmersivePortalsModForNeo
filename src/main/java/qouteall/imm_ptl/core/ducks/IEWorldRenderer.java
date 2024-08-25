@@ -21,7 +21,7 @@ public interface IEWorldRenderer {
         double cameraX,
         double cameraY,
         double cameraZ,
-        float tickDelta,
+        float partialTick,
         PoseStack matrixStack,
         MultiBufferSource vertexConsumerProvider
     );

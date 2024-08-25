@@ -24,12 +24,12 @@ public record FastBlockPortalShape(
     // the base pos is on the frame
     int basePosX, int basePosY, int basePosZ,
     Direction.Axis axis,
-    // in local coordinate based on base pos
+    // in local coordinate based on base pos (should not modify after initialization)
     int[] localAreaBlockCoords,
-    // in local coordinate based on base pos
+    // in local coordinate based on base pos (should not modify after initialization)
     // note the corner means outer corner
     int[] localFrameWithoutCornerBlockCoords,
-    // in local coordinate based on base pos
+    // in local coordinate based on base pos (should not modify after initialization)
     int[] localFrameCornerBlockCoords,
     // in world coordinate
     // this box does not contain the outer frame layer
@@ -192,7 +192,7 @@ public record FastBlockPortalShape(
             toWorldBlockPos(axis, coordOnAxis, maxA + 1, maxB + 1)
         );
         
-        long firstFramePosAssemble = frame.iterator().next();
+        long firstFramePosAssemble = frame.iterator().nextLong();
         int baseA = getAFromAssemble(firstFramePosAssemble);
         int baseB = getBFromAssemble(firstFramePosAssemble);
         BlockPos firstFramePos = toWorldBlockPos(axis, coordOnAxis, baseA, baseB);
@@ -229,7 +229,7 @@ public record FastBlockPortalShape(
         return new FastBlockPortalShape(
             firstFramePos.getX(), firstFramePos.getY(), firstFramePos.getZ(),
             axis,
-            areaBlockCoords,
+            localAreaBlockCoords,
             localFrameWithoutCornerBlockCoords,
             localFrameCornerBlockCoords,
             innerAreaBox,
@@ -316,6 +316,14 @@ public record FastBlockPortalShape(
         return tag;
     }
     
+    public static FastBlockPortalShape fromBlockPortalShape(BlockPortalShape blockPortalShape) {
+        return fromTag(blockPortalShape.toTag());
+    }
+    
+    public BlockPortalShape toBlockPortalShape() {
+        return BlockPortalShape.fromTag(toTag());
+    }
+    
     public boolean matchShape(
         int newBaseX, int newBaseY, int newBaseZ,
         TriIntPredicate framePredicate,
@@ -348,5 +356,19 @@ public record FastBlockPortalShape(
         }
         
         return true;
+    }
+    
+    public FastBlockPortalShape withNewBase(
+        int newBaseX, int newBaseY, int newBaseZ
+    ) {
+        return new FastBlockPortalShape(
+            newBaseX, newBaseY, newBaseZ,
+            axis,
+            localAreaBlockCoords,
+            localFrameWithoutCornerBlockCoords,
+            localFrameCornerBlockCoords,
+            innerAreaBox,
+            totalAreaBox
+        );
     }
 }

@@ -543,7 +543,7 @@ public class PortalWandInteraction {
         }
         
         ItemStack stack = new ItemStack(CommandStickItem.instance);
-        stack.setTag(data.toTag());
+        stack.set(CommandStickItem.COMPONENT_TYPE, data);
         
         if (!player.getInventory().contains(stack)) {
             player.getInventory().add(stack);

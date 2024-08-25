@@ -13,7 +13,7 @@ import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import qouteall.imm_ptl.core.McHelper;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -66,7 +66,7 @@ public class AxisArgumentType implements ArgumentType<Direction.Axis> {
     public static void init(IEventBus modEventBus) {
         modEventBus.addListener(RegisterEvent.class, registerEvent -> {
             registerEvent.register(BuiltInRegistries.COMMAND_ARGUMENT_TYPE.key(),
-                    new ResourceLocation("imm_ptl:axis"),
+                    McHelper.newResourceLocation("imm_ptl:axis"),
                     () -> ArgumentTypeInfos.registerByClass(AxisArgumentType.class, SingletonArgumentInfo.contextFree(() -> instance)));
         });
     }

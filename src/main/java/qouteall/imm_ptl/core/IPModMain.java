@@ -1,18 +1,12 @@
 package qouteall.imm_ptl.core;
 
 import com.mojang.logging.LogUtils;
-import de.nick1st.imm_ptl.networking.Payloads;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.block.Block;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer;
 import qouteall.imm_ptl.core.chunk_loading.EntitySync;
@@ -21,12 +15,17 @@ import qouteall.imm_ptl.core.chunk_loading.ImmPtlChunkTracking;
 import qouteall.imm_ptl.core.chunk_loading.ServerPerformanceMonitor;
 import qouteall.imm_ptl.core.chunk_loading.WorldInfoSender;
 import qouteall.imm_ptl.core.collision.CollisionHelper;
+import qouteall.imm_ptl.core.commands.AxisArgumentType;
 import qouteall.imm_ptl.core.commands.PortalCommand;
+import qouteall.imm_ptl.core.commands.SubCommandArgumentType;
+import qouteall.imm_ptl.core.commands.TimingFunctionArgumentType;
 import qouteall.imm_ptl.core.compat.IPPortingLibCompat;
 import qouteall.imm_ptl.core.debug.DebugUtil;
 import qouteall.imm_ptl.core.mc_utils.ServerTaskList;
 import qouteall.imm_ptl.core.miscellaneous.GcMonitor;
 import qouteall.imm_ptl.core.network.ImmPtlNetworkConfig;
+import qouteall.imm_ptl.core.network.ImmPtlNetworking;
+import qouteall.imm_ptl.core.network.PacketRedirection;
 import qouteall.imm_ptl.core.platform_specific.IPConfig;
 import qouteall.imm_ptl.core.platform_specific.O_O;
 import qouteall.imm_ptl.core.portal.BreakableMirror;
@@ -67,6 +66,7 @@ public class IPModMain {
 
         eventBus.addListener(RegisterPayloadHandlerEvent.class, Payloads::register);
         ImmPtlNetworkConfig.init(eventBus);
+        PacketRedirection.init();
 
         NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> IPGlobal.CLIENT_TASK_LIST.processTasks());
 
@@ -99,6 +99,14 @@ public class IPModMain {
         IPPortingLibCompat.init();
         
         BlockManipulationServer.init();
+        
+        CommandRegistrationCallback.EVENT.register(
+            (dispatcher, ctx, environment) -> PortalCommand.register(dispatcher, ctx)
+        );
+        SubCommandArgumentType.init();
+        TimingFunctionArgumentType.init();
+        AxisArgumentType.init();
+        
 
         NeoForge.EVENT_BUS.addListener(RegisterCommandsEvent.class, event -> {
             PortalCommand.register(event.getDispatcher());
@@ -119,7 +127,7 @@ public class IPModMain {
         RotationAnimation.init();
         NormalAnimation.init();
 //        OscillationAnimation.init();
-
+        
         if (!IPFeatureControl.enableVanillaBehaviorChangingByDefault()) {
             LOGGER.info("""
                 iPortal is provided by jar-in-jar.
@@ -160,7 +168,7 @@ public class IPModMain {
 
     public static void registerBlocks(BiConsumer<ResourceLocation, PortalPlaceholderBlock> regFunc) {
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "nether_portal_block"),
+            McHelper.newResourceLocation("immersive_portals", "nether_portal_block"),
             PortalPlaceholderBlock.instance
         );
     }
@@ -170,54 +178,54 @@ public class IPModMain {
     }
 
     public static void registerEntityTypes(BiConsumer<ResourceLocation, EntityType<?>> regFunc) {
-
+        
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "portal"),
+            McHelper.newResourceLocation("immersive_portals", "portal"),
             Portal.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "nether_portal_new"),
+            McHelper.newResourceLocation("immersive_portals", "nether_portal_new"),
             NetherPortalEntity.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "end_portal"),
+            McHelper.newResourceLocation("immersive_portals", "end_portal"),
             EndPortalEntity.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "mirror"),
+            McHelper.newResourceLocation("immersive_portals", "mirror"),
             Mirror.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "breakable_mirror"),
+            McHelper.newResourceLocation("immersive_portals", "breakable_mirror"),
             BreakableMirror.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "global_tracked_portal"),
+            McHelper.newResourceLocation("immersive_portals", "global_tracked_portal"),
             GlobalTrackedPortal.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "border_portal"),
+            McHelper.newResourceLocation("immersive_portals", "border_portal"),
             WorldWrappingPortal.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "end_floor_portal"),
+            McHelper.newResourceLocation("immersive_portals", "end_floor_portal"),
             VerticalConnectingPortal.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "general_breakable_portal"),
+            McHelper.newResourceLocation("immersive_portals", "general_breakable_portal"),
             GeneralBreakablePortal.ENTITY_TYPE
         );
         
         regFunc.accept(
-            new ResourceLocation("immersive_portals", "loading_indicator"),
+            McHelper.newResourceLocation("immersive_portals", "loading_indicator"),
             LoadingIndicatorEntity.entityType
         );
     }

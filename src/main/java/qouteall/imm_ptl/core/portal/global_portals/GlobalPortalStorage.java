@@ -1,5 +1,8 @@
 package qouteall.imm_ptl.core.portal.global_portals;
 
+import com.mojang.logging.LogUtils;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.HolderLookup;
 import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -24,9 +27,15 @@ import net.neoforged.neoforge.event.TickEvent;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import qouteall.dimlib.api.DimensionAPI;
 import qouteall.imm_ptl.core.CHelper;
+import qouteall.imm_ptl.core.ClientWorldLoader;
+import qouteall.imm_ptl.core.IPCGlobal;
+import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.api.PortalAPI;
+import qouteall.imm_ptl.core.ducks.IEClientWorld;
 import qouteall.imm_ptl.core.network.ImmPtlNetworking;
 import qouteall.imm_ptl.core.platform_specific.O_O;
 import qouteall.imm_ptl.core.portal.Portal;
@@ -43,7 +52,10 @@ import java.util.function.Predicate;
  * Stores global portals.
  * Also stores bedrock replacement block state for dimension stack.
  */
+@SuppressWarnings("resource")
 public class GlobalPortalStorage extends SavedData {
+    private static final Logger LOGGER = LogUtils.getLogger();
+
     public List<Portal> data;
     public final WeakReference<ServerLevel> world;
     private int version = 1;
@@ -66,12 +78,11 @@ public class GlobalPortalStorage extends SavedData {
                 get(world).onServerClose();
             }
         });
-
         // @Nick1st - DimLib removal
-//        NeoForge.EVENT_BUS.addListener(DimensionEvents.ServerDimensionDynamicUpdateEvent.class, event -> {
+//        DimensionAPI.SERVER_DIMENSION_DYNAMIC_UPDATE_EVENT.register((server, dims) -> {
 //            for (ServerLevel world : server.getAllLevels()) {
 //                GlobalPortalStorage gps = get(world);
-//                gps.clearAbnormalPortals();
+//                gps.clearAbnormalPortals(server);
 //                gps.syncToAllPlayers();
 //            }
 //        });
@@ -87,10 +98,10 @@ public class GlobalPortalStorage extends SavedData {
         return world.getDataStorage().computeIfAbsent(
             new SavedData.Factory<>(
                 () -> {
-                    Helper.log("Global portal storage initialized " + world.dimension().location());
+                    LOGGER.info("Global portal storage initialized {}", world.dimension().location());
                     return new GlobalPortalStorage(world);
                 },
-                (nbt) -> {
+                (nbt, holderLookup) -> {
                     GlobalPortalStorage globalPortalStorage = new GlobalPortalStorage(world);
                     globalPortalStorage.fromNbt(nbt);
                     return globalPortalStorage;
@@ -101,13 +112,13 @@ public class GlobalPortalStorage extends SavedData {
         );
     }
     
-    //@OnlyIn(Dist.CLIENT)
+    //@Environment(EnvType.CLIENT)
     private static void initClient() {
         NeoForge.EVENT_BUS.addListener(ClientCleanupEvent.class, e -> GlobalPortalStorageClient.onClientCleanup());
     }
 
     // @Nick1st - Moved to client class
-//    @OnlyIn(Dist.CLIENT)
+//    @Environment(EnvType.CLIENT)
 //    private static void onClientCleanup() {
 //        if (ClientWorldLoader.getIsInitialized()) {
 //            for (ClientLevel clientWorld : ClientWorldLoader.getClientWorlds()) {
@@ -142,8 +153,9 @@ public class GlobalPortalStorage extends SavedData {
         return new ClientboundCustomPayloadPacket(
             new ImmPtlNetworking.GlobalPortalSyncPacket(
                 PortalAPI.serverDimKeyToInt(world.getServer(), world.dimension()),
-                storage.save(new CompoundTag())
-            ));
+                storage.save(new CompoundTag(), world.registryAccess())
+            )
+        );
     }
     
     public void onDataChanged() {
@@ -192,9 +204,9 @@ public class GlobalPortalStorage extends SavedData {
     public void fromNbt(CompoundTag tag) {
         
         ServerLevel currWorld = world.get();
-        Validate.notNull(currWorld);
+        Validate.notNull(currWorld, "world is null");
+
         List<Portal> newData = getPortalsFromTag(tag, currWorld);
-        
         data = newData;
         
         if (tag.contains("version")) {
@@ -211,12 +223,12 @@ public class GlobalPortalStorage extends SavedData {
             bedrockReplacement = null;
         }
         
-        clearAbnormalPortals();
+        clearAbnormalPortals(currWorld.getServer());
     }
     
-    static List<Portal> getPortalsFromTag(
-            CompoundTag tag,
-            Level currWorld
+    private static List<Portal> getPortalsFromTag(
+        CompoundTag tag,
+        Level currWorld
     ) {
         /**{@link CompoundTag#getType()}*/
         ListTag listTag = tag.getList("data", 10);
@@ -237,7 +249,7 @@ public class GlobalPortalStorage extends SavedData {
     }
     
     private static Portal readPortalFromTag(Level currWorld, CompoundTag compoundTag) {
-        ResourceLocation entityId = new ResourceLocation(compoundTag.getString("entity_type"));
+        ResourceLocation entityId = McHelper.newResourceLocation(compoundTag.getString("entity_type"));
         EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(entityId);
         
         Entity e = entityType.create(currWorld);
@@ -253,14 +265,14 @@ public class GlobalPortalStorage extends SavedData {
     }
     
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public @NotNull CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
         if (data == null) {
             return tag;
         }
         
         ListTag listTag = new ListTag();
         ServerLevel currWorld = world.get();
-        Validate.notNull(currWorld);
+        Validate.notNull(currWorld, "world is null");
         
         for (Portal portal : data) {
             Validate.isTrue(portal.level() == currWorld);
@@ -297,11 +309,11 @@ public class GlobalPortalStorage extends SavedData {
         }
     }
     
-    public void clearAbnormalPortals() {
+    public void clearAbnormalPortals(MinecraftServer server) {
         data.removeIf(e -> {
             ResourceKey<Level> dimensionTo = ((Portal) e).getDestDim();
-            if (MiscHelper.getServer().getLevel(dimensionTo) == null) {
-                Helper.err("Missing Dimension for global portal " + dimensionTo.location());
+            if (server.getLevel(dimensionTo) == null) {
+                LOGGER.error("Missing Dimension for global portal {}", dimensionTo.location());
                 return true;
             }
             return false;
@@ -312,8 +324,9 @@ public class GlobalPortalStorage extends SavedData {
         //removed
     }
 
+    // TODO @Nick1st - Actually sync
     // @Nick1st - Moved to client class
-//    @OnlyIn(Dist.CLIENT)
+//    @Environment(EnvType.CLIENT)
 //    public static void receiveGlobalPortalSync(ResourceKey<Level> dimension, CompoundTag compoundTag) {
 //        ClientLevel world = ClientWorldLoader.getWorld(dimension);
 //
@@ -336,7 +349,7 @@ public class GlobalPortalStorage extends SavedData {
 //
 //        ((IEClientWorld) world).ip_setGlobalPortals(newPortals);
 //
-//        Helper.log("Global Portals Updated " + dimension.location());
+//        LOGGER.info("Global Portals Updated {}", dimension.location());
 //    }
     
     public static void convertNormalPortalIntoGlobalPortal(Portal portal) {
