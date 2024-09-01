@@ -129,8 +129,7 @@ public class PortalRenderInfo implements AutoCloseable {
         Map<List<UUID>, Visibility> infoMap1 = this.infoMap;
         // the disposal func should not reference this
         return () -> {
-            // TODO change it to debug
-            LOGGER.info("Running GC-directed PortalRenderInfo clean");
+            LOGGER.debug("Running GC-directed PortalRenderInfo clean");
             
             // the cleaner runs on its own thread. Use the task list to avoid thread safety issue.
             IPGlobal.PRE_TOTAL_RENDER_TASK_LIST.addOneShotTask(() -> {

@@ -23,6 +23,7 @@ import qouteall.imm_ptl.core.compat.sodium_compatibility.SodiumInterface;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.nether_portal.BlockPortalShape;
 import qouteall.imm_ptl.core.portal.nether_portal.BreakablePortalEntity;
+import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
 
 import java.util.ArrayList;
@@ -95,6 +96,10 @@ public class OverlayRendering {
         PoseStack matrixStack,
         MultiBufferSource vertexConsumerProvider
     ) {
+//        if (PortalRendering.isRendering()) {
+//            return;
+//        }
+        
         BreakablePortalEntity.OverlayInfo overlay = portal.getActualOverlay();
         
         if (overlay == null) {

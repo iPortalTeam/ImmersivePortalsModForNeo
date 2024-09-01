@@ -54,7 +54,7 @@ public class MyGameRenderer {
     
     private static final LimitedLogger limitedLogger = new LimitedLogger(10);
     
-    public static final int MAX_SECONDARY_BUFFER_NUM = 2;
+//    public static final int MAX_SECONDARY_BUFFER_NUM = 2;
     
     // portal rendering and outer world rendering uses different buffer builder storages
     private static Stack<RenderBuffers> secondaryRenderBuffers = new Stack<>();
@@ -75,9 +75,9 @@ public class MyGameRenderer {
     
     @Nullable
     private static RenderBuffers acquireRenderBuffersObject() {
-        if (usingRenderBuffersObjectNum >= MAX_SECONDARY_BUFFER_NUM) {
-            return null;
-        }
+//        if (usingRenderBuffersObjectNum >= MAX_SECONDARY_BUFFER_NUM) {
+//            return null;
+//        }
         usingRenderBuffersObjectNum++;
         
         if (secondaryRenderBuffers.isEmpty()) {
@@ -216,6 +216,7 @@ public class MyGameRenderer {
         ((IEWorldRenderer) worldRenderer).portal_setTransparencyShader(null);
         
         IERenderSystem.ip_setModelViewStack(new Matrix4fStack(16));
+        RenderSystem.applyModelViewMatrix();
         
         IrisInterface.invoker.setPipeline(worldRenderer, null);
         
@@ -267,6 +268,7 @@ public class MyGameRenderer {
         
         client.gameRenderer.resetProjectionMatrix(oldProjectionMatrix);
         IERenderSystem.ip_setModelViewStack(oldModelViewStack);
+        RenderSystem.applyModelViewMatrix();
         
         IrisInterface.invoker.setPipeline(worldRenderer, irisPipeline);
         
