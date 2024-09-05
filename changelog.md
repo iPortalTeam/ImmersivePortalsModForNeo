@@ -1,1 +1,1 @@
-Fix some rendering issues.
+Fix the issues related to projection matrix.
