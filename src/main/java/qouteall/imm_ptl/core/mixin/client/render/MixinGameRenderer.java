@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import org.joml.Matrix4f;
 import org.joml.Quaternionfc;
+import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -28,6 +29,7 @@ import qouteall.imm_ptl.core.portal.animation.ClientPortalAnimationManagement;
 import qouteall.imm_ptl.core.portal.animation.StableClientTimer;
 import qouteall.imm_ptl.core.render.CrossPortalViewRendering;
 import qouteall.imm_ptl.core.render.GuiPortalRendering;
+import qouteall.imm_ptl.core.render.MyGameRenderer;
 import qouteall.imm_ptl.core.render.MyRenderHelper;
 import qouteall.imm_ptl.core.render.TransformationManager;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
@@ -62,6 +64,8 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
     
     @Shadow
     protected abstract void bobView(PoseStack matrices, float f);
+    
+    @Shadow @Final private static Logger LOGGER;
     
     @Inject(method = "render", at = @At("HEAD"))
     private void onFarBeforeRendering(
@@ -280,15 +284,17 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
         if (PortalRendering.isRendering()) {
             if (RenderStates.basicProjectionMatrix != null) {
                 // replace the basic projection matrix
-                return RenderStates.basicProjectionMatrix;
+                // copy to avoid unwanted modification
+                return new Matrix4f(RenderStates.basicProjectionMatrix);
             }
             else {
-                Helper.err("projection matrix state abnormal");
+                LOGGER.error("[iPortal] Projection matrix state abnormal");
             }
         }
         
         Matrix4f result = instance.getProjectionMatrix(fov);
-        RenderStates.basicProjectionMatrix = result;
+        // copy to avoid unwanted modification
+        RenderStates.basicProjectionMatrix = new Matrix4f(result);
         
         return result;
     }
@@ -328,8 +334,4 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
         panoramicMode = cond;
     }
     
-    @Override
-    public void portal_bobView(PoseStack matrixStack, float partialTick) {
-        bobView(matrixStack, partialTick);
-    }
 }
