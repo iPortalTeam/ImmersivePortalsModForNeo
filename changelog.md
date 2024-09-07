@@ -1,1 +1,1 @@
-Fix the issues related to projection matrix.
+Fix cross-portal third person view rendering.
