@@ -1,5 +1,6 @@
 package qouteall.imm_ptl.core.portal.nether_portal;
 
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Util;
@@ -16,6 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.mc_utils.ServerTaskList;
 import qouteall.imm_ptl.core.portal.Portal;
@@ -23,11 +25,14 @@ import qouteall.imm_ptl.core.portal.PortalPlaceholderBlock;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.my_util.DQuaternion;
 import qouteall.q_misc_util.my_util.LimitedLogger;
+import qouteall.q_misc_util.my_util.MyTaskList;
 
 import java.util.List;
 import java.util.UUID;
 
 public abstract class BreakablePortalEntity extends Portal {
+    private static final Logger LOGGER = LogUtils.getLogger();
+    
     public static record OverlayInfo(
         BlockState blockState,
         double opacity,
@@ -207,12 +212,6 @@ public abstract class BreakablePortalEntity extends Portal {
             return true;
         }
         
-        // test
-//        BreakablePortalEntity rev = getReversePortal();
-//        if (rev == null) {
-//            Helper.err("ouch");
-//        }
-        
         List<BreakablePortalEntity> revs = findReversePortals(this);
         if (revs.size() == 1) {
             BreakablePortalEntity reversePortal = revs.get(0);
@@ -244,16 +243,21 @@ public abstract class BreakablePortalEntity extends Portal {
             reversePortal.shouldBreakPortal = true;
         }
         else {
-            int[] counter = {30};
-            ServerTaskList.of(getServer()).addTask(() -> {
-                BreakablePortalEntity reversePortal1 = getReversePortal();
-                if (reversePortal1 != null) {
-                    reversePortal1.shouldBreakPortal = true;
-                    return true;
+            ServerTaskList.of(getServer()).addTask(MyTaskList.withRetryNumberLimit(
+                30,
+                () -> {
+                    BreakablePortalEntity reversePortal1 = getReversePortal();
+                    if (reversePortal1 != null) {
+                        reversePortal1.shouldBreakPortal = true;
+                        return true;
+                    }
+                    LOGGER.info("Failed to find reverse portal of {}. This may be due to chunk loading delay. Going to retry.", this);
+                    return false;
+                },
+                () -> {
+                    LOGGER.warn("Failed to find reverse portal of {}. Giving up.", this);
                 }
-                counter[0]--;
-                return counter[0] >= 0;
-            });
+            ));
         }
     }
     
