@@ -246,17 +246,23 @@ public abstract class BreakablePortalEntity extends Portal {
             ServerTaskList.of(getServer()).addTask(MyTaskList.withRetryNumberLimit(
                 30,
                 () -> {
+                    if (this.isRemoved()) {
+                        return true;
+                    }
+                    
+                    if (!this.isOtherSideChunkLoaded()) {
+                        LOGGER.info("The other side chunk is not loaded. Delay finding reverse portal of {}.", this);
+                        return false;
+                    }
+                    
                     BreakablePortalEntity reversePortal1 = getReversePortal();
                     if (reversePortal1 != null) {
                         reversePortal1.shouldBreakPortal = true;
-                        return true;
                     }
-                    LOGGER.info("Failed to find reverse portal of {}. This may be due to chunk loading delay. Going to retry.", this);
-                    return false;
+                    
+                    return true;
                 },
-                () -> {
-                    LOGGER.warn("Failed to find reverse portal of {}. Giving up.", this);
-                }
+                () -> {}
             ));
         }
     }
