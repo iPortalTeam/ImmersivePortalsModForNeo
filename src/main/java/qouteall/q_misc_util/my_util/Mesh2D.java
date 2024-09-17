@@ -63,7 +63,9 @@ public class Mesh2D {
     // when not null, the quad tree is being maintained to keep consistent with the mesh
     public @Nullable QuadTree<IntArrayList> triangleLookup;
     
-    public Mesh2D() {}
+    public Mesh2D() {
+        gridToPointIndex.defaultReturnValue(-1);
+    }
     
     public int addTriangle(
         double x1, double y1,
@@ -123,6 +125,9 @@ public class Mesh2D {
     }
     
     public int indexPoint(double x, double y) {
+        Validate.isTrue(!Double.isNaN(x));
+        Validate.isTrue(!Double.isNaN(y));
+        
         x = Mth.clamp(x, -1.0, 1.0);
         y = Mth.clamp(y, -1.0, 1.0);
         
@@ -973,12 +978,16 @@ public class Mesh2D {
     
     public void movePoint(int pointIndex, int destPointIndex) {
         Validate.isTrue(!isPointUsed(destPointIndex));
+        Validate.isTrue(isPointUsed(pointIndex));
         
         double x = pointCoords.getDouble(pointIndex * 2);
         double y = pointCoords.getDouble(pointIndex * 2 + 1);
         long gridCoord = encodeToGrid(x, y);
         int removedPointIndex = gridToPointIndex.remove(gridCoord);
-        Validate.isTrue(removedPointIndex == pointIndex);
+        Validate.isTrue(
+            removedPointIndex == pointIndex,
+            "%d %d %f %f %d", removedPointIndex, pointIndex, x, y, gridCoord
+        );
         gridToPointIndex.put(gridCoord, destPointIndex);
         
         pointCoords.set(destPointIndex * 2, x);
@@ -1542,6 +1551,7 @@ public class Mesh2D {
         return sumAreaDoubled / 2;
     }
     
+    // Note the input polygon must be convex
     public void subtractPolygon(ObjectArrayList<Vec2d> polygonVertexes) {
         // dissect the polygon into triangles using fan triangulation
         for (int i = 1; i < polygonVertexes.size() - 1; i++) {
@@ -1649,7 +1659,7 @@ public class Mesh2D {
     }
     
     public CompoundTag toTag() {
-        compact();
+        // Note: should not compact() here! Modification may cause data race.
         
         ListTag pointCoordsTag = new ListTag();
         ListTag trianglesTag = new ListTag();

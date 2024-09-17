@@ -563,9 +563,10 @@ public class Portal extends Entity implements
         thisSideStateCache = null;
         otherSideStateCache = null;
         
-        if (!level().isClientSide()) {
-            reloadAndSyncToClientNextTick();
-        }
+        // after reload it will update cache, avoid infinite update
+//        if (!level().isClientSide()) {
+//            reloadAndSyncToClientNextTick();
+//        }
     }
     
     @Override
