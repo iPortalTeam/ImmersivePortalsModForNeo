@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.peripheral.wand;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.serialization.Codec;
 import de.nick1st.imm_ptl.events.ClientCleanupEvent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -29,6 +30,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import qouteall.imm_ptl.core.IPMcHelper;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer;
+import qouteall.imm_ptl.peripheral.platform_specific.PeripheralModEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -143,13 +145,6 @@ public class PortalWandItem extends Item {
         }
         
     }
-
-    public static final Codec<Mode> MODE_CODEC = Codec.STRING.xmap(Mode::fromStr, Mode::toStr);
-
-    public static final DataComponentType<Mode> COMPONENT_TYPE =
-        DataComponentType.<Mode>builder()
-            .persistent(MODE_CODEC)
-            .build();
 
     public PortalWandItem(Properties properties) {
         super(properties);

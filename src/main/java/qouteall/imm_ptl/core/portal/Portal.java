@@ -1,18 +1,16 @@
 package qouteall.imm_ptl.core.portal;
 
 import com.mojang.logging.LogUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import de.nick1st.imm_ptl.events.*;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -20,11 +18,7 @@ import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.level.ChunkPos;
@@ -120,7 +114,7 @@ public class Portal extends Entity implements
     protected Vec3 axisW;
     protected Vec3 axisH;
     
-    protected ResourceKey<Level> dimensionTo;
+    public ResourceKey<Level> dimensionTo;
     
     protected Vec3 destination;
     
@@ -885,10 +879,8 @@ public class Portal extends Entity implements
     }
 
     @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(
-        ServerEntity serverEntity
-    ) {
-        return createSyncPacket();
+    public void sendPairingData(@NotNull ServerPlayer serverPlayer, Consumer<CustomPacketPayload> payloadConsumer) {
+        payloadConsumer.accept(createSyncPacket());
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -1721,12 +1713,17 @@ public class Portal extends Entity implements
     
     //@OnlyIn(Dist.CLIENT)
     public void acceptDataSync(Vec3 pos, CompoundTag customData) {
-        PortalState oldState = getPortalState();
+        PortalState oldState;
+        try {
+            oldState = getPortalState();
+        } catch (Exception ignored) { // TODO @Nick1st this is a quick fix for initial data sync
+            oldState = null;
+        }
         
         setPos(pos);
         readAdditionalSaveData(customData);
 
-        if (animation.defaultAnimation.durationTicks > 0) {
+        if (animation.defaultAnimation.durationTicks > 0 && oldState != null) { // TODO @Nick1st the != null is a quick fix for initial data sync
             animation.defaultAnimation.startClientDefaultAnimation(this, oldState);
         }
 

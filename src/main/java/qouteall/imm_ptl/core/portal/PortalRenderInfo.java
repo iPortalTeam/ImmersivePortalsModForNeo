@@ -1,8 +1,8 @@
 package qouteall.imm_ptl.core.portal;
 
 import com.mojang.logging.LogUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import de.nick1st.imm_ptl.events.ClientPortalTickEvent;
+import de.nick1st.imm_ptl.events.PortalDisposeEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.NeoForge;
@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.IPGlobal;
+import qouteall.imm_ptl.core.portal.animation.ClientPortalAnimationManagement;
 import qouteall.imm_ptl.core.render.GlQueryObject;
 import qouteall.imm_ptl.core.render.QueryManager;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
@@ -26,7 +27,7 @@ import java.util.UUID;
 // A portal's rendering related things
 // to access the package private field of Portal, this class is not in "render" package
 @SuppressWarnings("resource")
-@Environment(EnvType.CLIENT)
+//@Environment(EnvType.CLIENT)
 public class PortalRenderInfo implements AutoCloseable {
     
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -87,13 +88,6 @@ public class PortalRenderInfo implements AutoCloseable {
                 presentation.tick(portal);
             }
         });
-        
-        Portal.PORTAL_DISPOSE_SIGNAL.register(portal -> {
-
-        NeoForge.EVENT_BUS.addListener(Portal.ClientPortalAcceptSyncEvent.class, clientPortalAcceptSyncEvent ->
-                PortalRenderInfo.updateGroupBinding(clientPortalAcceptSyncEvent.portal));
-        NeoForge.EVENT_BUS.addListener(ClientPortalAnimationManagement.ClientPortalDefaultAnimationFinishEvent.class, event ->
-                PortalRenderInfo.updateGroupBinding(event.portal));
 
         NeoForge.EVENT_BUS.addListener(PortalDisposeEvent.class, event -> {
             Portal portal = event.portal;
@@ -199,9 +193,9 @@ public class PortalRenderInfo implements AutoCloseable {
         if (totalMispredictCount > 5) {
             return true;
         }
-        
+
         long currTime = System.nanoTime();
-        
+
         return (currTime - mispredictTime1) < Helper.secondToNano(30);
     }
     

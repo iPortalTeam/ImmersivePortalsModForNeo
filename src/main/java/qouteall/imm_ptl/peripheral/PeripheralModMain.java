@@ -10,7 +10,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.peripheral.alternate_dimension.ChaosBiomeSource;
 import qouteall.imm_ptl.peripheral.alternate_dimension.ErrorTerrainGenerator;
 import qouteall.imm_ptl.peripheral.alternate_dimension.FormulaGenerator;
@@ -60,8 +62,6 @@ public class PeripheralModMain {
 //        AlternateDimensions.init();
 //
 //        DimensionAPI.suppressExperimentalWarningForNamespace("immersive_portals");
-        
-        DimensionAPI.suppressExperimentalWarningForNamespace("immersive_portals");
 
         PortalWandItem.init();
         

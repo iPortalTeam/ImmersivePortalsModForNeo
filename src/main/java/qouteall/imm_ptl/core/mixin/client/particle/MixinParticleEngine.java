@@ -41,7 +41,7 @@ public class MixinParticleEngine implements IEParticleManager {
     
     // maybe incompatible with sodium and iris
     @WrapWithCondition(
-        method = "render",
+        method = "render(Lnet/minecraft/client/renderer/LightTexture;Lnet/minecraft/client/Camera;FLnet/minecraft/client/renderer/culling/Frustum;Ljava/util/function/Predicate;)V",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/particle/Particle;render(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/client/Camera;F)V"

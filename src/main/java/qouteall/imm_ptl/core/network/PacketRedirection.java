@@ -177,15 +177,6 @@ public class PacketRedirection {
         player.connection.send(createRedirectedMessage(player.server, dimension, packet));
     }
 
-    private static final ProtocolInfo<ClientGamePacketListener> PLACEHOLDER_PROTOCOL_INFO =
-            // the function passed into bind is used for converting ByteBuf to RegistryFriendlyByteBuf
-            // it's a pre-processor
-            // that ProtocolInfo will be used by passing RegistryFriendlyByteBuf
-            // so only a casting is needed
-            GameProtocols.CLIENTBOUND_TEMPLATE.bind(
-                    argBuf -> ((RegistryFriendlyByteBuf) argBuf)
-            );
-
     // Note this doesn't consider bundle packet
     public static boolean isRedirectPacket(Packet<?> packet) {
         return packet instanceof ClientboundCustomPayloadPacket customPayloadPacket &&
@@ -203,7 +194,7 @@ public class PacketRedirection {
         Map<ServerCommonPacketListenerImpl, List<Packet<ClientGamePacketListener>>>
             map = new HashMap<>();
         forceBundle.set((listener, packet) -> {
-            List<Packet<? super ClientGamePacketListener>> packetsToBundle =
+            List<Packet<ClientGamePacketListener>> packetsToBundle =
                     map.computeIfAbsent(listener, k -> new ArrayList<>());
             if (packet instanceof BundlePacket<?> bundlePacket) {
                 Iterable<? extends Packet<?>> subPackets = bundlePacket.subPackets();

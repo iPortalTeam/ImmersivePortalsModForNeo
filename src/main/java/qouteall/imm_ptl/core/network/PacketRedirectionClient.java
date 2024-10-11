@@ -89,30 +89,26 @@ public class PacketRedirectionClient {
         Packet<ClientGamePacketListener> packet,
         ClientGamePacketListener handler
     ) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.isSameThread()) {
-            ResourceKey<Level> dimension = DimensionIntId.getClientMap()
-                    .fromIntegerId(dimensionIntId);
+        ResourceKey<Level> oldTaskRedirection = clientTaskRedirection.get();
+        clientTaskRedirection.set(dimension);
 
-            ResourceKey<Level> oldTaskRedirection = clientTaskRedirection.get();
-            clientTaskRedirection.set(dimension);
-
-            try {
+        try {
+            if (Minecraft.getInstance().isSameThread()) {
+                // typically for the invocation inside bundle packet handling
                 ClientWorldLoader.withSwitchedWorldFailSoft(
-                        dimension,
-                        () -> {
-                            packet.handle(handler);
-                        }
+                    dimension,
+                    () -> {
+                        packet.handle(handler);
+                    }
                 );
-            } finally {
-                clientTaskRedirection.set(oldTaskRedirection);
             }
-        } else {
-            minecraft.execute(() -> {
-                handleRedirectedPacket(
-                        dimensionIntId, packet, handler
-                );
-            });
+            else {
+                // normal packet handling
+                packet.handle(handler);
+            }
+        }
+        finally {
+            clientTaskRedirection.set(oldTaskRedirection);
         }
     }
 }

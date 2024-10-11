@@ -29,7 +29,6 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import qouteall.dimlib.api.DimensionAPI;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPCGlobal;
@@ -225,9 +224,9 @@ public class GlobalPortalStorage extends SavedData {
         clearAbnormalPortals(currWorld.getServer());
     }
     
-    private static List<Portal> getPortalsFromTag(
-        CompoundTag tag,
-        Level currWorld
+    static List<Portal> getPortalsFromTag(
+            CompoundTag tag,
+            Level currWorld
     ) {
         /**{@link CompoundTag#getType()}*/
         ListTag listTag = tag.getList("data", 10);

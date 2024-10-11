@@ -12,8 +12,6 @@
     "iris.MixinIrisIris",
     "iris.MixinIrisNewWorldRenderingPipeline",
     "iris.MixinIrisShadowRenderTargets",
-    "iris.MixinIrisSodiumChunkShaderInterface",
-    "iris.MixinIrisSodiumSodiumTerrainPipeline",
     "sodium.IESodiumWorldRenderer",
     "sodium.MixinSodiumChunkShaderInterface",
     "sodium.MixinSodiumOcclusionCuller",

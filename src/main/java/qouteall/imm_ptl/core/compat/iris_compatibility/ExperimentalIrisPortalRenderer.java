@@ -246,7 +246,7 @@ public class ExperimentalIrisPortalRenderer extends PortalRenderer {
         
         if (!portal.isFuseView()) {
             // TODO sync from RendererUsingStencil
-            restoreDepthOfPortalViewArea(portal, matrixStack);
+            restoreDepthOfPortalViewArea(portal, modelView);
         }
         
         clampStencilValue(outerPortalStencilValue);

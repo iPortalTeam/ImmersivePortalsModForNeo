@@ -54,7 +54,7 @@ public class BlockManipulationClient {
         return bhr == null || bhr.getType() == HitResult.Type.MISS;
     }
     
-    public static void updatePointedBlock(float tickDelta) {
+    public static void updatePointedBlock(float partialTick) {
         if (client.gameMode == null || client.level == null || client.player == null) {
             return;
         }

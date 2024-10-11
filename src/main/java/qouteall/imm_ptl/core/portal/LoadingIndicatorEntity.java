@@ -29,7 +29,7 @@ public class LoadingIndicatorEntity extends Entity {
                 .fireImmune()
                 .clientTrackingRange(96)
                 .updateInterval(20);
-        builder.dimensions = new EntityDimensions(1, 1, true);
+        builder.dimensions = EntityDimensions.fixed(1, 1);
         return builder.build("");
     }
     

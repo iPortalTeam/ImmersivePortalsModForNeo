@@ -30,7 +30,7 @@ public abstract class PortalGenForm {
             registry, McHelper.newResourceLocation("imm_ptl:heterogeneous"), HeterogeneousForm.CODEC
         );
         Registry.register(
-            registry, McHelper.newResourceLocation("imm_ptl:flipping_floor_square"), FlippingFloorSquareForm.codec
+            registry, McHelper.newResourceLocation("imm_ptl:flipping_floor_square"), FlippingFloorSquareForm.CODEC
         );
         Registry.register(
             registry, McHelper.newResourceLocation("imm_ptl:scaling_square"), ScalingSquareForm.CODEC

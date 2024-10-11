@@ -1,5 +1,6 @@
 package qouteall.imm_ptl.core.platform_specific;
 
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
@@ -42,12 +43,13 @@ public class IPModEntry {
     public void onInitialize(IEventBus eventBus) {
         IPModMain.init(eventBus);
         RequiemCompat.init();
-        
-        IPModMain.registerEntityTypes(
-            (id, entityType) -> Registry.register(BuiltInRegistries.ENTITY_TYPE, id, entityType)
-        );
-        
-        IPModMain.registerBlocks((id, obj) -> Registry.register(BuiltInRegistries.BLOCK, id, obj));
+
+// @Nick1st Neo moved
+//        IPModMain.registerEntityTypes(
+//            (id, entityType) -> Registry.register(BuiltInRegistries.ENTITY_TYPE, id, entityType)
+//        );
+//
+//        IPModMain.registerBlocks((id, obj) -> Registry.register(BuiltInRegistries.BLOCK, id, obj));
         
         if (ModList.get().isLoaded("dimthread")) {
             O_O.isDimensionalThreadingPresent = true;

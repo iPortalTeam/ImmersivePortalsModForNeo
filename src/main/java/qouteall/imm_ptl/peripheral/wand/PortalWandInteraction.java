@@ -324,21 +324,20 @@ public class PortalWandInteraction {
                             return true;
                         }
 
-                            if (player.getMainHandItem().getItem() != PortalWandItem.instance) {
-                                return true;
-                            }
-
-                            return false;
+                        if (player.getMainHandItem().getItem() != PortalWandItem.instance) {
+                            return true;
                         }
+
+                        return false;
+                    }
                 );
 
                 copyingSessionMap.entrySet().removeIf(
-                        e -> {
-                            ServerPlayer player = e.getKey();
-                            return player.isRemoved();
-                        }
+                    e -> {
+                        ServerPlayer player = e.getKey();
+                        return player.isRemoved();
+                    }
                 );
-            }
         });
 
         NeoForge.EVENT_BUS.addListener(ServerCleanupEvent.class, event -> {

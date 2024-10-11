@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -26,7 +24,7 @@ public class ScaleUtils {
     public static final ResourceLocation IPORTAL_SCALING =
         ResourceLocation.fromNamespaceAndPath("iportal", "scaling");
     
-    @Environment(EnvType.CLIENT)
+//    @Environment(EnvType.CLIENT)
     public static void onClientPlayerTeleported(Portal portal) {
         if (portal.hasScaling() && portal.isTeleportChangesScale()) {
             Minecraft client = Minecraft.getInstance();
@@ -144,7 +142,7 @@ public class ScaleUtils {
         return getScale(entity);
     }
     
-    private static void doScalingForEntity(Entity entity, Portal portal) {
+    public static void doScalingForEntity(Entity entity, Portal portal) {
         Vec3 eyePos = McHelper.getEyePos(entity);
         Vec3 lastTickEyePos = McHelper.getLastTickEyePos(entity);
         

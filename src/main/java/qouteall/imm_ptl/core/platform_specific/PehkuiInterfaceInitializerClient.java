@@ -6,7 +6,7 @@ import org.apache.commons.lang3.Validate;
 import qouteall.imm_ptl.core.ducks.IECamera;
 import qouteall.imm_ptl.core.portal.Portal;
 
-import static qouteall.imm_ptl.core.platform_specific.PehkuiInterfaceInitializer.doScalingForEntity;
+import static qouteall.imm_ptl.core.ScaleUtils.doScalingForEntity;
 
 public class PehkuiInterfaceInitializerClient {
     static void onPlayerTeleportedClient(Portal portal) {
