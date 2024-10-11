@@ -56,7 +56,7 @@ public class MyGameRenderer {
     
     private static final LimitedLogger limitedLogger = new LimitedLogger(10);
     
-    public static final int MAX_SECONDARY_BUFFER_NUM = 2;
+//    public static final int MAX_SECONDARY_BUFFER_NUM = 2;
     
     // portal rendering and outer world rendering uses different buffer builder storages
     private static Stack<RenderBuffers> secondaryRenderBuffers = new Stack<>();
@@ -75,9 +75,9 @@ public class MyGameRenderer {
     
     @Nullable
     private static RenderBuffers acquireRenderBuffersObject() {
-        if (usingRenderBuffersObjectNum >= MAX_SECONDARY_BUFFER_NUM) {
-            return null;
-        }
+//        if (usingRenderBuffersObjectNum >= MAX_SECONDARY_BUFFER_NUM) {
+//            return null;
+//        }
         usingRenderBuffersObjectNum++;
         
         if (secondaryRenderBuffers.isEmpty()) {
@@ -132,7 +132,7 @@ public class MyGameRenderer {
         LevelRenderer worldRenderer = ClientWorldLoader.getWorldRenderer(newDimension);
         
         CHelper.checkGlError();
-
+        
         IEGameRenderer ieGameRenderer = (IEGameRenderer) client.gameRenderer;
         DimensionRenderHelper helper =
             ClientWorldLoader.getDimensionRenderHelper(newDimension);
@@ -160,11 +160,11 @@ public class MyGameRenderer {
         // the view bobbing is related with scale
         Matrix4f oldProjectionMatrix = RenderSystem.getProjectionMatrix();
         Matrix4fStack oldModelViewStack = IERenderSystem.ip_getModelViewStack();
-
+        
         ObjectArrayList<SectionRenderDispatcher.RenderSection> newChunkInfoList =
             VisibleSectionDiscovery.takeList();
         ((IEWorldRenderer) oldWorldRenderer).portal_setChunkInfoList(newChunkInfoList);
-
+        
         Object irisPipeline = IrisInterface.invoker.getPipeline(worldRenderer);
         
         // switch (note: it will no longer switch the world that client player is in )
@@ -214,8 +214,9 @@ public class MyGameRenderer {
         SodiumInterface.invoker.switchContextWithCurrentWorldRenderer(newSodiumContext);
         
         ((IEWorldRenderer) worldRenderer).portal_setTransparencyShader(null);
-
+        
         IERenderSystem.ip_setModelViewStack(new Matrix4fStack(16));
+        RenderSystem.applyModelViewMatrix();
 
         IrisInterface.invoker.setPipeline(worldRenderer, null);
         
@@ -267,6 +268,7 @@ public class MyGameRenderer {
         
         client.gameRenderer.resetProjectionMatrix(oldProjectionMatrix);
         IERenderSystem.ip_setModelViewStack(oldModelViewStack);
+        RenderSystem.applyModelViewMatrix();
 
         IrisInterface.invoker.setPipeline(worldRenderer, irisPipeline);
         

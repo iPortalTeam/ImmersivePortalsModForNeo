@@ -96,7 +96,6 @@ public class CrossPortalEntityRenderer {
         return IPGlobal.correctCrossPortalEntityRendering;
     }
     
-    // do not use runWithTransformation here (because matrixStack is changed?)
     public static void onEndRenderingEntitiesAndBlockEntities(PoseStack matrixStack) {
         isRenderingEntityNormally = false;
         

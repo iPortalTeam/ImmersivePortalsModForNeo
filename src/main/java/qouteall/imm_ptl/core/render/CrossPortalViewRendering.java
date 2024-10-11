@@ -86,7 +86,7 @@ public class CrossPortalViewRendering {
             .setWorld(ClientWorldLoader.getWorld(portal.getDestDim()))
             .setCameraPos(renderingCameraPos)
             .setCameraTransformation(portal.getAdditionalCameraTransformation())
-            .setOverwriteCameraTransformation(true)
+            .setOverwriteCameraTransformation(false)
             .setDescription(null)
             .setRenderDistance(client.options.getEffectiveRenderDistance())
             .setDoRenderHand(false)

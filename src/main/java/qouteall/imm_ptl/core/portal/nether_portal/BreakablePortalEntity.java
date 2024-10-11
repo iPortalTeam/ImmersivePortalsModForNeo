@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.mc_utils.ServerTaskList;
 import qouteall.imm_ptl.core.portal.Portal;
@@ -21,11 +22,14 @@ import qouteall.imm_ptl.core.portal.PortalPlaceholderBlock;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.my_util.DQuaternion;
 import qouteall.q_misc_util.my_util.LimitedLogger;
+import qouteall.q_misc_util.my_util.MyTaskList;
 
 import java.util.List;
 import java.util.UUID;
 
 public abstract class BreakablePortalEntity extends Portal {
+    private static final Logger LOGGER = LogUtils.getLogger();
+
     public static record OverlayInfo(
         BlockState blockState,
         double opacity,
@@ -68,7 +72,7 @@ public abstract class BreakablePortalEntity extends Portal {
         
         reversePortalId = Helper.getUuid(compoundTag, "reversePortalId");
         if (reversePortalId == null) {
-            Helper.err("missing reverse portal intId " + compoundTag);
+            Helper.err("missing reverse portal id " + compoundTag);
             reversePortalId = Util.NIL_UUID;
         }
         
@@ -204,13 +208,7 @@ public abstract class BreakablePortalEntity extends Portal {
         if (!isOtherSideChunkLoaded()) {
             return true;
         }
-        
-        // test
-//        BreakablePortalEntity rev = getReversePortal();
-//        if (rev == null) {
-//            Helper.err("ouch");
-//        }
-        
+
         List<BreakablePortalEntity> revs = findReversePortals(this);
         if (revs.size() == 1) {
             BreakablePortalEntity reversePortal = revs.get(0);
@@ -242,16 +240,27 @@ public abstract class BreakablePortalEntity extends Portal {
             reversePortal.shouldBreakPortal = true;
         }
         else {
-            int[] counter = {30};
-            ServerTaskList.of(getServer()).addTask(() -> {
-                BreakablePortalEntity reversePortal1 = getReversePortal();
-                if (reversePortal1 != null) {
-                    reversePortal1.shouldBreakPortal = true;
+            ServerTaskList.of(getServer()).addTask(MyTaskList.withRetryNumberLimit(
+                30,
+                () -> {
+                    if (this.isRemoved()) {
+                        return true;
+                    }
+
+                    if (!this.isOtherSideChunkLoaded()) {
+                        LOGGER.info("The other side chunk is not loaded. Delay finding reverse portal of {}.", this);
+                        return false;
+                    }
+
+                    BreakablePortalEntity reversePortal1 = getReversePortal();
+                    if (reversePortal1 != null) {
+                        reversePortal1.shouldBreakPortal = true;
+                    }
+
                     return true;
-                }
-                counter[0]--;
-                return counter[0] >= 0;
-            });
+                },
+                () -> {}
+            ));
         }
     }
     

@@ -28,7 +28,7 @@ import java.util.UUID;
 @SuppressWarnings("resource")
 @Environment(EnvType.CLIENT)
 public class PortalRenderInfo implements AutoCloseable {
-
+    
     private static final Logger LOGGER = LogUtils.getLogger();
     
     public static class Visibility {
@@ -78,7 +78,7 @@ public class PortalRenderInfo implements AutoCloseable {
     private long mispredictTime2 = 0;
     
     private int totalMispredictCount = 0;
-
+    
     public static void init() {
         NeoForge.EVENT_BUS.addListener(ClientPortalTickEvent.class, event -> {
             Portal portal = event.portal;
@@ -139,21 +139,20 @@ public class PortalRenderInfo implements AutoCloseable {
         Map<List<UUID>, Visibility> infoMap1 = this.infoMap;
         // the disposal func should not reference this
         return () -> {
-            // TODO change it to debug
-            LOGGER.info("Running GC-directed PortalRenderInfo clean");
-
+            LOGGER.debug("Running GC-directed PortalRenderInfo clean");
+            
             // the cleaner runs on its own thread. Use the task list to avoid thread safety issue.
             IPGlobal.PRE_TOTAL_RENDER_TASK_LIST.addOneShotTask(() -> {
                 disposeInfoMap(infoMap1);
             });
         };
     }
-
+    
     @Override
     public void close() throws Exception {
         dispose();
     }
-
+    
     // running it twice is fine
     private static void disposeInfoMap(Map<List<UUID>, Visibility> infoMap) {
         infoMap.values().forEach(Visibility::dispose);

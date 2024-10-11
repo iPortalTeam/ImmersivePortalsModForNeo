@@ -2712,6 +2712,8 @@ public class PortalCommand {
 
             mesh2D.simplify();
             
+            mesh2D.compact();
+            
         }, Util.backgroundExecutor());
         
         future.thenRun(() -> server.execute(() -> {

@@ -12,6 +12,4 @@ public interface IEGameRenderer {
     void ip_setCamera(Camera camera);
     
     void ip_setIsRenderingPanorama(boolean cond);
-    
-    void portal_bobView(PoseStack matrixStack, float partialTick);
 }

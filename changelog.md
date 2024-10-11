@@ -1,1 +1,1 @@
-Upgrade to MC 1.21. NOTE: This is a possibly buggy preview version. Backup your world before using it.
+Fix cross-portal third person view rendering.
