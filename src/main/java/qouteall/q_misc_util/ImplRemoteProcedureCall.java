@@ -231,7 +231,7 @@ public class ImplRemoteProcedureCall {
             }
         }
 
-        @OnlyIn(Dist.CLIENT)
+        //@OnlyIn(Dist.CLIENT)
         public void handle(IPayloadContext c) {
             if (!deserializeSuccess) {
                 if (ERROR_MESSAGE_LIMIT.tryDecrement()) {

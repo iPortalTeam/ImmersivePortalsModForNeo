@@ -23,7 +23,7 @@ import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.IPMcHelper;
 import qouteall.imm_ptl.core.McHelper;
-import qouteall.imm_ptl.core.ScaleUtils;
+import qouteall.imm_ptl.core.ScaleUtilsClient;
 import qouteall.imm_ptl.core.api.PortalAPI;
 import qouteall.imm_ptl.core.collision.CollisionHelper;
 import qouteall.imm_ptl.core.collision.PortalCollisionHandler;
@@ -364,7 +364,7 @@ public class ClientTeleportationManager {
             TeleportationUtil.transformEntityVelocity(portal, vehicle, portalPointVelocity, oldVehiclePos);
         }
         
-        ScaleUtils.onClientPlayerTeleported(portal);
+        ScaleUtilsClient.onClientPlayerTeleported(portal);
         
         player.connection.send(new ServerboundCustomPayloadPacket(
             new ImmPtlNetworking.TeleportPacket(

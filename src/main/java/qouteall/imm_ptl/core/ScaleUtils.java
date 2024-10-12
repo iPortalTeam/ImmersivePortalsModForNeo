@@ -1,7 +1,5 @@
 package qouteall.imm_ptl.core;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -10,9 +8,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.Vec3;
-import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
-import qouteall.imm_ptl.core.ducks.IECamera;
 import qouteall.imm_ptl.core.portal.Portal;
 
 @SuppressWarnings({"resource", "JavadocReference", "DanglingJavadoc"})
@@ -23,25 +19,26 @@ public class ScaleUtils {
      */
     public static final ResourceLocation IPORTAL_SCALING =
         ResourceLocation.fromNamespaceAndPath("iportal", "scaling");
-    
+
+    // @Nick1st moved to Client class
 //    @Environment(EnvType.CLIENT)
-    public static void onClientPlayerTeleported(Portal portal) {
-        if (portal.hasScaling() && portal.isTeleportChangesScale()) {
-            Minecraft client = Minecraft.getInstance();
-            
-            LocalPlayer player = client.player;
-            
-            Validate.notNull(player, "Player is null");
-            
-            doScalingForEntity(player, portal);
-            
-            IECamera camera = (IECamera) client.gameRenderer.getMainCamera();
-            camera.ip_setCameraY(
-                ((float) (camera.ip_getCameraY() * portal.getScaling())),
-                ((float) (camera.ip_getLastCameraY() * portal.getScaling()))
-            );
-        }
-    }
+//    public static void onClientPlayerTeleported(Portal portal) {
+//        if (portal.hasScaling() && portal.isTeleportChangesScale()) {
+//            Minecraft client = Minecraft.getInstance();
+//
+//            LocalPlayer player = client.player;
+//
+//            Validate.notNull(player, "Player is null");
+//
+//            doScalingForEntity(player, portal);
+//
+//            IECamera camera = (IECamera) client.gameRenderer.getMainCamera();
+//            camera.ip_setCameraY(
+//                ((float) (camera.ip_getCameraY() * portal.getScaling())),
+//                ((float) (camera.ip_getLastCameraY() * portal.getScaling()))
+//            );
+//        }
+//    }
     
     public static void onServerEntityTeleported(Entity entity, Portal portal) {
         if (portal.hasScaling() && portal.isTeleportChangesScale()) {
