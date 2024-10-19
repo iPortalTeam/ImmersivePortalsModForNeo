@@ -1,3 +1,4 @@
+// TODO This must be fixed, the commit this was changed with is https://github.com/IrisShaders/Iris/commit/e67ca5a310d936406d234289cd791a0be762f5c2 seems this should now target SodiumPrograms
 //package qouteall.imm_ptl.core.compat.mixin.iris;
 //
 //import com.mojang.blaze3d.shaders.Program;
