@@ -1,6 +1,5 @@
 package qouteall.imm_ptl.core.compat.mixin.sodium;
 
-
 import net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer;
 import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
 import org.spongepowered.asm.mixin.Mixin;

@@ -5,6 +5,8 @@ import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
 import net.caffeinemc.mods.sodium.client.render.chunk.map.ChunkStatus;
 import net.caffeinemc.mods.sodium.client.render.chunk.map.ChunkTrackerHolder;
 import net.caffeinemc.mods.sodium.client.render.texture.SpriteUtil;
+import net.caffeinemc.mods.sodium.client.world.LevelRendererExtension;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.jetbrains.annotations.Nullable;
@@ -59,14 +61,14 @@ public class SodiumInterface {
         @Override
         public void switchContextWithCurrentWorldRenderer(Object context) {
             SodiumWorldRenderer swr =
-                    SodiumWorldRenderer.instance();
+                ((LevelRendererExtension) Minecraft.getInstance().levelRenderer).sodium$getWorldRenderer();
             swr.scheduleTerrainUpdate();
 
             RenderSectionManager renderSectionManager =
-                    ((IESodiumWorldRenderer) swr).ip_getRenderSectionManager();
+                ((IESodiumWorldRenderer) swr).ip_getRenderSectionManager();
 
             ((IESodiumRenderSectionManager) renderSectionManager)
-                    .ip_swapContext(((SodiumRenderingContext) context));
+                .ip_swapContext(((SodiumRenderingContext) context));
 
             swr.scheduleTerrainUpdate();
         }
@@ -79,13 +81,13 @@ public class SodiumInterface {
         @Override
         public void onClientChunkLoaded(ClientLevel world, int chunkX, int chunkZ) {
             ChunkTrackerHolder.get(world)
-                    .onChunkStatusAdded(chunkX, chunkZ, ChunkStatus.FLAG_HAS_BLOCK_DATA);
+                .onChunkStatusAdded(chunkX, chunkZ, ChunkStatus.FLAG_HAS_BLOCK_DATA);
         }
 
         @Override
         public void onClientChunkUnloaded(ClientLevel world, int chunkX, int chunkZ) {
             ChunkTrackerHolder.get(world)
-                    .onChunkStatusRemoved(chunkX, chunkZ, ChunkStatus.FLAG_HAS_BLOCK_DATA);
+                .onChunkStatusRemoved(chunkX, chunkZ, ChunkStatus.FLAG_HAS_BLOCK_DATA);
         }
     }
 

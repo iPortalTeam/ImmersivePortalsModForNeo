@@ -1,8 +1,8 @@
 package qouteall.imm_ptl.core.compat.mixin.sodium;
 
 import net.caffeinemc.mods.sodium.client.gl.GlObject;
-import net.caffeinemc.mods.sodium.client.render.chunk.shader.ChunkShaderInterface;
 import net.caffeinemc.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
+import net.caffeinemc.mods.sodium.client.render.chunk.shader.DefaultShaderInterface;
 import net.caffeinemc.mods.sodium.client.render.chunk.shader.ShaderBindingContext;
 import org.lwjgl.opengl.GL20C;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +15,7 @@ import qouteall.imm_ptl.core.render.FrontClipping;
 import qouteall.q_misc_util.Helper;
 
 @Pseudo
-@Mixin(value = ChunkShaderInterface.class, remap = false)
+@Mixin(value = DefaultShaderInterface.class, remap = false)
 public class MixinSodiumChunkShaderInterface {
     @Unique
     private int uIPClippingEquation = -1;
