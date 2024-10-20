@@ -58,6 +58,7 @@ public class MixinServerPlayerGameMode {
             "handleBlockBreakAction",
             "destroyAndAck",
             "destroyBlock",
+            "removeBlock" // @Nick1st NeoPatch
         },
         at = @At(
             value = "FIELD",
