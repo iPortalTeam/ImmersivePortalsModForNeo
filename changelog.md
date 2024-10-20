@@ -18,6 +18,6 @@ None currently
 - Iris compatibility is not fully functional
 - Crash with SecurityCraft
 
-[Unreleased Changes]: https://github.com/iPortalTeam/ImmersivePortalsModForNeo/v6.0.3...HEAD
+[Unreleased Changes]: https://github.com/iPortalTeam/ImmersivePortalsModForNeo/compare/v6.0.3...HEAD
 [6.0.3]: https://github.com/iPortalTeam/ImmersivePortalsModForNeo/releases/tag/v6.0.3
 
