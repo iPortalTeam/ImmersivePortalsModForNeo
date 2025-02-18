@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import qouteall.imm_ptl.core.chunk_loading.ChunkLoader;
 import qouteall.imm_ptl.core.chunk_loading.ImmPtlChunkTracking;
 import qouteall.imm_ptl.core.chunk_loading.PlayerChunkLoading;
 import qouteall.imm_ptl.core.ducks.IEChunkMap;
@@ -64,12 +65,30 @@ public abstract class MixinChunkMap_C implements IEChunkMap {
         ci.cancel();
     }
     
+//    /**
+//     * @author qouteall
+//     * @reason
+//     */
+//    @Overwrite
+//    private void onChunkReadyToSend(LevelChunk chunk) {
+//        ImmPtlChunkTracking.onChunkProvidedDeferred(chunk);
+//    }
+
+    @Inject(
+            method = "onChunkReadyToSend",
+            at = @At("HEAD")
+    )
+    private void onChunkReadyToSend(LevelChunk chunk, CallbackInfo ci) {
+        ImmPtlChunkTracking.onChunkProvidedDeferred(chunk);
+        //ci.cancel();
+    }
+
     /**
-     * @author qouteall
-     * @reason
+     * @author Nick1st
+     * @reason the former Mixin now causes regular conflicts
      */
     @Overwrite
-    private void onChunkReadyToSend(LevelChunk chunk) {
-        ImmPtlChunkTracking.onChunkProvidedDeferred(chunk);
+    private static void markChunkPendingToSend(ServerPlayer player, LevelChunk chunk) {
+        ImmPtlChunkTracking.addPerPlayerAdditionalChunkLoader(player, new ChunkLoader(chunk.getLevel().dimension(), chunk.getPos().x, chunk.getPos().z, 1));
     }
 }

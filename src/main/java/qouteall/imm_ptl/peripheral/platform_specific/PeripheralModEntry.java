@@ -1,6 +1,7 @@
 package qouteall.imm_ptl.peripheral.platform_specific;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -13,7 +14,7 @@ public class PeripheralModEntry {
 
     public static final String MODID = "imm_ptl";
 
-    public static final DeferredRegister.DataComponents DATA_COMPONENTS_REGISTRAR = DeferredRegister.createDataComponents(MODID);
+    public static final DeferredRegister.DataComponents DATA_COMPONENTS_REGISTRAR = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, MODID);
 
     public PeripheralModEntry(IEventBus modEventBus) {
         DATA_COMPONENTS_REGISTRAR.register(modEventBus);

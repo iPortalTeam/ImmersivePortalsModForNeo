@@ -123,15 +123,17 @@ dependencies {
     /*implementation "maven.modrinth:embeddium:Na1PoLYF"
     compileOnly "maven.modrinth:oculus:1.20.1-1.6.15a"*/
 
-    implementation "maven.modrinth:sodium:mc1.21.1-0.6.5-neoforge"
-    implementation "maven.modrinth:iris:1.8.1+1.21.1-neoforge"
+    implementation "maven.modrinth:sodium:mc1.21.1-0.6.7-neoforge"
+    implementation "maven.modrinth:iris:1.8.6+1.21.1-neoforge"
 
     implementation "maven.modrinth:cloth-config:15.0.140+neoforge"
     implementation "maven.modrinth:pehkui:3.8.3+1.21-neoforge"
 
+    implementation "maven.modrinth:security-craft:HAh7fFcj"
+
     // The Aether
     implementation "maven.modrinth:owo-lib:0.12.15-beta.12+1.21"
-    implementation "maven.modrinth:aether:1.21.1-1.5.1-beta.4-neoforge"
+    implementation "maven.modrinth:aether:1.21.1-1.5.4-neoforge"
 }
 
 tasks.named('build').configure { dependsOn('jarJar') }

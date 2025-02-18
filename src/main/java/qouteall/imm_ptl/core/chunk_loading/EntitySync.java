@@ -19,6 +19,7 @@ public class EntitySync {
     }
     
     /**
+     * Replace {@link ChunkMap#tick()}
      * regarding the players in all dimensions
      */
     public static void update(MinecraftServer server) {
