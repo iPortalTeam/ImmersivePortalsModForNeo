@@ -66,8 +66,6 @@ public abstract class PortalRenderer {
     
     public abstract void onBeforeTranslucentRendering(Matrix4f modelView);
     
-    public abstract void onAfterTranslucentRendering(Matrix4f modelView);
-    
     // will be called when rendering portal
     public abstract void onHandRenderingEnded();
     

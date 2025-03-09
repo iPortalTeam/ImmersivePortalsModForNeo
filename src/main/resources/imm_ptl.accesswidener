@@ -13,8 +13,6 @@ transitive-accessible method net/minecraft/world/level/GameRules register (Ljava
 
 transitive-accessible method net/minecraft/world/level/GameRules$BooleanValue create (Z)Lnet/minecraft/world/level/GameRules$Type;
 
-transitive-accessible method com/mojang/blaze3d/shaders/Program$Type getGlType ()I
-
 transitive-extendable method net/minecraft/world/entity/Entity getBoundingBox ()Lnet/minecraft/world/phys/AABB;
 
 #transitive-accessible class net/minecraft/client/renderer/LevelRenderer$RenderChunkInfo

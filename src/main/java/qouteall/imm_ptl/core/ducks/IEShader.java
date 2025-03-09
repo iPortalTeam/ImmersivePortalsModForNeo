@@ -4,6 +4,5 @@ import com.mojang.blaze3d.shaders.Uniform;
 import org.jetbrains.annotations.Nullable;
 
 public interface IEShader {
-    @Nullable
-    Uniform ip_getClippingEquationUniform();
+    int ip_getClippingEquationUniformLocation();
 }

@@ -3,6 +3,7 @@ package qouteall.imm_ptl.core.render.renderer;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
@@ -50,7 +51,7 @@ public class RendererUsingStencil extends PortalRenderer {
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);
         
-        client.getProfiler().popPush("render_portal_total");
+        Profiler.get().popPush("render_portal_total");
         renderPortals(modelView);
         if (PortalRendering.isRendering()) {
             setStencilStateForWorldRendering();
@@ -68,11 +69,6 @@ public class RendererUsingStencil extends PortalRenderer {
         for (Portal portal : portalsToRender) {
             doRenderPortal(portal, modelView);
         }
-    }
-    
-    @Override
-    public void onAfterTranslucentRendering(Matrix4f modelView) {
-    
     }
     
     @Override
@@ -123,13 +119,13 @@ public class RendererUsingStencil extends PortalRenderer {
         
         int outerPortalStencilValue = PortalRendering.getPortalLayer();
         
-        client.getProfiler().push("render_view_area");
+        Profiler.get().push("render_view_area");
         
         boolean anySamplePassed = PortalRenderInfo.renderAndDecideVisibility(portal, () -> {
             renderPortalViewAreaToStencil(portal, modelView);
         });
         
-        client.getProfiler().pop();
+        Profiler.get().pop();
         
         if (!anySamplePassed) {
             setStencilStateForWorldRendering();
@@ -141,9 +137,9 @@ public class RendererUsingStencil extends PortalRenderer {
         int thisPortalStencilValue = outerPortalStencilValue + 1;
         
         if (!portal.isFuseView()) {
-            client.getProfiler().push("clear_depth_of_view_area");
+            Profiler.get().push("clear_depth_of_view_area");
             clearDepthOfThePortalViewArea(portal);
-            client.getProfiler().pop();
+            Profiler.get().pop();
         }
         
         setStencilStateForWorldRendering();

@@ -4,12 +4,13 @@ import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.CompiledShaderProgram;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.imm_ptl.core.IPGlobal;
@@ -178,24 +179,30 @@ public class FrontClipping {
             return;
         }
         
-        ShaderInstance shader = RenderSystem.getShader();
+        CompiledShaderProgram shader = RenderSystem.getShader();
         
         if (shader == null) {
             return;
         }
         
-        Uniform clippingEquationUniform = ((IEShader) shader).ip_getClippingEquationUniform();
-        if (clippingEquationUniform != null) {
+        int uniformLocation = ((IEShader) shader).ip_getClippingEquationUniformLocation();
+        if (uniformLocation != -1) {
             if (isClippingEnabled) {
                 double[] equation = activeClipPlaneEquationBeforeModelView;
 //                double[] equation = isRenderingEntities ? activeClipPlaneAfterModelView : activeClipPlaneEquationBeforeModelView;
-                clippingEquationUniform.set(
+//                clippingEquationUniform.set(
+//                    (float) equation[0], (float) equation[1],
+//                    (float) equation[2], (float) equation[3]
+//                );
+                GL20.glUniform4f(
+                    uniformLocation,
                     (float) equation[0], (float) equation[1],
                     (float) equation[2], (float) equation[3]
                 );
             }
             else {
-                clippingEquationUniform.set(0f, 0f, 0f, 1f);
+                GL20.glUniform4f(uniformLocation, 0, 0, 0, 1);
+//                clippingEquationUniform.set(0f, 0f, 0f, 1f);
             }
         }
     }
@@ -205,15 +212,15 @@ public class FrontClipping {
             return;
         }
         
-        ShaderInstance shader = RenderSystem.getShader();
+        CompiledShaderProgram shader = RenderSystem.getShader();
         
         if (shader == null) {
             return;
         }
         
-        Uniform clippingEquationUniform = ((IEShader) shader).ip_getClippingEquationUniform();
-        if (clippingEquationUniform != null) {
-            clippingEquationUniform.set(0f, 0f, 0f, 1f);
+        int uniformLocation = ((IEShader) shader).ip_getClippingEquationUniformLocation();
+        if (uniformLocation != -1) {
+            GL20.glUniform4f(uniformLocation, 0, 0, 0, 1);
         }
     }
 }

@@ -23,6 +23,8 @@ import qouteall.imm_ptl.core.render.CrossPortalEntityRenderer;
 import qouteall.q_misc_util.my_util.LimitedLogger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -203,7 +205,9 @@ public class IPMcHelper {
             return new Tuple<>(
                 BlockHitResult.miss(
                     end,
-                    Direction.getNearest(diff.x, diff.y, diff.z),
+                    Arrays.stream(Direction.values())
+                        .max(Comparator.comparingDouble(d -> d.getUnitVec3().dot(diff)))
+                        .orElseThrow(),
                     BlockPos.containing(end)
                 ),
                 portals

@@ -58,11 +58,6 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
     }
     
     @Override
-    public void onAfterTranslucentRendering(Matrix4f modelView) {
-    
-    }
-    
-    @Override
     public void finishRendering() {
         GL11.glDisable(GL_STENCIL_TEST);
     }
@@ -72,7 +67,7 @@ public class IrisCompatibilityPortalRenderer extends PortalRenderer {
         deferredBuffer.prepare();
         
         deferredBuffer.fb.setClearColor(1, 0, 0, 0);
-        deferredBuffer.fb.clear(Minecraft.ON_OSX);
+        deferredBuffer.fb.clear();
         
         IPPortingLibCompat.setIsStencilEnabled(
             client.getMainRenderTarget(), false

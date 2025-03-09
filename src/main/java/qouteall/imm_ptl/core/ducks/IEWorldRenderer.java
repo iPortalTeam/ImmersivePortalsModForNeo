@@ -26,10 +26,6 @@ public interface IEWorldRenderer {
         MultiBufferSource vertexConsumerProvider
     );
     
-    PostChain portal_getTransparencyShader();
-    
-    void portal_setTransparencyShader(PostChain arg);
-    
     RenderBuffers ip_getRenderBuffers();
     
     void ip_setRenderBuffers(RenderBuffers arg);

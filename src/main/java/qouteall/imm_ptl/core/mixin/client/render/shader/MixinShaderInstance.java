@@ -1,12 +1,12 @@
 package qouteall.imm_ptl.core.mixin.client.render.shader;
 
-import com.mojang.blaze3d.shaders.Shader;
 import com.mojang.blaze3d.shaders.Uniform;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.CompiledShaderProgram;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -15,41 +15,26 @@ import qouteall.imm_ptl.core.render.ShaderCodeTransformation;
 
 import java.util.List;
 
-@Mixin(ShaderInstance.class)
+@Mixin(CompiledShaderProgram.class)
 public abstract class MixinShaderInstance implements IEShader {
-    @Shadow
-    @Nullable
-    public abstract Uniform getUniform(String name);
     
     @Shadow
     @Final
-    private List<Uniform> uniforms;
-    @Shadow
-    @Final
-    private String name;
+    private int programId;
     
-    @Nullable
-    private Uniform ip_clippingEquation;
+    @Unique
+    private int ip_clippingEquationLoccation;
     
     @Inject(
-        method = "Lnet/minecraft/client/renderer/ShaderInstance;updateLocations()V",
-        at = @At("HEAD")
+        method = "setupUniforms",
+        at = @At("RETURN")
     )
-    private void onLoadReferences(CallbackInfo ci) {
-        Shader this_ = (Shader) (Object) this;
-        
-        if (ShaderCodeTransformation.shouldAddUniform(name)) {
-            ip_clippingEquation = new Uniform(
-                "iportal_ClippingEquation",
-                7, 4, this_
-            );
-            uniforms.add(ip_clippingEquation);
-        }
+    private void onSetupUniforms(CallbackInfo ci) {
+        ip_clippingEquationLoccation = Uniform.glGetUniformLocation(programId, "iportal_ClippingEquation");
     }
     
-    @Nullable
     @Override
-    public Uniform ip_getClippingEquationUniform() {
-        return ip_clippingEquation;
+    public int ip_getClippingEquationUniformLocation() {
+        return ip_clippingEquationLoccation;
     }
 }

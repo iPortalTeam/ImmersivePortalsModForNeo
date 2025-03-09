@@ -2,6 +2,7 @@ package qouteall.imm_ptl.core.mixin.client.render;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -9,6 +10,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Matrix4f;
 import org.joml.Quaternionfc;
@@ -59,10 +62,7 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
 
     @Shadow
     private boolean panoramicMode;
-    
-    @Shadow
-    public abstract void resetProjectionMatrix(Matrix4f matrix4f);
-    
+
     @Shadow
     protected abstract void bobView(PoseStack matrices, float f);
     
@@ -72,16 +72,17 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
     private void onFarBeforeRendering(
         DeltaTracker deltaTracker, boolean renderWorldIn, CallbackInfo ci
     ) {
-        minecraft.getProfiler().push("ip_pre_total_render");
+        ProfilerFiller profilerFiller = Profiler.get();
+        profilerFiller.push("ip_pre_total_render");
         IPGlobal.PRE_TOTAL_RENDER_TASK_LIST.processTasks();
-        minecraft.getProfiler().pop();
+        profilerFiller.pop();
         if (minecraft.level == null) {
             return;
         }
         if (!renderWorldIn) { // when respawning, it will runTick and execute rendering
             return;
         }
-        minecraft.getProfiler().push("ip_pre_render");
+        profilerFiller.push("ip_pre_render");
         // Note do not use delta tick. use partial tick.
         float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
         RenderStates.updatePreRenderInfo(partialTick);
@@ -94,7 +95,7 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
         if (IPCGlobal.earlyRemoteUpload) {
             MyRenderHelper.earlyRemoteUpload();
         }
-        minecraft.getProfiler().pop();
+        profilerFiller.pop();
         
         RenderStates.frameIndex++;
     }
@@ -134,9 +135,10 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
         GuiPortalRendering._onGameRenderEnd();
         
         if (IPCGlobal.lateClientLightUpdate) {
-            minecraft.getProfiler().push("ip_late_update_light");
+            ProfilerFiller profilerFiller = Profiler.get();
+            profilerFiller.push("ip_late_update_light");
             MyRenderHelper.lateUpdateLight();
-            minecraft.getProfiler().pop();
+            profilerFiller.pop();
         }
     }
     
@@ -169,14 +171,14 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
         method = "renderLevel",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V"
+            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V"
         )
     )
     private void wrapRenderLevel(
-        LevelRenderer instance, DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f projection, Operation<Void> original
+        LevelRenderer instance, GraphicsResourceAllocator graphicsResourceAllocator, DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f modelView, Matrix4f projection, Operation<Void> original
     ) {
         original.call(
-            instance, deltaTracker, bl, camera, gameRenderer, lightTexture, modelView, projection
+            instance, graphicsResourceAllocator, deltaTracker, bl, camera, gameRenderer, lightTexture, modelView, projection
         );
         
         IPCGlobal.renderer.onBeforeHandRendering(modelView);
@@ -277,11 +279,11 @@ public abstract class MixinGameRenderer implements IEGameRenderer {
         method = "renderLevel",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/GameRenderer;getProjectionMatrix(D)Lorg/joml/Matrix4f;",
+            target = "Lnet/minecraft/client/renderer/GameRenderer;getProjectionMatrix(F)Lorg/joml/Matrix4f;",
             ordinal = 0
         )
     )
-    private Matrix4f redirectGetBasicProjectionMatrix(GameRenderer instance, double fov) {
+    private Matrix4f redirectGetBasicProjectionMatrix(GameRenderer instance, float fov) {
         if (PortalRendering.isRendering()) {
             if (RenderStates.basicProjectionMatrix != null) {
                 // replace the basic projection matrix
