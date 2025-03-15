@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
@@ -327,7 +328,7 @@ public class ServerTeleportationManager {
         Vec3 newEyePos
     ) {
         MinecraftServer server = player.server;
-        server.getProfiler().push("portal_teleport");
+        Profiler.get().push("portal_teleport");
         
         ServerLevel fromWorld = (ServerLevel) player.level();
         ServerLevel toWorld = server.getLevel(dimensionTo);
@@ -349,7 +350,7 @@ public class ServerTeleportationManager {
             player, newEyePos, newEyePos, 1
         );
         
-        server.getProfiler().pop();
+        Profiler.get().pop();
     }
 
     public void forceTeleportPlayer(

@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import qouteall.imm_ptl.core.ClientWorldLoader;
@@ -67,7 +68,7 @@ public class FogRendererContext {
     ) {
         Minecraft client = Minecraft.getInstance();
         
-        client.getProfiler().push("get_fog_color");
+        Profiler.get().push("get_fog_color");
         
         ClientLevel oldWorld = client.level;
         
@@ -104,7 +105,7 @@ public class FogRendererContext {
             swappingManager.popSwapping();
             client.level = oldWorld;
             
-            client.getProfiler().pop();
+            Profiler.get().pop();
         }
     }
     

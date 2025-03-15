@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
@@ -262,9 +263,9 @@ public class CustomPortalGeneration {
             return false;
         }
         
-        world.getProfiler().push("custom_portal_gen_perform");
+        Profiler.get().push("custom_portal_gen_perform");
         boolean result = form.perform(this, world, startPos, toWorld, triggeringEntity);
-        world.getProfiler().pop();
+        Profiler.get().pop();
         return result;
     }
     

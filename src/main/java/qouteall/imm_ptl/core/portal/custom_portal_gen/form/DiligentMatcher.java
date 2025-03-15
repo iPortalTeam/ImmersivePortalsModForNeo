@@ -149,8 +149,8 @@ public class DiligentMatcher {
         int multiplyFactor
     ) {
         Tuple<Direction.Axis, Direction.Axis> axs = Helper.getAnotherTwoAxis(shape.axis);
-        Vec3i v1 = Direction.fromAxisAndDirection(axs.getA(), Direction.AxisDirection.POSITIVE).getNormal();
-        Vec3i v2 = Direction.fromAxisAndDirection(axs.getB(), Direction.AxisDirection.POSITIVE).getNormal();
+        Vec3i v1 = Direction.fromAxisAndDirection(axs.getA(), Direction.AxisDirection.POSITIVE).getUnitVec3i();
+        Vec3i v2 = Direction.fromAxisAndDirection(axs.getB(), Direction.AxisDirection.POSITIVE).getUnitVec3i();
         
         return new BlockPortalShape(
             shape.area.stream().flatMap(

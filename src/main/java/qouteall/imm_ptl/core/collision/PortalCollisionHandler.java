@@ -2,6 +2,7 @@ package qouteall.imm_ptl.core.collision;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -72,15 +73,15 @@ public class PortalCollisionHandler {
             return attemptedMove;
         }
         
-        entity.level().getProfiler().push("cross_portal_collision");
+        Profiler.get().push("cross_portal_collision");
         
         portalCollisions.sort(
             Comparator.comparingLong((PortalCollisionEntry p) -> p.activeTime).reversed()
         );
         
         Vec3 result = doHandleCollision(entity, attemptedMove, 1, portalCollisions, entity.getBoundingBox());
-        
-        entity.level().getProfiler().pop();
+
+        Profiler.get().pop();
         
         return result;
     }

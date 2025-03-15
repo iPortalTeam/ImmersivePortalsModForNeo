@@ -118,7 +118,7 @@ public class BlockManipulationServer {
         BlockHitResult blockHitResult
     ) {
         Direction side = blockHitResult.getDirection();
-        Vec3 sideVec = Vec3.atLowerCornerOf(side.getNormal());
+        Vec3 sideVec = Vec3.atLowerCornerOf(side.getUnitVec3i());
         BlockPos hitPos = blockHitResult.getBlockPos();
         Vec3 hitCenter = Vec3.atCenterOf(hitPos);
         
@@ -233,7 +233,7 @@ public class BlockManipulationServer {
         if (isAttackingAction(action)) {
             player.gameMode.handleBlockBreakAction(
                 blockPos, action, packet.getDirection(),
-                world.getMaxBuildHeight(), packet.getSequence()
+                world.getMaxY(), packet.getSequence()
             );
             player.connection.ackBlockChangesUpTo(packet.getSequence());
         }
@@ -291,7 +291,7 @@ public class BlockManipulationServer {
         );
         
         BlockPos offseted = blockPos.relative(direction);
-        if (offseted.getY() >= world.getMinBuildHeight() && offseted.getY() < world.getMaxBuildHeight()) {
+        if (offseted.getY() >= world.getMinY() && offseted.getY() < world.getMaxY()) {
             PacketRedirection.sendRedirectedMessage(
                 player,
                 dimension,

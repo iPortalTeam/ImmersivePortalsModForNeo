@@ -68,7 +68,7 @@ public class OverlayRendering {
     }
     
     public static List<BakedQuad> getQuads(BakedModel model, BlockState blockState, Vec3 portalNormal) {
-        Direction facing = Direction.getNearest(portalNormal.x, portalNormal.y, portalNormal.z);
+        Direction facing = Direction.getApproximateNearest(portalNormal.x, portalNormal.y, portalNormal.z);
         
         List<BakedQuad> result = new ArrayList<>();
         

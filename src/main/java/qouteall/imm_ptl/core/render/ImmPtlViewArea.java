@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.chunk.SectionRenderDispatcher.RenderSection
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
@@ -136,7 +137,7 @@ public class ImmPtlViewArea extends ViewArea {
      */
     @Override
     public void repositionCamera(double playerX, double playerZ) {
-        Minecraft.getInstance().getProfiler().push("built_section_storage");
+        Profiler.get().push("built_section_storage");
 
         int cameraBlockX = Mth.floor(playerX);
         int cameraBlockZ = Mth.floor(playerZ);
@@ -158,7 +159,7 @@ public class ImmPtlViewArea extends ViewArea {
         this.sections = preset.data;
         this.currentPreset = preset;
 
-        Minecraft.getInstance().getProfiler().pop();
+        Profiler.get().pop();
     }
 
     @Override
@@ -286,7 +287,7 @@ public class ImmPtlViewArea extends ViewArea {
     }
 
     private void purge() {
-        Minecraft.getInstance().getProfiler().push("my_built_section_storage_purge");
+        Profiler.get().push("my_built_section_storage_purge");
 
         long dropTime = Helper.secondToNano(GcMonitor.isMemoryNotEnough() ? 3 : 20);
 
@@ -345,7 +346,7 @@ public class ImmPtlViewArea extends ViewArea {
             });
         }
 
-        Minecraft.getInstance().getProfiler().pop();
+        Profiler.get().pop();
     }
 
     private boolean shouldDropPreset(long dropTime, long currentTime, Preset preset) {

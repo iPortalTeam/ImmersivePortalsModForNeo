@@ -15,6 +15,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.dimension.DimensionType;
@@ -387,7 +388,7 @@ public class ClientWorldLoader {
         
         isCreatingClientWorld = true;
         
-        CLIENT.getProfiler().push("create_world");
+        Profiler.get().push("create_world");
         
         int chunkLoadDistance = 3; // my own chunk manager doesn't need it
         
@@ -468,7 +469,7 @@ public class ClientWorldLoader {
         }
         finally {
             isCreatingClientWorld = false;
-            CLIENT.getProfiler().pop();
+            Profiler.get().pop();
         }
 
         NeoForge.EVENT_BUS.post(new DimensionEvents.CLIENT_WORLD_LOAD_EVENT(newWorld));

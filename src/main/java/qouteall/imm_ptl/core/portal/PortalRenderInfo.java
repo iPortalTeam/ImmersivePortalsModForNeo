@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.nick1st.imm_ptl.events.ClientPortalTickEvent;
 import de.nick1st.imm_ptl.events.PortalDisposeEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
@@ -214,7 +215,7 @@ public class PortalRenderInfo implements AutoCloseable {
     }
     
     public static boolean renderAndDecideVisibility(Portal portal, Runnable queryRendering) {
-        ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
+        ProfilerFiller profiler = Profiler.get();
         
         boolean decision;
         if (IPGlobal.offsetOcclusionQuery) {

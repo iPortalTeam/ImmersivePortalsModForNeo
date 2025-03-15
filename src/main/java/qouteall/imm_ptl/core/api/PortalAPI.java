@@ -52,8 +52,8 @@ public class PortalAPI {
         Vec3 center = boxSurface.getCenter();
         portal.setPos(center.x, center.y, center.z);
         
-        portal.setAxisW(Vec3.atLowerCornerOf(directions.getA().getNormal()));
-        portal.setAxisH(Vec3.atLowerCornerOf(directions.getB().getNormal()));
+        portal.setAxisW(Vec3.atLowerCornerOf(directions.getA().getUnitVec3i()));
+        portal.setAxisH(Vec3.atLowerCornerOf(directions.getB().getUnitVec3i()));
         portal.setWidth(Helper.getCoordinate(areaSize, directions.getA().getAxis()));
         portal.setHeight(Helper.getCoordinate(areaSize, directions.getB().getAxis()));
     }

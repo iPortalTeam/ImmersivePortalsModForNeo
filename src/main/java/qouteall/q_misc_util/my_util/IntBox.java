@@ -54,7 +54,7 @@ public class IntBox {
             Helper.scale(
                 Direction.get(
                     Direction.AxisDirection.POSITIVE, axis
-                ).getNormal(),
+                ).getUnitVec3i(),
                 n
             )
         );
@@ -64,12 +64,12 @@ public class IntBox {
         if (direction.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
             return new IntBox(
                 l,
-                h.offset(Helper.scale(direction.getNormal(), n))
+                h.offset(Helper.scale(direction.getUnitVec3i(), n))
             );
         }
         else {
             return new IntBox(
-                l.offset(Helper.scale(direction.getNormal(), n)),
+                l.offset(Helper.scale(direction.getUnitVec3i(), n)),
                 h
             );
         }

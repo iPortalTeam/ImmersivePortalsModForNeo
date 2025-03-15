@@ -121,7 +121,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     @Shadow private @Nullable RenderTarget entityOutlineTarget;
     
     @Inject(
-        method = "method_62214", // the lambda in addMainPass
+        method = "lambda$addMainPass$1", // the lambda in addMainPass
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/DimensionSpecialEffects;constantAmbientLight()Z"
@@ -136,7 +136,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     }
     
     @Inject(
-        method = "method_62214", // the lambda in addMainPass
+        method = "lambda$addMainPass$1", // the lambda in addMainPass
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/Sheets;translucentItemSheet()Lnet/minecraft/client/renderer/RenderType;"
@@ -157,7 +157,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     
     @IPVanillaCopy
     @Inject(
-        method = "method_62214", // the lambda in addMainPass
+        method = "lambda$addMainPass$1", // the lambda in addMainPass
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;endLastBatch()V",
@@ -176,14 +176,14 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         at = @At("RETURN")
     )
     private void onFinishRenderLevel(
-        GraphicsResourceAllocator graphicsResourceAllocator, DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci
+            DeltaTracker deltaTracker, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f frustumMatrix, Matrix4f projectionMatrix, CallbackInfo ci
     ) {
         // make hand rendering normal
         Lighting.setupLevel();
     }
     
     @Inject(
-        method = "method_62214", // the lambda in addMainPass
+        method = "lambda$addMainPass$1", // the lambda in addMainPass
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/LevelRenderer;renderSectionLayer(Lnet/minecraft/client/renderer/RenderType;DDDLorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V"
@@ -211,7 +211,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     }
     
     @Inject(
-        method = "method_62214", // the lambda in addMainPass
+        method = "lambda$addMainPass$1", // the lambda in addMainPass
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/LevelRenderer;renderSectionLayer(Lnet/minecraft/client/renderer/RenderType;DDDLorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V",
@@ -306,7 +306,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     }
     
     @Redirect(
-        method = "method_62218", // lambda in renderLevel
+        method = "lambda$addMainPass$1", // lambda in renderLevel
         at = @At(
             value = "INVOKE",
             target = "Lcom/mojang/blaze3d/systems/RenderSystem;clear(I)V",
@@ -345,7 +345,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     }
     
     @WrapOperation(
-        method = "renderEntities",
+        method = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/LevelRenderer;renderEntity(Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)V"
@@ -362,7 +362,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     }
     
     @Inject(
-        method = "method_62216", // lambda in addWeatherPass
+        method = "lambda$addWeatherPass$4", // lambda in addWeatherPass
         at = @At("HEAD")
     )
     private void beforeRenderingWeather(
@@ -378,7 +378,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     }
     
     @Inject(
-        method = "method_62216", // lambda in addWeatherPass
+        method = "lambda$addWeatherPass$4", // lambda in addWeatherPass
         at = @At("RETURN")
     )
     private void afterRenderingWeather(

@@ -187,7 +187,7 @@ public class BreakableMirror extends Mirror {
             pos, facing.getAxis(),
             Helper.getCoordinate(
                 shape.innerAreaBox.getCenterVec().add(
-                    Vec3.atLowerCornerOf(facing.getNormal()).scale(distanceToCenter)
+                    Vec3.atLowerCornerOf(facing.getUnitVec3i()).scale(distanceToCenter)
                 ),
                 facing.getAxis()
             )
@@ -201,8 +201,8 @@ public class BreakableMirror extends Mirror {
         Direction hDirection = perpendicularDirections.getB();
         breakableMirror.setWidth(Helper.getCoordinate(Helper.getBoxSize(wallBox), wDirection.getAxis()));
         breakableMirror.setHeight(Helper.getCoordinate(Helper.getBoxSize(wallBox), hDirection.getAxis()));
-        breakableMirror.setAxisW(Vec3.atLowerCornerOf(wDirection.getNormal()));
-        breakableMirror.setAxisH(Vec3.atLowerCornerOf(hDirection.getNormal()));
+        breakableMirror.setAxisW(Vec3.atLowerCornerOf(wDirection.getUnitVec3i()));
+        breakableMirror.setAxisH(Vec3.atLowerCornerOf(hDirection.getUnitVec3i()));
         
         initializeMirrorGeometryShape(breakableMirror, facing, shape);
         

@@ -199,7 +199,7 @@ public class Helper {
         return Direction.get(
             Direction.AxisDirection.POSITIVE,
             axis
-        ).getNormal();
+        ).getUnitVec3i();
     }
     
     public static int getCoordinate(Vec3i v, Direction.Axis axis) {
@@ -386,7 +386,7 @@ public class Helper {
     
     public static AABB getBoxSurfaceInversed(AABB box, Direction direction) {
         double size = getCoordinate(getBoxSize(box), direction.getAxis());
-        Vec3 shrinkVec = Vec3.atLowerCornerOf(direction.getNormal()).scale(size);
+        Vec3 shrinkVec = Vec3.atLowerCornerOf(direction.getUnitVec3i()).scale(size);
         return box.contract(shrinkVec.x, shrinkVec.y, shrinkVec.z);
     }
     

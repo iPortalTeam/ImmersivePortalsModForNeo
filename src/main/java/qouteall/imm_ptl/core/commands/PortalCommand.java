@@ -607,10 +607,10 @@ public class PortalCommand {
                             
                             ServerPlayer player = context.getSource().getPlayerOrException();
                             Vec3 viewVector = player.getLookAngle();
-                            Direction facing = Direction.getNearest(
+                            Direction facing = Direction.getApproximateNearest(
                                 viewVector.x, viewVector.y, viewVector.z
                             );
-                            Vec3 offset = Vec3.atLowerCornerOf(facing.getNormal()).scale(distance);
+                            Vec3 offset = Vec3.atLowerCornerOf(facing.getUnitVec3i()).scale(distance);
                             portal.setPos(
                                 portal.getX() + offset.x,
                                 portal.getY() + offset.y,
@@ -638,10 +638,10 @@ public class PortalCommand {
                             
                             ServerPlayer player = context.getSource().getPlayerOrException();
                             Vec3 viewVector = player.getLookAngle();
-                            Direction facing = Direction.getNearest(
+                            Direction facing = Direction.getApproximateNearest(
                                 viewVector.x, viewVector.y, viewVector.z
                             );
-                            Vec3 offset = Vec3.atLowerCornerOf(facing.getNormal()).scale(distance);
+                            Vec3 offset = Vec3.atLowerCornerOf(facing.getUnitVec3i()).scale(distance);
                             
                             portal.setDestination(portal.getDestPos().add(
                                 portal.transformLocalVecNonScale(offset)
@@ -1087,7 +1087,7 @@ public class PortalCommand {
         BlockPos origin = BlockPos.containing(portal.getOriginPos());
         
         Direction portalNormalDirection =
-            Direction.getNearest(portal.getNormal().x, portal.getNormal().y, portal.getNormal().z);
+            Direction.getApproximateNearest(portal.getNormal().x, portal.getNormal().y, portal.getNormal().z);
         
         Level world = portal.level();
         
@@ -1098,7 +1098,7 @@ public class PortalCommand {
         
         AABB portalBox = new AABB(0, 0, 0, 0, 0, 0);
         for (Direction direction : Direction.values()) {
-            IntBox outerSurface = boxArea.getSurfaceLayer(direction).getMoved(direction.getNormal());
+            IntBox outerSurface = boxArea.getSurfaceLayer(direction).getMoved(direction.getUnitVec3i());
             AABB collisionBox = McHelper.getWallBox(world, outerSurface);
             if (collisionBox == null) {
                 collisionBox = outerSurface.toRealNumberBox();
@@ -1781,7 +1781,7 @@ public class PortalCommand {
                             Vec3 toPos = Vec3Argument.getVec3(context, "toPos");
                             Direction.Axis axis = AxisArgumentType.getAxis(context, "axis");
                             Vec3 axisVec = Vec3.atLowerCornerOf(
-                                Direction.fromAxisAndDirection(axis, Direction.AxisDirection.POSITIVE).getNormal()
+                                Direction.fromAxisAndDirection(axis, Direction.AxisDirection.POSITIVE).getUnitVec3i()
                             );
                             
                             Vec3 delta = toPos.subtract(fromPos);
@@ -1857,9 +1857,9 @@ public class PortalCommand {
         Vec3 boxSize = Helper.getBoxSize(box);
         Vec3 boxCenter = box.getCenter();
         for (Direction face : Direction.values()) {
-            Vec3 facingVec = Vec3.atLowerCornerOf(face.getNormal());
+            Vec3 facingVec = Vec3.atLowerCornerOf(face.getUnitVec3i());
             for (Direction sideDirection : Helper.getAnotherFourDirections(face.getAxis())) {
-                Vec3 sideDirectionVec = Vec3.atLowerCornerOf(sideDirection.getNormal());
+                Vec3 sideDirectionVec = Vec3.atLowerCornerOf(sideDirection.getUnitVec3i());
                 Vec3 edgeCenter = facingVec.scale(0.5)
                     .add(sideDirectionVec.scale(0.5))
                     .multiply(boxSize)

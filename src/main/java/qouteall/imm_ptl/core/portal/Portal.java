@@ -1031,7 +1031,7 @@ public class Portal extends Entity implements
     }
     
     public Direction getApproximateFacingDirection() {
-        return Direction.getNearest(
+        return Direction.getApproximateNearest(
             getNormal().x, getNormal().y, getNormal().z
         );
     }
@@ -1630,11 +1630,11 @@ public class Portal extends Entity implements
     }
     
     public Direction getTransformedGravityDirection(Direction oldGravityDir) {
-        Vec3 oldGravityVec = Vec3.atLowerCornerOf(oldGravityDir.getNormal());
+        Vec3 oldGravityVec = Vec3.atLowerCornerOf(oldGravityDir.getUnitVec3i());
         
         Vec3 newGravityVec = transformLocalVecNonScale(oldGravityVec);
         
-        return Direction.getNearest(
+        return Direction.getApproximateNearest(
             newGravityVec.x, newGravityVec.y, newGravityVec.z
         );
     }

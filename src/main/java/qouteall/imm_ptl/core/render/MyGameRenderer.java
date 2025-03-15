@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -227,11 +228,11 @@ public class MyGameRenderer {
         
         //invoke rendering
         invokeWrapper.accept(() -> {
-            client.getProfiler().push("render_portal_content");
+            Profiler.get().push("render_portal_content");
             client.gameRenderer.renderLevel(
-                client.getTimer()
+                client.getDeltaTracker()
             );
-            client.getProfiler().pop();
+            Profiler.get().pop();
         });
         
         SodiumInterface.invoker.switchContextWithCurrentWorldRenderer(newSodiumContext);

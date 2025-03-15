@@ -10,7 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.RelativeMovement;
+import net.minecraft.world.entity.Relative;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.phys.AABB;
@@ -179,8 +179,8 @@ public abstract class MixinServerGamePacketListenerImpl implements IEServerPlayN
     @Overwrite
     @IPVanillaCopy
     public void teleport(
-        double x, double y, double z, float yaw, float pitch,
-        Set<RelativeMovement> relativeAttrs
+            double x, double y, double z, float yaw, float pitch,
+            Set<Relative> relativeAttrs
     ) {
         // it may request teleport while this.player is marked removed during respawn
         
@@ -199,11 +199,11 @@ public abstract class MixinServerGamePacketListenerImpl implements IEServerPlayN
             );
         }
         
-        double xBase = relativeAttrs.contains(RelativeMovement.X) ? this.player.getX() : 0.0;
-        double yBase = relativeAttrs.contains(RelativeMovement.Y) ? this.player.getY() : 0.0;
-        double zBase = relativeAttrs.contains(RelativeMovement.Z) ? this.player.getZ() : 0.0;
-        float yRotBase = relativeAttrs.contains(RelativeMovement.Y_ROT) ? this.player.getYRot() : 0.0f;
-        float xRotBase = relativeAttrs.contains(RelativeMovement.X_ROT) ? this.player.getXRot() : 0.0f;
+        double xBase = relativeAttrs.contains(Relative.X) ? this.player.getX() : 0.0;
+        double yBase = relativeAttrs.contains(Relative.Y) ? this.player.getY() : 0.0;
+        double zBase = relativeAttrs.contains(Relative.Z) ? this.player.getZ() : 0.0;
+        float yRotBase = relativeAttrs.contains(Relative.Y_ROT) ? this.player.getYRot() : 0.0f;
+        float xRotBase = relativeAttrs.contains(Relative.X_ROT) ? this.player.getXRot() : 0.0f;
         
         this.awaitingPositionFromClient = new Vec3(x, y, z);
         this.ip_dimOfAwaitingPosition = player.level().dimension();

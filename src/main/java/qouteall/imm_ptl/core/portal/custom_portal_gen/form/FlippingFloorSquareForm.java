@@ -169,7 +169,7 @@ public class FlippingFloorSquareForm extends PortalGenForm {
                 }
             ))
             .filter(intBox -> intBox.getSurfaceLayer(Direction.DOWN)
-                .getMoved(Direction.DOWN.getNormal())
+                .getMoved(Direction.DOWN.getUnitVec3i())
                 .stream().allMatch(
                     blockPos -> {
                         BlockState blockState = toWorld.getBlockState(blockPos);
@@ -179,7 +179,7 @@ public class FlippingFloorSquareForm extends PortalGenForm {
                 )
             )
             .findFirst().orElseGet(() -> IntBox.fromBasePointAndSize(toPos, areaSize))
-            .getMoved(Direction.DOWN.getNormal());
+            .getMoved(Direction.DOWN.getUnitVec3i());
     }
     
     public static GeneralBreakablePortal[] createPortals(

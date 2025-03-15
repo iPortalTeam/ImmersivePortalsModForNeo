@@ -14,6 +14,7 @@ import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -359,7 +360,7 @@ public class ImmPtlChunkTracking {
     }
 
     private static void tick(MinecraftServer server) {
-        server.getProfiler().push("portal_chunk_tracking");
+        Profiler.get().push("portal_chunk_tracking");
 
         boolean updates = false;
         long gameTime = server.overworld().getGameTime();
@@ -388,7 +389,7 @@ public class ImmPtlChunkTracking {
             dimTicketManager.tick(world);
         }
 
-        server.getProfiler().pop();
+        Profiler.get().pop();
 
         if (updates) {
             EntitySync.update(server);

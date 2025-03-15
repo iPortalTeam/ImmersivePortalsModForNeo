@@ -6,6 +6,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.IPGlobal;
@@ -41,7 +42,7 @@ public class CrossPortalSound {
             return null;
         }
         
-        soundWorld.getProfiler().push("cross_portal_sound");
+        Profiler.get().push("cross_portal_sound");
         
         double soundRadius = Math.min(64, Math.max(VOLUME_RADIUS_MULT * soundVol, MIN_SOUND_RADIUS));
         Vec3 playerCameraPos = RenderStates.originalPlayerPos.add(
@@ -84,7 +85,7 @@ public class CrossPortalSound {
             }
         ).orElse(null);
         
-        soundWorld.getProfiler().pop();
+        Profiler.get().pop();
         
         return result;
     }

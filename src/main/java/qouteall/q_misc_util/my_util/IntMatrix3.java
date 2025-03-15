@@ -32,9 +32,9 @@ public class IntMatrix3 {
         Direction d1 = t.rotate(Direction.fromAxisAndDirection(Direction.Axis.X, Direction.AxisDirection.POSITIVE));
         Direction d2 = t.rotate(Direction.fromAxisAndDirection(Direction.Axis.Y, Direction.AxisDirection.POSITIVE));
         Direction d3 = t.rotate(Direction.fromAxisAndDirection(Direction.Axis.Z, Direction.AxisDirection.POSITIVE));
-        x = d1.getNormal();
-        y = d2.getNormal();
-        z = d3.getNormal();
+        x = d1.getUnitVec3i();
+        y = d2.getUnitVec3i();
+        z = d3.getUnitVec3i();
     }
     
     // p * m  p is horizontal vector
@@ -54,8 +54,8 @@ public class IntMatrix3 {
     }
     
     public Direction transformDirection(Direction direction) {
-        BlockPos vec = transform(direction.getNormal());
-        return Direction.fromDelta(vec.getX(), vec.getY(), vec.getZ());
+        BlockPos vec = transform(direction.getUnitVec3i());
+        return Direction.getApproximateNearest(vec.getX(), vec.getY(), vec.getZ());
     }
     
     @Override

@@ -6,6 +6,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.DistanceManager;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.profiling.Profiler;
 import net.neoforged.neoforge.common.NeoForge;
 import qouteall.imm_ptl.core.ducks.IEChunkMap;
 import qouteall.imm_ptl.core.ducks.IETrackedEntity;
@@ -22,7 +23,7 @@ public class EntitySync {
      * regarding the players in all dimensions
      */
     public static void update(MinecraftServer server) {
-        server.getProfiler().push("ip_entity_tracking_update");
+        Profiler.get().push("ip_entity_tracking_update");
         
         for (ServerLevel world : server.getAllLevels()) {
             PacketRedirection.withForceRedirect(
@@ -41,11 +42,11 @@ public class EntitySync {
             );
         }
         
-        server.getProfiler().pop();
+        Profiler.get().pop();
     }
     
     public static void tick(MinecraftServer server) {
-        server.getProfiler().push("ip_entity_tracking_tick");
+        Profiler.get().push("ip_entity_tracking_tick");
         
         for (ServerLevel world : server.getAllLevels()) {
             PacketRedirection.withForceRedirect(
@@ -70,7 +71,7 @@ public class EntitySync {
             
         }
         
-        server.getProfiler().pop();
+        Profiler.get().pop();
     }
     
     private static void forceRemoveDimension(ServerLevel world) {

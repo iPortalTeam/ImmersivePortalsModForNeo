@@ -377,8 +377,8 @@ public class PortalManipulation {
             return null;
         }
         
-        Vec3 axisH = Vec3.atLowerCornerOf(hitResult.getDirection().getNormal());
-        Vec3 axisW = axisH.cross(Vec3.atLowerCornerOf(lookingDirection.getOpposite().getNormal()));
+        Vec3 axisH = Vec3.atLowerCornerOf(hitResult.getDirection().getUnitVec3i());
+        Vec3 axisW = axisH.cross(Vec3.atLowerCornerOf(lookingDirection.getOpposite().getUnitVec3i()));
         Vec3 pos = Vec3.atCenterOf(hitResult.getBlockPos())
             .add(axisH.scale(0.5 + height / 2));
         

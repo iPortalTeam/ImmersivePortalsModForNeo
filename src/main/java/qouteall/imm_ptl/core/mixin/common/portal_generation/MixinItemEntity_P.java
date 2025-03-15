@@ -1,5 +1,6 @@
 package qouteall.imm_ptl.core.mixin.common.portal_generation;
 
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -39,14 +40,14 @@ public abstract class MixinItemEntity_P {
             return;
         }
         
-        this_.level().getProfiler().push("imm_ptl_item_tick");
+        Profiler.get().push("imm_ptl_item_tick");
         
         CustomPortalGenManager customPortalGenManager =
             IPPerServerInfo.of(this_.getServer()).customPortalGenManager;
         if (customPortalGenManager != null) {
             customPortalGenManager.onItemTick(this_);
         }
-        
-        this_.level().getProfiler().pop();
+
+        Profiler.get().pop();
     }
 }

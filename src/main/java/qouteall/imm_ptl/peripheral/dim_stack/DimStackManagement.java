@@ -141,7 +141,7 @@ public class DimStackManagement {
             BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
-                    for (int y = chunk.getMinBuildHeight(); y < chunk.getMaxBuildHeight(); y++) {
+                    for (int y = chunk.getMinY(); y < chunk.getMaxY(); y++) {
                         mutable.set(x, y, z);
                         BlockState blockState = chunk.getBlockState(mutable);
                         if (blockState.getBlock() == Blocks.BEDROCK) {
