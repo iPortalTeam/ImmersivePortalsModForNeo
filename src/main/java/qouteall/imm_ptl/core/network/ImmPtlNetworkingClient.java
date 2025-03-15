@@ -4,6 +4,7 @@ import de.nick1st.imm_ptl.events.ClientPortalSpawnEvent;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
@@ -41,7 +42,7 @@ public abstract class ImmPtlNetworkingClient {
         }
         else {
             // spawn new portal
-            Entity entity = syncPacket.entityType().create(world);
+            Entity entity = syncPacket.entityType().create(world, EntitySpawnReason.LOAD);
             Validate.notNull(entity, "Entity type is null");
 
             if (!(entity instanceof Portal portal)) {

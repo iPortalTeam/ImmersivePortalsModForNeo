@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Tuple;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -59,7 +60,7 @@ public class WorldWrappingPortal extends GlobalTrackedPortal {
         int zoneId,
         boolean isInward
     ) {
-        WorldWrappingPortal portal = WorldWrappingPortal.ENTITY_TYPE.create(serverWorld);
+        WorldWrappingPortal portal = WorldWrappingPortal.ENTITY_TYPE.create(serverWorld, EntitySpawnReason.COMMAND);
         portal.isInward = isInward;
         portal.zoneId = zoneId;
         

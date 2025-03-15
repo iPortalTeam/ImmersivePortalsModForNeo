@@ -8,10 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -145,7 +142,7 @@ public class EndPortalEntity extends Portal {
         
         Vec3 portalCenter = thisSideBox.getCenter();
         
-        EndPortalEntity portal = EndPortalEntity.ENTITY_TYPE.create(world);
+        EndPortalEntity portal = EndPortalEntity.ENTITY_TYPE.create(world, EntitySpawnReason.COMMAND);
         assert portal != null;
         
         portal.setOriginPos(portalCenter);

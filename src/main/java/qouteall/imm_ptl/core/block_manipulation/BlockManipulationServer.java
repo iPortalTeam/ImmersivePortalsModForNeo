@@ -279,7 +279,7 @@ public class BlockManipulationServer {
                 hand,
                 blockHitResult
             );
-            if (actionResult.shouldSwing()) {
+            if (actionResult.consumesAction()) {
                 player.swing(hand, true);
             }
         }

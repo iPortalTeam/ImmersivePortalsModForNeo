@@ -37,6 +37,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -1239,7 +1240,7 @@ public class PortalCommand {
         double width, double height, Entity fromEntity, Entity toEntity,
         String portalName
     ) {
-        Portal portal = Portal.ENTITY_TYPE.create(fromEntity.level());
+        Portal portal = Portal.ENTITY_TYPE.create(fromEntity.level(), EntitySpawnReason.COMMAND);
         
         portal.setPos(fromEntity.getX(), fromEntity.getY(), fromEntity.getZ());
         
@@ -1551,7 +1552,7 @@ public class PortalCommand {
                                 double thisSideHeight = area.getYsize() / scale;
                                 double thisSideThickness = area.getZsize() / scale;
                                 
-                                Portal portal = Portal.ENTITY_TYPE.create(boxWorld);
+                                Portal portal = Portal.ENTITY_TYPE.create(boxWorld, EntitySpawnReason.COMMAND);
                                 assert portal != null;
                                 portal.setDestinationDimension(areaWorld.dimension());
                                 portal.setOriginPos(
@@ -1790,7 +1791,7 @@ public class PortalCommand {
                             
                             Vec3 center = fromPos.add(toPos).scale(0.5);
                             
-                            Portal portal = Portal.ENTITY_TYPE.create(context.getSource().getLevel());
+                            Portal portal = Portal.ENTITY_TYPE.create(context.getSource().getLevel(), EntitySpawnReason.COMMAND);
                             assert portal != null;
                             portal.setOriginPos(center);
                             portal.setOrientation(vecAlongAxis.normalize(), vecNotAlongAxis.normalize());
@@ -1878,7 +1879,7 @@ public class PortalCommand {
                     facingVec, sideDirectionVec
                 );
                 
-                Portal portal = Portal.ENTITY_TYPE.create(world);
+                Portal portal = Portal.ENTITY_TYPE.create(world, EntitySpawnReason.COMMAND);
                 portal.setOriginPos(portalOrigin);
                 portal.setDestination(portalDestination);
                 portal.setDestinationDimension(world.dimension());
@@ -1940,7 +1941,7 @@ public class PortalCommand {
                     IntBox room1 = room1Area.getAdjusted(1, 1, 1, -1, -1, -1);
                     IntBox room2 = room2Area.getAdjusted(1, 1, 1, -1, -1, -1);
                     
-                    Portal portal = Portal.ENTITY_TYPE.create(world);
+                    Portal portal = Portal.ENTITY_TYPE.create(world, EntitySpawnReason.COMMAND);
                     Validate.notNull(portal);
                     portal.setOriginPos(room1.getCenterVec().add(
                         roomSize.getX() / 4.0, 0, 0
@@ -2025,7 +2026,7 @@ public class PortalCommand {
     
     private static void addSmallWorldWrappingPortals(AABB box, ServerLevel world, boolean isInward) {
         for (Direction direction : Direction.values()) {
-            Portal portal = Portal.ENTITY_TYPE.create(world);
+            Portal portal = Portal.ENTITY_TYPE.create(world, EntitySpawnReason.COMMAND);
             WorldWrappingPortal.initWrappingPortal(
                 world, box, direction, isInward, portal
             );
@@ -2472,7 +2473,7 @@ public class PortalCommand {
                                         
                                         ServerLevel world = context.getSource().getLevel();
                                         
-                                        Portal portal = Portal.ENTITY_TYPE.create(world);
+                                        Portal portal = Portal.ENTITY_TYPE.create(world, EntitySpawnReason.COMMAND);
                                         Validate.notNull(portal);
                                         portal.setOriginPos(origin);
                                         
@@ -2619,7 +2620,7 @@ public class PortalCommand {
         portal.remove(Entity.RemovalReason.KILLED);
         
         // create the 2 mirrors
-        Mirror thisSideMirror = Mirror.ENTITY_TYPE.create(fromWorld);
+        Mirror thisSideMirror = Mirror.ENTITY_TYPE.create(fromWorld, EntitySpawnReason.COMMAND);
         assert thisSideMirror != null;
         thisSideMirror.setDestDim(thisSideMirror.level().dimension());
         thisSideMirror.setOriginPos(thisSideState.position());
@@ -2630,7 +2631,7 @@ public class PortalCommand {
         thisSideMirror.setPortalShape(specialShape);
         thisSideMirror.setRotationTransformationForMirror(spacialRotation);
         
-        Mirror otherSideMirror = Mirror.ENTITY_TYPE.create(toWorld);
+        Mirror otherSideMirror = Mirror.ENTITY_TYPE.create(toWorld, EntitySpawnReason.COMMAND);
         assert otherSideMirror != null;
         otherSideMirror.setDestDim(otherSideMirror.level().dimension());
         otherSideMirror.setOriginPos(otherSideState.position());
@@ -2645,7 +2646,7 @@ public class PortalCommand {
         McHelper.spawnServerEntity(otherSideMirror);
         
         // create the invisible portal
-        Portal invisiblePortal = Portal.ENTITY_TYPE.create(fromWorld);
+        Portal invisiblePortal = Portal.ENTITY_TYPE.create(fromWorld, EntitySpawnReason.COMMAND);
         assert invisiblePortal != null;
         invisiblePortal.setDestDim(toWorld.dimension());
         invisiblePortal.setPortalState(UnilateralPortalState.combine(thisSideState, otherSideState));

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,10 +21,7 @@ public class MixinDebugRenderer {
         at = @At("RETURN")
     )
     private void onRender(
-        PoseStack poseStack,
-        MultiBufferSource.BufferSource bufferSource,
-        double camX, double camY, double camZ,
-        CallbackInfo ci
+            PoseStack poseStack, Frustum frustum, MultiBufferSource.BufferSource bufferSource, double camX, double camY, double camZ, CallbackInfo ci
     ) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) {

@@ -5,6 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Tuple;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -170,7 +171,7 @@ public class BreakableMirror extends Mirror {
             return null;
         }
         
-        BreakableMirror breakableMirror = BreakableMirror.ENTITY_TYPE.create(world);
+        BreakableMirror breakableMirror = BreakableMirror.ENTITY_TYPE.create(world, EntitySpawnReason.COMMAND);
         assert breakableMirror != null;
         double distanceToCenter = isPane ? (1.0 / 16) : 0.5;
         

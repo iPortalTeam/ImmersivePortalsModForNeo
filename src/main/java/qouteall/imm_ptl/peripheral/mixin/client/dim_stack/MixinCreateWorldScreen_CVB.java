@@ -2,6 +2,7 @@ package qouteall.imm_ptl.peripheral.mixin.client.dim_stack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.worldselection.CreateWorldCallback;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
@@ -52,8 +53,7 @@ public abstract class MixinCreateWorldScreen_CVB extends Screen implements IECre
             at = @At("RETURN")
     )
     private void onInitEnd(
-            Minecraft minecraft, Screen screen, WorldCreationContext worldCreationContext,
-            Optional<ResourceKey<WorldPreset>> optional, OptionalLong optionalLong, CallbackInfo ci
+            Minecraft minecraft, Screen lastScreen, WorldCreationContext context, Optional preset, OptionalLong seed, CreateWorldCallback createWorldCallback, CallbackInfo ci
     ) {
         DimStackManagement.dimStackToApply = DimStackManagement.getDimStackPreset();
         if (DimStackManagement.dimStackToApply != null) {

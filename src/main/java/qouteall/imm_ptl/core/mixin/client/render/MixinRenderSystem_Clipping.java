@@ -1,7 +1,7 @@
 package qouteall.imm_ptl.core.mixin.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.CompiledShaderProgram;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,15 +13,13 @@ import qouteall.imm_ptl.core.render.CrossPortalEntityRenderer;
 import qouteall.imm_ptl.core.render.FrontClipping;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
 
-import java.util.function.Supplier;
-
 @Mixin(value = RenderSystem.class, remap = false)
 public class MixinRenderSystem_Clipping {
     @Inject(
-        method = "Lcom/mojang/blaze3d/systems/RenderSystem;setShader(Ljava/util/function/Supplier;)V",
+        method = "setShader(Lnet/minecraft/client/renderer/CompiledShaderProgram;)V",
         at = @At("RETURN")
     )
-    private static void onSetShader(Supplier<ShaderInstance> shaderSupplier, CallbackInfo ci) {
+    private static void onSetShader(CompiledShaderProgram shader, CallbackInfo ci) {
         iportal_onShaderSet();
     }
     

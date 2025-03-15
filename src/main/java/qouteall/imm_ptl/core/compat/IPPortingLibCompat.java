@@ -56,7 +56,7 @@ public class IPPortingLibCompat {
                     }
                 );
                 renderTarget.resize(
-                    renderTarget.viewWidth, renderTarget.viewHeight, Minecraft.ON_OSX
+                    renderTarget.viewWidth, renderTarget.viewHeight
                 );
             }
         }

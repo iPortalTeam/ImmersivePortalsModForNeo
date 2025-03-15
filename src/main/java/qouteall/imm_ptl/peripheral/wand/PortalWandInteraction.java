@@ -9,6 +9,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
@@ -238,7 +239,7 @@ public class PortalWandInteraction {
             }
         }
         
-        Portal portal = Portal.ENTITY_TYPE.create(McHelper.getServerWorld(firstSideDimension));
+        Portal portal = Portal.ENTITY_TYPE.create(McHelper.getServerWorld(firstSideDimension), EntitySpawnReason.COMMAND);
         Validate.notNull(portal);
         portal.setOriginPos(
             firstSideLeftBottom
@@ -821,7 +822,7 @@ public class PortalWandInteraction {
             return;
         }
         
-        Portal portal = Portal.ENTITY_TYPE.create(player.level());
+        Portal portal = Portal.ENTITY_TYPE.create(player.level(), EntitySpawnReason.COMMAND);
         assert portal != null;
         
         portal.readPortalDataFromNbt(copyingSession.portalData);

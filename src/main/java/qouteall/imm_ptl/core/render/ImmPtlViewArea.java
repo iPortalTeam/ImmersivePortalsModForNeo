@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.ViewArea;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher.RenderSection;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
@@ -17,6 +18,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPGlobal;
@@ -136,11 +138,11 @@ public class ImmPtlViewArea extends ViewArea {
      * Won't be called in portal rendering
      */
     @Override
-    public void repositionCamera(double playerX, double playerZ) {
+    public void repositionCamera(@NotNull SectionPos sectionPos) {
         Profiler.get().push("built_section_storage");
 
-        int cameraBlockX = Mth.floor(playerX);
-        int cameraBlockZ = Mth.floor(playerZ);
+        int cameraBlockX = Mth.floor(sectionPos.x());
+        int cameraBlockZ = Mth.floor(sectionPos.z());
 
         int cameraChunkX = cameraBlockX >> 4;
         int cameraChunkZ = cameraBlockZ >> 4;
@@ -177,7 +179,7 @@ public class ImmPtlViewArea extends ViewArea {
     }
 
     /**
-     * {@link ViewArea#repositionCamera(double, double)}
+     * {@link ViewArea#repositionCamera(SectionPos)}
      */
     private Preset createPresetByChunkPos(int sectionX, int sectionZ) {
         RenderSection[] sections1 =
@@ -209,7 +211,7 @@ public class ImmPtlViewArea extends ViewArea {
     }
 
     /**
-     * {@link ViewArea#repositionCamera(double, double)}
+     * {@link ViewArea#repositionCamera(SectionPos)}
      */
     private void foreachPresetCoveredChunkPoses(
             int centerChunkX, int centerChunkZ,

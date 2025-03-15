@@ -423,7 +423,7 @@ public class ClientWorldLoader {
             int simulationDistance = CLIENT.level.getServerSimulationDistance();
             
             Holder<DimensionType> dimensionType = registryManager
-                .registryOrThrow(Registries.DIMENSION_TYPE)
+                .lookupOrThrow(Registries.DIMENSION_TYPE)
                 .getHolderOrThrow(dimensionTypeKey);
             
             // currently use a separated level data object
@@ -440,10 +440,10 @@ public class ClientWorldLoader {
                 dimensionType,
                 chunkLoadDistance,
                 simulationDistance,// seems that client world does not use this
-                CLIENT::getProfiler,
                 worldRenderer,
                 CLIENT.level.isDebug(),
-                CLIENT.level.getBiomeManager().biomeZoomSeed
+                CLIENT.level.getBiomeManager().biomeZoomSeed,
+                    missing
             );
             
             // all worlds share the same map data map
@@ -607,13 +607,13 @@ public class ClientWorldLoader {
             LocalPlayer player = Minecraft.getInstance().player;
             assert player != null;
             RegistryAccess registryAccess = player.connection.registryAccess();
-            Registry<Biome> biomes = registryAccess.registryOrThrow(Registries.BIOME);
+            Registry<Biome> biomes = registryAccess.lookupOrThrow(Registries.BIOME);
             
             for (Map.Entry<String, Integer> entry : idMap.entrySet()) {
                 ResourceLocation id = McHelper.newResourceLocation(entry.getKey());
                 int expectedId = entry.getValue();
                 
-                if (biomes.getId(biomes.get(id)) != expectedId) {
+                if (biomes.getId(id) != expectedId) {
                     LOGGER.error("Biome intId mismatch: {} {}", id, expectedId);
                 }
             }

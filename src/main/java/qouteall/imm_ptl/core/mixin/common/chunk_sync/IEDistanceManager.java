@@ -1,8 +1,8 @@
 package qouteall.imm_ptl.core.mixin.common.chunk_sync;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.minecraft.server.level.ChunkTaskPriorityQueueSorter;
 import net.minecraft.server.level.DistanceManager;
+import net.minecraft.server.level.ThrottlingChunkTaskDispatcher;
 import net.minecraft.server.level.Ticket;
 import net.minecraft.util.SortedArraySet;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,6 +18,6 @@ public interface IEDistanceManager {
     @Accessor("mainThreadExecutor")
     Executor ip_getMainThreadExecutor();
     
-    @Accessor("ticketThrottler")
-    ChunkTaskPriorityQueueSorter ip_getTicketThrottler();
+    @Accessor("ticketDispatcher")
+    ThrottlingChunkTaskDispatcher ip_getTicketThrottler();
 }
