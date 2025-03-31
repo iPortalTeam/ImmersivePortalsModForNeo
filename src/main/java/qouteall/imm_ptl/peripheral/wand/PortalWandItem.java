@@ -179,7 +179,7 @@ public class PortalWandItem extends Item {
                 if (!PortalWandInteraction.isDragging(((ServerPlayer) player))) {
                     Mode nextMode = mode.next();
                     itemStack.set(COMPONENT_TYPE, nextMode);
-                    return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStack);
+                    return new InteractionResult.Success(InteractionResult.SwingSource.NONE, new InteractionResult.ItemContext(true, itemStack));
                 }
             }
         }

@@ -443,7 +443,7 @@ public class ClientWorldLoader {
                 worldRenderer,
                 CLIENT.level.isDebug(),
                 CLIENT.level.getBiomeManager().biomeZoomSeed,
-                    missing
+                    64 // TODO @Nick1st 21.3 This should be something different
             );
             
             // all worlds share the same map data map

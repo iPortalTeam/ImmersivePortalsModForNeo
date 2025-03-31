@@ -5,11 +5,14 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -32,7 +35,7 @@ public class LoadingIndicatorEntity extends Entity {
                 .clientTrackingRange(96)
                 .updateInterval(20);
         builder.dimensions = EntityDimensions.fixed(1, 1);
-        return builder.build();
+        return builder.build(ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("imm_ptl", "loading_entity")));
     }
     
     private static final EntityDataAccessor<Component> TEXT = SynchedEntityData.defineId(

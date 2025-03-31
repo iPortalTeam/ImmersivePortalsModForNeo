@@ -23,7 +23,6 @@ import org.objectweb.asm.Opcodes;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,7 +32,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.ducks.IEEntity;
 import qouteall.imm_ptl.core.ducks.IEPlayerMoveC2SPacket;
-import qouteall.imm_ptl.core.ducks.IEPlayerPositionLookS2CPacket;
 import qouteall.imm_ptl.core.ducks.IEServerPlayNetworkHandler;
 import qouteall.imm_ptl.core.mc_utils.ServerTaskList;
 import qouteall.imm_ptl.core.miscellaneous.IPVanillaCopy;
@@ -171,12 +169,14 @@ public abstract class MixinServerGamePacketListenerImpl implements IEServerPlayN
             ip_wrongMovePacketCount = 0;
         }
     }
+
+
     
     /**
      * @reason make PlayerPositionLookS2CPacket contain dimension data and do some special handling
      * @author qouteall
      */
-    @Overwrite
+    // @Overwrite // TODO @Nick1st 21.3
     @IPVanillaCopy
     public void teleport(
             double x, double y, double z, float yaw, float pitch,
@@ -213,15 +213,16 @@ public abstract class MixinServerGamePacketListenerImpl implements IEServerPlayN
         
         this.awaitingTeleportTime = this.tickCount;
         this.player.absMoveTo(x, y, z, yaw, pitch);
-        ClientboundPlayerPositionPacket lookPacket = new ClientboundPlayerPositionPacket(
-            x - xBase, y - yBase, z - zBase,
-            yaw - yRotBase, pitch - xRotBase,
-            relativeAttrs, this.awaitingTeleport
-        );
-        
-        ((IEPlayerPositionLookS2CPacket) lookPacket).ip_setPlayerDimension(player.level().dimension());
-        
-        this.player.connection.send(lookPacket);
+        // TODO @Nick1st 21.3
+//        ClientboundPlayerPositionPacket lookPacket = new ClientboundPlayerPositionPacket(
+//            x - xBase, y - yBase, z - zBase,
+//            yaw - yRotBase, pitch - xRotBase,
+//            relativeAttrs, this.awaitingTeleport
+//        );
+//
+//        ((IEPlayerPositionLookS2CPacket) lookPacket).ip_setPlayerDimension(player.level().dimension());
+//
+//        this.player.connection.send(lookPacket);
     }
     
     @Inject(

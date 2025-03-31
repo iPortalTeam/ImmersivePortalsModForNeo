@@ -7,7 +7,6 @@ import net.minecraft.world.TickRateManager;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
-import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.q_misc_util.my_util.LimitedLogger;
 /**
  * Sometimes the client time jumps forward and backward. (This even happens in singleplayer).

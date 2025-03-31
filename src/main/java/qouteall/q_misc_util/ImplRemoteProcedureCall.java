@@ -19,9 +19,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.common.ClientCommonPacketListener;
-import net.minecraft.network.protocol.common.ServerCommonPacketListener;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -40,7 +37,6 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import qouteall.imm_ptl.core.McHelper;
 import qouteall.q_misc_util.my_util.CountDownInt;
 import qouteall.q_misc_util.my_util.DQuaternion;
 
@@ -189,7 +185,7 @@ public class ImplRemoteProcedureCall {
     ) implements CustomPacketPayload {
 
         public static final CustomPacketPayload.Type<S2CRPCPayload> TYPE =
-                new Type<>(ResourceLocation.parse("iportal:remote_s2c"));
+                new java.lang.reflect.Type<>(ResourceLocation.parse("iportal:remote_s2c"));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, S2CRPCPayload> CODEC = StreamCodec.of(
                 (b, p) -> p.write(b), S2CRPCPayload::read
@@ -254,7 +250,7 @@ public class ImplRemoteProcedureCall {
         }
 
         @Override
-        public @NotNull Type<? extends CustomPacketPayload> type() {
+        public @NotNull java.lang.reflect.Type<? extends CustomPacketPayload> type() {
             return TYPE;
         }
     }
@@ -324,7 +320,7 @@ public class ImplRemoteProcedureCall {
     ) implements CustomPacketPayload {
 
         public static final CustomPacketPayload.Type<C2SRPCPayload> TYPE =
-                new Type<>(ResourceLocation.parse("iportal:remote_c2s"));
+                new java.lang.reflect.Type<>(ResourceLocation.parse("iportal:remote_c2s"));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, C2SRPCPayload> CODEC = StreamCodec.of(
                 (b, p) -> p.write(b), C2SRPCPayload::read
@@ -400,7 +396,7 @@ public class ImplRemoteProcedureCall {
         }
 
         @Override
-        public @NotNull Type<? extends CustomPacketPayload> type() {
+        public @NotNull java.lang.reflect.Type<? extends CustomPacketPayload> type() {
             return TYPE;
         }
     }

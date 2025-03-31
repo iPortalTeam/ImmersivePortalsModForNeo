@@ -7,10 +7,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.SectionBufferBuilderPack;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
@@ -21,16 +19,12 @@ import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
-import org.joml.Vector4f;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
-import qouteall.imm_ptl.core.IPCGlobal;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationClient;
 import qouteall.imm_ptl.core.compat.iris_compatibility.IrisInterface;
@@ -150,8 +144,9 @@ public class MyGameRenderer {
             ((IEWorldRenderer) oldWorldRenderer).portal_getChunkInfoList();
         HitResult oldCrosshairTarget = client.hitResult;
         Camera oldCamera = client.gameRenderer.getMainCamera();
-        PostChain oldTransparencyShader = ((IEWorldRenderer) worldRenderer).portal_getTransparencyShader();
-        RenderBuffers oldRenderBuffers = ((IEWorldRenderer) worldRenderer).ip_getRenderBuffers();
+        // TODO @Nick1st 21.3
+//        PostChain oldTransparencyShader = ((IEWorldRenderer) worldRenderer).portal_getTransparencyShader();
+//        RenderBuffers oldRenderBuffers = ((IEWorldRenderer) worldRenderer).ip_getRenderBuffers();
         RenderBuffers oldClientRenderBuffers = client.renderBuffers();
         SectionBufferBuilderPack oldSectionRenderDispatcherFixedBuffers =
             ((IESectionRenderDispatcher) worldRenderer.getSectionRenderDispatcher())
@@ -214,11 +209,13 @@ public class MyGameRenderer {
         
         Object newSodiumContext = SodiumInterface.invoker.createNewContext(renderDistance);
         SodiumInterface.invoker.switchContextWithCurrentWorldRenderer(newSodiumContext);
-        
-        ((IEWorldRenderer) worldRenderer).portal_setTransparencyShader(null);
+
+        // TODO @Nick1st 21.3
+        // ((IEWorldRenderer) worldRenderer).portal_setTransparencyShader(null);
         
         IERenderSystem.ip_setModelViewStack(new Matrix4fStack(16));
-        RenderSystem.applyModelViewMatrix();
+        // TODO @Nick1st 21.3
+        //RenderSystem.applyModelViewMatrix();
 
         IrisInterface.invoker.setPipeline(worldRenderer, null);
         
@@ -250,15 +247,17 @@ public class MyGameRenderer {
         ((IEParticleManager) client.particleEngine).ip_setWorld(oldWorld);
         client.hitResult = oldCrosshairTarget;
         ieGameRenderer.ip_setCamera(oldCamera);
-        
-        ((IEWorldRenderer) worldRenderer).portal_setTransparencyShader(oldTransparencyShader);
+
+        // TODO @Nick1st 21.3
+        //((IEWorldRenderer) worldRenderer).portal_setTransparencyShader(oldTransparencyShader);
         
         FogRendererContext.swappingManager.popSwapping();
         
         ((IEWorldRenderer) oldWorldRenderer).portal_setChunkInfoList(oldChunkInfoList);
         VisibleSectionDiscovery.returnList(newChunkInfoList);
-        
-        ((IEWorldRenderer) worldRenderer).ip_setRenderBuffers(oldRenderBuffers);
+
+        // TODO @Nick1st 21.3
+        //((IEWorldRenderer) worldRenderer).ip_setRenderBuffers(oldRenderBuffers);
         ((IEMinecraftClient) client).ip_setRenderBuffers(oldClientRenderBuffers);
         ((IESectionRenderDispatcher) worldRenderer.getSectionRenderDispatcher())
             .ip_setFixedBuffers(oldSectionRenderDispatcherFixedBuffers);
@@ -267,10 +266,12 @@ public class MyGameRenderer {
         }
         
         ((IEWorldRenderer) worldRenderer).portal_setFrustum(oldFrustum);
-        
-        client.gameRenderer.resetProjectionMatrix(oldProjectionMatrix);
+
+        // TODO @Nick1st 21.3
+        //client.gameRenderer.resetProjectionMatrix(oldProjectionMatrix);
         IERenderSystem.ip_setModelViewStack(oldModelViewStack);
-        RenderSystem.applyModelViewMatrix();
+        // TODO @Nick1st 21.3
+        //RenderSystem.applyModelViewMatrix();
 
         IrisInterface.invoker.setPipeline(worldRenderer, irisPipeline);
         
@@ -301,20 +302,22 @@ public class MyGameRenderer {
         
         boolean isFoggy = client.level.effects().isFoggyAt(Mth.floor(x), Mth.floor(y)) ||
             client.gui.getBossOverlay().shouldCreateWorldFog();
-        FogRenderer.setupFog(
-            camera, FogRenderer.FogMode.FOG_TERRAIN, Math.max(g, 32.0F), isFoggy, RenderStates.getPartialTick()
-        );
-        FogRenderer.levelFogColor();
+        // TODO @Nick1st 21.3
+//        FogRenderer.setupFog(
+//            camera, FogRenderer.FogMode.FOG_TERRAIN, Math.max(g, 32.0F), isFoggy, RenderStates.getPartialTick()
+//        );
+//        FogRenderer.levelFogColor();
     }
     
     public static void updateFogColor() {
-        FogRenderer.setupColor(
-            client.gameRenderer.getMainCamera(),
-            RenderStates.getPartialTick(),
-            client.level,
-            client.options.getEffectiveRenderDistance(),
-            client.gameRenderer.getDarkenWorldAmount(RenderStates.getPartialTick())
-        );
+        // TODO @Nick1st 21.3
+//        FogRenderer.setupColor(
+//            client.gameRenderer.getMainCamera(),
+//            RenderStates.getPartialTick(),
+//            client.level,
+//            client.options.getEffectiveRenderDistance(),
+//            client.gameRenderer.getDarkenWorldAmount(RenderStates.getPartialTick())
+//        );
     }
     
     /**

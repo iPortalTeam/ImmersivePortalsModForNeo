@@ -1,6 +1,5 @@
 package qouteall.imm_ptl.core.platform_specific;
 
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;

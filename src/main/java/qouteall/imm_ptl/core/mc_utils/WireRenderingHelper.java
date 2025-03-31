@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -58,18 +57,19 @@ public class WireRenderingHelper {
         float red = ((color >> 16) & 0xff) / 255f;
         float green = ((color >> 8) & 0xff) / 255f;
         float blue = (color & 0xff) / 255f;
-        
-        LevelRenderer.renderLineBox(
-            matrixStack,
-            vertexConsumer,
-            -boxSize / 2,
-            -boxSize / 2,
-            -boxSize / 2,
-            boxSize / 2,
-            boxSize / 2,
-            boxSize / 2,
-            red, green, blue, alpha
-        );
+
+        // TODO @Nick1st 21.3
+//        LevelRenderer.renderLineBox(
+//            matrixStack,
+//            vertexConsumer,
+//            -boxSize / 2,
+//            -boxSize / 2,
+//            -boxSize / 2,
+//            boxSize / 2,
+//            boxSize / 2,
+//            boxSize / 2,
+//            red, green, blue, alpha
+//        );
         matrixStack.popPose();
     }
     

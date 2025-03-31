@@ -181,17 +181,18 @@ public class CommandStickItem extends Item {
         
         tooltip.add(Component.translatable("imm_ptl.command_stick").withStyle(ChatFormatting.GRAY));
     }
-    
-    @Override
-    public @NotNull String getDescriptionId(ItemStack stack) {
-        Data data = stack.get(COMPONENT_TYPE);
 
-        if (data == null) {
-            return "";
-        }
-
-        return data.nameTranslationKey;
-    }
+    // TODO @Nick1st 21.3
+//    @Override
+//    public @NotNull String getDescriptionId(ItemStack stack) {
+//        Data data = stack.get(COMPONENT_TYPE);
+//
+//        if (data == null) {
+//            return "";
+//        }
+//
+//        return data.nameTranslationKey;
+//    }
     
     public static void sendMessage(Player player, Component message) {
         ((ServerPlayer) player).sendSystemMessage(message);
