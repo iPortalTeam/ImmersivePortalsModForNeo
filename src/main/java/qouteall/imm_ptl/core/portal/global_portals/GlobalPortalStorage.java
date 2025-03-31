@@ -249,7 +249,7 @@ public class GlobalPortalStorage extends SavedData {
     
     private static Portal readPortalFromTag(Level currWorld, CompoundTag compoundTag) {
         ResourceLocation entityId = McHelper.newResourceLocation(compoundTag.getString("entity_type"));
-        EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(entityId);
+        EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(entityId).get().value();
         
         Entity e = entityType.create(currWorld, EntitySpawnReason.LOAD);
         e.load(compoundTag);

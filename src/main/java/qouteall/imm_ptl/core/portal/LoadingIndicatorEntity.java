@@ -10,7 +10,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
@@ -30,7 +32,7 @@ public class LoadingIndicatorEntity extends Entity {
                 .clientTrackingRange(96)
                 .updateInterval(20);
         builder.dimensions = EntityDimensions.fixed(1, 1);
-        return builder.build("");
+        return builder.build();
     }
     
     private static final EntityDataAccessor<Component> TEXT = SynchedEntityData.defineId(
@@ -63,7 +65,12 @@ public class LoadingIndicatorEntity extends Entity {
             }
         }
     }
-    
+
+    @Override
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float v) {
+        return false;
+    }
+
     //@OnlyIn(Dist.CLIENT)
     private void tickClient() {
         addParticles();

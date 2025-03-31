@@ -38,7 +38,7 @@ public class PeripheralModMain {
                 
                 CommandStickItem.addIntoCreativeTag(entries);
                 
-                entries.accept(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("immersive_portals", "portal_helper")));
+                entries.accept(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("immersive_portals", "portal_helper")).get().value());
             })
             .build();
     

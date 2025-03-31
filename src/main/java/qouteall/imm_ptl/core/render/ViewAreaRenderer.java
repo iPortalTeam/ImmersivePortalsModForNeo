@@ -81,8 +81,7 @@ public class ViewAreaRenderer {
         
         CHelper.enableDepthClamp();
 
-        CompiledShaderProgram shader = MyRenderHelper.portalAreaShader;
-        RenderSystem.setShader(shader);
+        CompiledShaderProgram shader = RenderSystem.setShader(MyRenderHelper.PORTAL_AREA);
         
         shader.MODEL_VIEW_MATRIX.set(modelViewMatrix);
         shader.PROJECTION_MATRIX.set(projectionMatrix);

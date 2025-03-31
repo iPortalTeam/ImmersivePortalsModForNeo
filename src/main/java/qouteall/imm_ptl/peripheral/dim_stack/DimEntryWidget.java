@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
@@ -119,7 +120,7 @@ public class DimEntryWidget extends ContainerObjectSelectionList.Entry<DimEntryW
                 );
             }
             
-            guiGraphics.blit(
+            guiGraphics.blit(RenderType.GUI_TEXTURED,
                 dimIconPath, 0, 0, 0.0F, 0.0F,
                 iconLen, iconLen,
                 iconLen, iconLen

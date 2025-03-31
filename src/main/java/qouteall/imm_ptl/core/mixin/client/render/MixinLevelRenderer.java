@@ -121,31 +121,31 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     @Shadow private @Nullable RenderTarget entityOutlineTarget;
     
     @Inject(
-        method = "lambda$addMainPass$1", // the lambda in addMainPass
+        method = "lambda$addMainPass$2", // the lambda in addMainPass
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/DimensionSpecialEffects;constantAmbientLight()Z"
         )
     )
     private void onAfterCutoutRendering(
-        FogParameters fogParameters, DeltaTracker deltaTracker, Camera camera, ProfilerFiller profilerFiller, Matrix4f modelView, Matrix4f matrix4f2, ResourceHandle resourceHandle, ResourceHandle resourceHandle2, ResourceHandle resourceHandle3, ResourceHandle resourceHandle4, boolean bl, Frustum frustum, ResourceHandle resourceHandle5, CallbackInfo ci
-    ) {
+            //FogParameters fogParameters, DeltaTracker deltaTracker, Camera camera, ProfilerFiller profilerFiller, Matrix4f modelView, Matrix4f matrix4f2, ResourceHandle resourceHandle, ResourceHandle resourceHandle2, ResourceHandle resourceHandle3, ResourceHandle resourceHandle4, boolean bl, Frustum frustum, ResourceHandle resourceHandle5, CallbackInfo ci
+            FogParameters fogParameters, DeltaTracker deltaTracker, Camera camera, ProfilerFiller profiler, Matrix4f frustumMatrix, Matrix4f projectionMatrix, ResourceHandle resourcehandle2, ResourceHandle resourcehandle, ResourceHandle resourcehandle3, ResourceHandle resourcehandle4, Frustum frustum, boolean renderBlockOutline, ResourceHandle resourcehandle1, CallbackInfo ci) {
 //        IPCGlobal.renderer.onBeforeTranslucentRendering(matrices);
         
-        CrossPortalEntityRenderer.onBeginRenderingEntitiesAndBlockEntities(modelView);
+        CrossPortalEntityRenderer.onBeginRenderingEntitiesAndBlockEntities(frustumMatrix);
     }
     
     @Inject(
-        method = "lambda$addMainPass$1", // the lambda in addMainPass
+        method = "lambda$addMainPass$2", // the lambda in addMainPass
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/Sheets;translucentItemSheet()Lnet/minecraft/client/renderer/RenderType;"
         )
     )
     private void onMyBeforeTranslucentRendering(
-        FogParameters fogParameters, DeltaTracker deltaTracker, Camera camera, ProfilerFiller profilerFiller, Matrix4f modelView, Matrix4f matrix4f2, ResourceHandle resourceHandle, ResourceHandle resourceHandle2, ResourceHandle resourceHandle3, ResourceHandle resourceHandle4, boolean bl, Frustum frustum, ResourceHandle resourceHandle5, CallbackInfo ci
+            FogParameters fogParameters, DeltaTracker deltaTracker, Camera camera, ProfilerFiller profiler, Matrix4f frustumMatrix, Matrix4f projectionMatrix, ResourceHandle resourcehandle2, ResourceHandle resourcehandle, ResourceHandle resourcehandle3, ResourceHandle resourcehandle4, Frustum frustum, boolean renderBlockOutline, ResourceHandle resourcehandle1, CallbackInfo ci
     ) {
-        IPCGlobal.renderer.onBeforeTranslucentRendering(modelView);
+        IPCGlobal.renderer.onBeforeTranslucentRendering(frustumMatrix);
         
         MyGameRenderer.updateFogColor();
         MyGameRenderer.resetFogState();
@@ -157,7 +157,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     
     @IPVanillaCopy
     @Inject(
-        method = "lambda$addMainPass$1", // the lambda in addMainPass
+        method = "lambda$addMainPass$2", // the lambda in addMainPass
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;endLastBatch()V",
@@ -166,7 +166,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void onEndRenderingEntities(
-        FogParameters fogParameters, DeltaTracker deltaTracker, Camera camera, ProfilerFiller profilerFiller, Matrix4f matrix4f, Matrix4f matrix4f2, ResourceHandle resourceHandle, ResourceHandle resourceHandle2, ResourceHandle resourceHandle3, ResourceHandle resourceHandle4, boolean bl, Frustum frustum, ResourceHandle resourceHandle5, CallbackInfo ci, @Local PoseStack poseStack
+            FogParameters fogParameters, DeltaTracker deltaTracker, Camera camera, ProfilerFiller profiler, Matrix4f frustumMatrix, Matrix4f projectionMatrix, ResourceHandle resourcehandle2, ResourceHandle resourcehandle, ResourceHandle resourcehandle3, ResourceHandle resourcehandle4, Frustum frustum, boolean renderBlockOutline, ResourceHandle resourcehandle1, CallbackInfo ci, @Local PoseStack poseStack
     ) {
         CrossPortalEntityRenderer.onEndRenderingEntitiesAndBlockEntities(poseStack);
     }
@@ -176,26 +176,26 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         at = @At("RETURN")
     )
     private void onFinishRenderLevel(
-            DeltaTracker deltaTracker, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f frustumMatrix, Matrix4f projectionMatrix, CallbackInfo ci
+            GraphicsResourceAllocator graphicsResourceAllocator, DeltaTracker deltaTracker, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f frustumMatrix, Matrix4f projectionMatrix, CallbackInfo ci
     ) {
         // make hand rendering normal
         Lighting.setupLevel();
     }
     
     @Inject(
-        method = "lambda$addMainPass$1", // the lambda in addMainPass
+        method = "lambda$addMainPass$2", // the lambda in addMainPass
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/LevelRenderer;renderSectionLayer(Lnet/minecraft/client/renderer/RenderType;DDDLorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V"
         )
     )
     private void onBeforeRenderingLayer(
-        FogParameters fogParameters, DeltaTracker deltaTracker, Camera camera, ProfilerFiller profilerFiller, Matrix4f modelView, Matrix4f matrix4f2, ResourceHandle resourceHandle, ResourceHandle resourceHandle2, ResourceHandle resourceHandle3, ResourceHandle resourceHandle4, boolean bl, Frustum frustum, ResourceHandle resourceHandle5, CallbackInfo ci
+            FogParameters fogParameters, DeltaTracker deltaTracker, Camera camera, ProfilerFiller profiler, Matrix4f frustumMatrix, Matrix4f projectionMatrix, ResourceHandle resourcehandle2, ResourceHandle resourcehandle, ResourceHandle resourcehandle3, ResourceHandle resourcehandle4, Frustum frustum, boolean renderBlockOutline, ResourceHandle resourcehandle1, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.setupInnerClipping(
                 PortalRendering.getActiveClippingPlane(),
-                modelView,
+                frustumMatrix,
                 -FrontClipping.ADJUSTMENT
                 // move the clipping plane a little back, to make world wrapping portal not z-fight
             );
@@ -211,7 +211,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     }
     
     @Inject(
-        method = "lambda$addMainPass$1", // the lambda in addMainPass
+        method = "lambda$addMainPass$2", // the lambda in addMainPass
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/LevelRenderer;renderSectionLayer(Lnet/minecraft/client/renderer/RenderType;DDDLorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V",
@@ -219,7 +219,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         )
     )
     private void onAfterRenderingLayer(
-        FogParameters fogParameters, DeltaTracker deltaTracker, Camera camera, ProfilerFiller profilerFiller, Matrix4f matrix4f, Matrix4f matrix4f2, ResourceHandle resourceHandle, ResourceHandle resourceHandle2, ResourceHandle resourceHandle3, ResourceHandle resourceHandle4, boolean bl, Frustum frustum, ResourceHandle resourceHandle5, CallbackInfo ci
+            FogParameters fogParameters, DeltaTracker deltaTracker, Camera camera, ProfilerFiller profiler, Matrix4f frustumMatrix, Matrix4f projectionMatrix, ResourceHandle resourcehandle2, ResourceHandle resourcehandle, ResourceHandle resourcehandle3, ResourceHandle resourcehandle4, Frustum frustum, boolean renderBlockOutline, ResourceHandle resourcehandle1, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.disableClipping();
@@ -306,7 +306,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     }
     
     @Redirect(
-        method = "lambda$addMainPass$1", // lambda in renderLevel
+        method = "lambda$addMainPass$2", // lambda in renderLevel
         at = @At(
             value = "INVOKE",
             target = "Lcom/mojang/blaze3d/systems/RenderSystem;clear(I)V",
@@ -345,8 +345,9 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     }
     
     @WrapOperation(
-        method = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V",
-        at = @At(
+        //method = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V",
+        method = "renderEntities",
+            at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/LevelRenderer;renderEntity(Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)V"
         )
@@ -362,11 +363,11 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     }
     
     @Inject(
-        method = "lambda$addWeatherPass$4", // lambda in addWeatherPass
+        method = "lambda$addWeatherPass$7", // lambda in addWeatherPass
         at = @At("HEAD")
     )
     private void beforeRenderingWeather(
-        FogParameters fogParameters, LightTexture lightTexture, float f, Vec3 vec3, int i, float g, CallbackInfo ci
+            FogParameters fog, LightTexture lightTexture, float partialTick, Vec3 cameraPosition, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, Camera camera, int i, float f, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.setupInnerClipping(
@@ -378,11 +379,11 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
     }
     
     @Inject(
-        method = "lambda$addWeatherPass$4", // lambda in addWeatherPass
+        method = "lambda$addWeatherPass$7", // lambda in addWeatherPass
         at = @At("RETURN")
     )
     private void afterRenderingWeather(
-        FogParameters fogParameters, LightTexture lightTexture, float f, Vec3 vec3, int i, float g, CallbackInfo ci
+            FogParameters fog, LightTexture lightTexture, float partialTick, Vec3 cameraPosition, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, Camera camera, int i, float f, CallbackInfo ci
     ) {
         if (PortalRendering.isRendering()) {
             FrontClipping.disableClipping();

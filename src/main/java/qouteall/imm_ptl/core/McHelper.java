@@ -427,13 +427,15 @@ public class McHelper {
     }
     
     public static void invokeCommandAs(Entity commandSender, List<String> commandList) {
-        CommandSourceStack commandSource = commandSender.createCommandSourceStack().withPermission(2).withSuppressedOutput();
-        MinecraftServer server = commandSender.getServer();
-        assert server != null;
-        Commands commandManager = server.getCommands();
-        
-        for (String command : commandList) {
-            commandManager.performPrefixedCommand(commandSource, command);
+        if (commandSender.level() instanceof ServerLevel) {
+            CommandSourceStack commandSource = commandSender.createCommandSourceStackForNameResolution((ServerLevel) commandSender.level()).withPermission(2).withSuppressedOutput();
+            MinecraftServer server = commandSender.getServer();
+            assert server != null;
+            Commands commandManager = server.getCommands();
+
+            for (String command : commandList) {
+                commandManager.performPrefixedCommand(commandSource, command);
+            }
         }
     }
     

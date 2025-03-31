@@ -424,7 +424,7 @@ public class ClientWorldLoader {
             
             Holder<DimensionType> dimensionType = registryManager
                 .lookupOrThrow(Registries.DIMENSION_TYPE)
-                .getHolderOrThrow(dimensionTypeKey);
+                .getOrThrow(dimensionTypeKey);
             
             // currently use a separated level data object
             // day time is not shared between worlds

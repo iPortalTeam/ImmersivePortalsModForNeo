@@ -7,6 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.portal.Portal;
@@ -148,9 +149,11 @@ public class ScaleUtils {
         
         if (!entity.level().isClientSide && isScaleIllegal(newScale)) {
             newScale = 1;
-            entity.sendSystemMessage(
-                Component.literal("Scale out of range")
-            );
+            if (entity instanceof Player player) {
+                player.displayClientMessage(
+                        Component.literal("Scale out of range"), false
+                );
+            }
         }
         
         ScaleUtils.setIPortalScaling(entity, newScale);

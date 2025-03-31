@@ -25,12 +25,12 @@ public class PortalHelperItem extends BlockItem {
             if (context.getPlayer() != null) {
                 if (!deprecationInformed) {
                     deprecationInformed = true;
-                    context.getPlayer().sendSystemMessage(
+                    context.getPlayer().displayClientMessage(
                         Component.translatable(
                             "imm_ptl.portal_helper_deprecated",
                             Component.literal("/portal shape sculpt")
                                 .withStyle(ChatFormatting.GOLD)
-                        )
+                        ), false
                     );
                 }
             }

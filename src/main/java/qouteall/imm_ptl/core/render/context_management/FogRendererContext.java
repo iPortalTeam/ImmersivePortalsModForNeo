@@ -89,17 +89,15 @@ public class FogRendererContext {
         ((IECamera) newCamera).portal_setFocusedEntity(client.cameraEntity);
         
         try {
-            FogRenderer.setupColor(
+            FogRenderer.computeFogColor(
                 newCamera,
                 RenderStates.getPartialTick(),
                 destWorld,
                 client.options.getEffectiveRenderDistance(),
                 client.gameRenderer.getDarkenWorldAmount(RenderStates.getPartialTick())
             );
-            
-            Vec3 result = getCurrentFogColor.get();
-            
-            return result;
+
+            return getCurrentFogColor.get();
         }
         finally {
             swappingManager.popSwapping();

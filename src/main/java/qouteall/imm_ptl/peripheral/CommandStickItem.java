@@ -12,12 +12,13 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -34,6 +35,7 @@ import qouteall.imm_ptl.peripheral.platform_specific.PeripheralModEntry;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CommandStickItem extends Item {
@@ -82,13 +84,13 @@ public class CommandStickItem extends Item {
                         StringTag.valueOf("").getId()
                     )
                     .stream()
-                    .map(tag1 -> ((StringTag) tag1).getAsString())
+                    .map(Tag::getAsString)
                     .collect(Collectors.toList())
             );
         }
     }
     
-    public static final LinkedHashMap<String, Data> BUILT_IN_COMMAND_STICK_TYPES = new LinkedHashMap<>();
+    public static final Map<String, Data> BUILT_IN_COMMAND_STICK_TYPES = new LinkedHashMap<>();
     
     public static void registerBuiltInCommandStick(Data data) {
         BUILT_IN_COMMAND_STICK_TYPES.put(data.command, data);
@@ -102,18 +104,18 @@ public class CommandStickItem extends Item {
     
     // display enchantment glint
     @Override
-    public boolean isFoil(ItemStack stack) {
+    public boolean isFoil(@NotNull ItemStack stack) {
         return true;
     }
     
     @Override
-    public InteractionResult use(Level world, Player player, InteractionHand hand) {
-        doUse(player, player.getItemInHand(hand));
+    public @NotNull InteractionResult use(@NotNull Level world, @NotNull Player player, @NotNull InteractionHand hand) {
+        doUse(world, player, player.getItemInHand(hand));
         return super.use(world, player, hand);
     }
     
-    private void doUse(Player player, ItemStack stack) {
-        if (player.level().isClientSide()) {
+    private void doUse(Level level, Player player, ItemStack stack) {
+        if (player.level().isClientSide() || level.isClientSide()) {
             return;
         }
         
@@ -125,7 +127,7 @@ public class CommandStickItem extends Item {
                 return;
             }
 
-            CommandSourceStack commandSource = player.createCommandSourceStack().withPermission(2);
+            CommandSourceStack commandSource = player.createCommandSourceStackForNameResolution((ServerLevel) level).withPermission(2);
 
             MinecraftServer server = player.getServer();
             assert server != null;
@@ -156,8 +158,8 @@ public class CommandStickItem extends Item {
     
     @Override
     public void appendHoverText(
-        ItemStack stack, Item.TooltipContext tooltipContext,
-        List<Component> tooltip, TooltipFlag tooltipFlag
+            @NotNull ItemStack stack, Item.@NotNull TooltipContext tooltipContext,
+            @NotNull List<Component> tooltip, @NotNull TooltipFlag tooltipFlag
     ) {
         super.appendHoverText(stack, tooltipContext, tooltip, tooltipFlag);
 

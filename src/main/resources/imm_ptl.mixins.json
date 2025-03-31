@@ -13,7 +13,7 @@
     "common.MixinServerChunkCache",
     "common.MixinServerLevel",
     "common.chunk_sync.IEChunkMap_Accessor",
-    "common.chunk_sync.IEChunkTaskPriorityQueueSorter",
+    "common.chunk_sync.IEChunkTaskDispatcher",
     "common.chunk_sync.IEDistanceManager",
     "common.chunk_sync.IEServerCommonPacketListenerImpl",
     "common.chunk_sync.MixinChunkHolder",

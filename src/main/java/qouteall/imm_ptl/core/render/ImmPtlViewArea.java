@@ -260,7 +260,7 @@ public class ImmPtlViewArea extends ViewArea {
         for (int offsetCY = 0; offsetCY < sectionGridSizeY; offsetCY++) {
             RenderSection builtChunk = factory.new RenderSection(
                     0,
-                    sectionX << 4, (offsetCY << 4) + minY, sectionZ << 4
+                    SectionPos.asLong(sectionX << 4, (offsetCY << 4) + minY, sectionZ << 4)
             );
 
             array[offsetCY] = builtChunk;
