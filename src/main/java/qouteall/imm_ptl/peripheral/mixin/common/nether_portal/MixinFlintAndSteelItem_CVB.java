@@ -43,7 +43,7 @@ public class MixinFlintAndSteelItem_CVB {
                 );
                 cir.setReturnValue(InteractionResult.SUCCESS);
             }
-            else if (targetBlock == PeripheralModMain.portalHelperBlock) {
+            else if (targetBlock == PeripheralModMain.PORTAL_HELPER.get()) {
                 boolean result = IntrinsicPortalGeneration.activatePortalHelper(
                     ((ServerLevel) world),
                     firePos

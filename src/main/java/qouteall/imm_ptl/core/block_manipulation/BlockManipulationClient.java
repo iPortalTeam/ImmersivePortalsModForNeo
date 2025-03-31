@@ -20,6 +20,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import qouteall.imm_ptl.core.ClientWorldLoader;
+import qouteall.imm_ptl.core.IPModMain;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.PortalPlaceholderBlock;
 import qouteall.imm_ptl.core.portal.PortalUtils;
@@ -98,7 +99,7 @@ public class BlockManipulationClient {
         
         if (client.hitResult instanceof BlockHitResult) {
             BlockPos hitPos = ((BlockHitResult) client.hitResult).getBlockPos();
-            if (client.level.getBlockState(hitPos).getBlock() == PortalPlaceholderBlock.instance) {
+            if (client.level.getBlockState(hitPos).getBlock() == IPModMain.NETHER_PORTAL_BLOCK.get()) {
                 return 23333;
             }
         }
@@ -138,7 +139,7 @@ public class BlockManipulationClient {
             (rayTraceContext, blockPos) -> {
                 BlockState blockState = world.getBlockState(blockPos);
                 
-                if (blockState.getBlock() == PortalPlaceholderBlock.instance) {
+                if (blockState.getBlock() == IPModMain.NETHER_PORTAL_BLOCK.get()) {
                     return null;
                 }
                 if (blockState.getBlock() == Blocks.BARRIER) {

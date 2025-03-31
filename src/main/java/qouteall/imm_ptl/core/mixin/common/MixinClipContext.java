@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import qouteall.imm_ptl.core.IPGlobal;
+import qouteall.imm_ptl.core.IPModMain;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.ducks.IERayTraceContext;
 import qouteall.imm_ptl.core.portal.Portal;
@@ -68,7 +69,7 @@ public abstract class MixinClipContext implements IERayTraceContext {
         BlockPos blockPos,
         CallbackInfoReturnable<VoxelShape> cir
     ) {
-        if (blockState.getBlock() == PortalPlaceholderBlock.instance) {
+        if (blockState.getBlock() == IPModMain.NETHER_PORTAL_BLOCK.get()) {
             if (block == ClipContext.Block.OUTLINE) {
                 if (blockView instanceof Level world) {
                     boolean intersectingWithPortal = McHelper.traverseEntitiesByBox(

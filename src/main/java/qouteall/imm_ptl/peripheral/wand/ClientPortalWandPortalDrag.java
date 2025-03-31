@@ -30,6 +30,7 @@ import qouteall.imm_ptl.core.portal.animation.UnilateralPortalState;
 import qouteall.imm_ptl.core.portal.util.PortalLocalXYNormalized;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
+import qouteall.imm_ptl.peripheral.PeripheralModMain;
 import qouteall.q_misc_util.CustomTextOverlay;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.api.McRemoteProcedureCall;
@@ -273,8 +274,8 @@ public class ClientPortalWandPortalDrag {
         }
         
         if (isDragging()) {
-            if (player.getItemInHand(InteractionHand.MAIN_HAND).getItem() != PortalWandItem.instance &&
-                player.getItemInHand(InteractionHand.OFF_HAND).getItem() != PortalWandItem.instance
+            if (player.getItemInHand(InteractionHand.MAIN_HAND).getItem() != PeripheralModMain.PORTAL_WAND.get() &&
+                player.getItemInHand(InteractionHand.OFF_HAND).getItem() != PeripheralModMain.PORTAL_WAND.get()
             ) {
                 LOGGER.info("Undo dragging because the player is not holding the wand");
                 undoDragging();

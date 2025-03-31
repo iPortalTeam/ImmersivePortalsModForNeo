@@ -301,20 +301,21 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
             }
         }
     }
-    
-    @Redirect(
-        method = "lambda$addMainPass$2", // lambda in renderLevel
-        at = @At(
-            value = "INVOKE",
-            target = "Lcom/mojang/blaze3d/systems/RenderSystem;clear(I)V",
-            remap = false
-        )
-    )
-    private static void redirectClearing(int flags) {
-        if (!IPCGlobal.renderer.replaceFrameBufferClearing()) {
-            RenderSystem.clear(flags);
-        }
-    }
+
+    // TODO @Nick1st 21.3
+//    @Redirect(
+//        method = "lambda$addMainPass$2", // lambda in renderLevel
+//        at = @At(
+//            value = "INVOKE",
+//            target = "Lcom/mojang/blaze3d/systems/RenderSystem;clear(I)V",
+//            remap = false
+//        )
+//    )
+//    private static void redirectClearing(int flags) {
+//        if (!IPCGlobal.renderer.replaceFrameBufferClearing()) {
+//            RenderSystem.clear(flags);
+//        }
+//    }
     
     @Redirect(
         method = "allChanged",
@@ -410,34 +411,35 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         
         ClientWorldLoader._onWorldRendererReloaded();
     }
-    
-    @WrapOperation(
-        method = "addSkyPass",
-        at = @At(
-            value = "INVOKE",
-            target = "Lcom/mojang/blaze3d/framegraph/FramePass;executes(Ljava/lang/Runnable;)V"
-        )
-    )
-    private void wrapAddSkyPassExecute(FramePass instance, Runnable runnable, Operation<Void> original) {
-        original.call(instance, (Runnable) () -> {
-            if (WorldRenderInfo.isRendering()) {
-                if (!WorldRenderInfo.getTopRenderInfo().doRenderSky) {
-                    if (!IrisInterface.invoker.isShaders()) {
-                        // skip sky rendering (except for iris)
-                        return;
-                    }
-                }
-            }
-            
-            if (PortalRendering.isRenderingOddNumberOfMirrors()) {
-                MyRenderHelper.applyMirrorFaceCulling();
-            }
-            
-            runnable.run();
-            
-            MyRenderHelper.recoverFaceCulling();
-        });
-    }
+
+    // TODO @Nick1st 21.3
+//    @WrapOperation(
+//        method = "addSkyPass",
+//        at = @At(
+//            value = "INVOKE",
+//            target = "Lcom/mojang/blaze3d/framegraph/FramePass;executes(Ljava/lang/Runnable;)V"
+//        )
+//    )
+//    private void wrapAddSkyPassExecute(FramePass instance, Runnable runnable, Operation<Void> original) {
+//        original.call(instance, (Runnable) () -> {
+//            if (WorldRenderInfo.isRendering()) {
+//                if (!WorldRenderInfo.getTopRenderInfo().doRenderSky) {
+//                    if (!IrisInterface.invoker.isShaders()) {
+//                        // skip sky rendering (except for iris)
+//                        return;
+//                    }
+//                }
+//            }
+//
+//            if (PortalRendering.isRenderingOddNumberOfMirrors()) {
+//                MyRenderHelper.applyMirrorFaceCulling();
+//            }
+//
+//            runnable.run();
+//
+//            MyRenderHelper.recoverFaceCulling();
+//        });
+//    }
     
 //    // vanilla clears translucentFramebuffer even when transparencyShader is null
 //    // it makes the framebuffer to be wrongly bound in fabulous mode

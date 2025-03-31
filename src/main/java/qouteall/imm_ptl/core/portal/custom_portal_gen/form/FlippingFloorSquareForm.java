@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import qouteall.imm_ptl.core.IPModMain;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.portal.PortalExtension;
 import qouteall.imm_ptl.core.portal.PortalManipulation;
@@ -165,7 +166,7 @@ public class FlippingFloorSquareForm extends PortalGenForm {
                 pos -> {
                     BlockState blockState = toWorld.getBlockState(pos);
                     return !blockState.isSolidRender() &&
-                        blockState.getBlock() != PortalPlaceholderBlock.instance &&
+                        blockState.getBlock() != IPModMain.NETHER_PORTAL_BLOCK.get() &&
                         blockState.getFluidState().isEmpty();
                 }
             ))
@@ -175,7 +176,7 @@ public class FlippingFloorSquareForm extends PortalGenForm {
                     blockPos -> {
                         BlockState blockState = toWorld.getBlockState(blockPos);
                         return !blockState.isAir() &&
-                            blockState.getBlock() != PortalPlaceholderBlock.instance;
+                            blockState.getBlock() != IPModMain.NETHER_PORTAL_BLOCK.get();
                     }
                 )
             )

@@ -14,12 +14,13 @@ import qouteall.imm_ptl.core.network.ImmPtlNetworkConfig;
 
 @Mixin(ClientboundPlayerPositionPacket.class)
 public class MixinClientboundPlayerPositionPacket {
-    @Inject(method = "<init>(Lnet/minecraft/network/FriendlyByteBuf;)V", at = @At("RETURN"))
-    private void onRead(FriendlyByteBuf buf, CallbackInfo ci) {
-        if (ImmPtlNetworkConfig.doesServerHaveImmPtl()) {
-            ResourceKey<Level> playerDimension = buf.readResourceKey(Registries.DIMENSION);
-            ((IEPlayerPositionLookS2CPacket) this).ip_setPlayerDimension(playerDimension);
-        }
-    }
+    // TODO @Nick1st 21.3
+//    @Inject(method = "<init>(Lnet/minecraft/network/FriendlyByteBuf;)V", at = @At("RETURN"))
+//    private void onRead(FriendlyByteBuf buf, CallbackInfo ci) {
+//        if (ImmPtlNetworkConfig.doesServerHaveImmPtl()) {
+//            ResourceKey<Level> playerDimension = buf.readResourceKey(Registries.DIMENSION);
+//            ((IEPlayerPositionLookS2CPacket) this).ip_setPlayerDimension(playerDimension);
+//        }
+//    }
     
 }

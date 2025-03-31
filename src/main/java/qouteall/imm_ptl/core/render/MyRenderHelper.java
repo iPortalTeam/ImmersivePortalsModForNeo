@@ -22,12 +22,10 @@ import org.joml.Matrix4f;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.miscellaneous.IPVanillaCopy;
-import qouteall.imm_ptl.core.mixin.client.accessor.CoreShadersAccessor;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.render.context_management.PortalRendering;
 import qouteall.imm_ptl.core.render.context_management.RenderStates;
 import qouteall.imm_ptl.core.render.context_management.WorldRenderInfo;
-import qouteall.q_misc_util.my_util.SignalBiArged;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -53,19 +51,19 @@ public class MyRenderHelper {
     
     public static final Minecraft client = Minecraft.getInstance();
     
-    public static final ShaderProgram BLIT_SCREEN_NOBLEND = CoreShadersAccessor.register(
+    public static final ShaderProgram BLIT_SCREEN_NOBLEND = CoreShaders.register(
         "blit_screen_noblend",
         DefaultVertexFormat.BLIT_SCREEN,
         ShaderDefines.EMPTY
     );
     
-    public static final ShaderProgram PORTAL_AREA = CoreShadersAccessor.register(
+    public static final ShaderProgram PORTAL_AREA = CoreShaders.register(
         "portal_area",
         DefaultVertexFormat.POSITION_COLOR,
         ShaderDefines.EMPTY
     );
     
-    public static final ShaderProgram PORTAL_DRAW_FB_IN_AREA = CoreShadersAccessor.register(
+    public static final ShaderProgram PORTAL_DRAW_FB_IN_AREA = CoreShaders.register(
         "portal_draw_fb_in_area",
         DefaultVertexFormat.POSITION_COLOR,
         ShaderDefines.EMPTY

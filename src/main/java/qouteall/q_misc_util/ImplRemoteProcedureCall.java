@@ -185,7 +185,7 @@ public class ImplRemoteProcedureCall {
     ) implements CustomPacketPayload {
 
         public static final CustomPacketPayload.Type<S2CRPCPayload> TYPE =
-                new java.lang.reflect.Type<>(ResourceLocation.parse("iportal:remote_s2c"));
+                new Type<>(ResourceLocation.parse("iportal:remote_s2c"));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, S2CRPCPayload> CODEC = StreamCodec.of(
                 (b, p) -> p.write(b), S2CRPCPayload::read
@@ -250,7 +250,7 @@ public class ImplRemoteProcedureCall {
         }
 
         @Override
-        public @NotNull java.lang.reflect.Type<? extends CustomPacketPayload> type() {
+        public @NotNull Type<? extends CustomPacketPayload> type() {
             return TYPE;
         }
     }
@@ -320,7 +320,7 @@ public class ImplRemoteProcedureCall {
     ) implements CustomPacketPayload {
 
         public static final CustomPacketPayload.Type<C2SRPCPayload> TYPE =
-                new java.lang.reflect.Type<>(ResourceLocation.parse("iportal:remote_c2s"));
+                new Type<>(ResourceLocation.parse("iportal:remote_c2s"));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, C2SRPCPayload> CODEC = StreamCodec.of(
                 (b, p) -> p.write(b), C2SRPCPayload::read
@@ -396,7 +396,7 @@ public class ImplRemoteProcedureCall {
         }
 
         @Override
-        public @NotNull java.lang.reflect.Type<? extends CustomPacketPayload> type() {
+        public @NotNull Type<? extends CustomPacketPayload> type() {
             return TYPE;
         }
     }

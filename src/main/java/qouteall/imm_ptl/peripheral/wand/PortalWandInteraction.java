@@ -31,6 +31,7 @@ import qouteall.imm_ptl.core.portal.PortalState;
 import qouteall.imm_ptl.core.portal.animation.UnilateralPortalState;
 import qouteall.imm_ptl.core.portal.util.PortalLocalXYNormalized;
 import qouteall.imm_ptl.peripheral.CommandStickItem;
+import qouteall.imm_ptl.peripheral.PeripheralModMain;
 import qouteall.q_misc_util.my_util.DQuaternion;
 import qouteall.q_misc_util.my_util.Plane;
 import qouteall.q_misc_util.my_util.Range;
@@ -325,7 +326,7 @@ public class PortalWandInteraction {
                             return true;
                         }
 
-                        if (player.getMainHandItem().getItem() != PortalWandItem.instance) {
+                        if (player.getMainHandItem().getItem() != PeripheralModMain.PORTAL_WAND.get()) {
                             return true;
                         }
 
@@ -541,7 +542,7 @@ public class PortalWandInteraction {
             data = new CommandStickItem.Data(command, command, List.of());
         }
         
-        ItemStack stack = new ItemStack(CommandStickItem.instance);
+        ItemStack stack = new ItemStack(PeripheralModMain.COMMAND_STICK.get());
         stack.set(CommandStickItem.COMPONENT_TYPE, data);
         
         if (!player.getInventory().contains(stack)) {

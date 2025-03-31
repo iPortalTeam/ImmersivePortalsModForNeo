@@ -8,10 +8,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer;
@@ -158,11 +162,24 @@ public class IPModMain {
         registerBlocks(registerHelper::register);
     }
 
+    static DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks("immersive_portals");
+
+    public static DeferredBlock<Block> NETHER_PORTAL_BLOCK = BLOCKS.registerBlock("nether_portal_block",
+            properties -> new PortalPlaceholderBlock(
+            BlockBehaviour.Properties.of()
+            .noCollission()
+            .sound(SoundType.GLASS)
+            .strength(1.0f, 0)
+            .noOcclusion()
+            .noLootTable()
+            .lightLevel(s -> 15)
+            ));
+
     public static void registerBlocks(BiConsumer<ResourceLocation, PortalPlaceholderBlock> regFunc) {
-        regFunc.accept(
-            McHelper.newResourceLocation("immersive_portals", "nether_portal_block"),
-            PortalPlaceholderBlock.instance
-        );
+//        regFunc.accept(
+//            McHelper.newResourceLocation("immersive_portals", "nether_portal_block"),
+//            PortalPlaceholderBlock.instance
+//        );
     }
 
     public static void registerEntityTypesForge(RegisterEvent.RegisterHelper<EntityType<?>> registerHelper) {

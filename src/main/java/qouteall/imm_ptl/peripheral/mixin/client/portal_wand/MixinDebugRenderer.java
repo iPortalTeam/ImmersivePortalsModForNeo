@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import qouteall.imm_ptl.peripheral.PeripheralModMain;
 import qouteall.imm_ptl.peripheral.wand.PortalWandItem;
 
 @Mixin(DebugRenderer.class)
@@ -30,7 +31,7 @@ public class MixinDebugRenderer {
         
         ItemStack itemStack = player.getMainHandItem();
         
-        if (itemStack.getItem() == PortalWandItem.instance) {
+        if (itemStack.getItem() == PeripheralModMain.PORTAL_WAND.get()) {
             PortalWandItem.clientRender(player, itemStack, poseStack, bufferSource, camX, camY, camZ);
         }
     }

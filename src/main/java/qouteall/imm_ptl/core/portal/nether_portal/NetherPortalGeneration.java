@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+import qouteall.imm_ptl.core.IPModMain;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.chunk_loading.ChunkLoader;
 import qouteall.imm_ptl.core.chunk_loading.DimensionalChunkPos;
@@ -102,7 +103,7 @@ public class NetherPortalGeneration {
     ) {
         world.setBlockAndUpdate(
             pos,
-            PortalPlaceholderBlock.instance.defaultBlockState().setValue(
+                IPModMain.NETHER_PORTAL_BLOCK.get().defaultBlockState().setValue(
                 PortalPlaceholderBlock.AXIS, normalAxis
             )
         );

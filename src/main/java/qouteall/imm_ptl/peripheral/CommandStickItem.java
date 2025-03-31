@@ -96,8 +96,6 @@ public class CommandStickItem extends Item {
         BUILT_IN_COMMAND_STICK_TYPES.put(data.command, data);
     }
 
-    public static CommandStickItem instance;
-
     public CommandStickItem(Properties settings) {
         super(settings);
     }
@@ -200,7 +198,7 @@ public class CommandStickItem extends Item {
     
     public static void init() {
         PortalCommand.createCommandStickCommandSignal.connect((player, command) -> {
-            ItemStack itemStack = new ItemStack(instance, 1);
+            ItemStack itemStack = new ItemStack(PeripheralModMain.COMMAND_STICK.get(), 1);
             Data data = new Data(
                 command, command, new ArrayList<>()
             );
@@ -214,7 +212,7 @@ public class CommandStickItem extends Item {
     
     public static void addIntoCreativeTag(CreativeModeTab.Output entries) {
         for (Data data : BUILT_IN_COMMAND_STICK_TYPES.values()) {
-            ItemStack stack = new ItemStack(instance);
+            ItemStack stack = new ItemStack(PeripheralModMain.COMMAND_STICK.get());
             stack.set(COMPONENT_TYPE, data);
             entries.accept(stack);
         }

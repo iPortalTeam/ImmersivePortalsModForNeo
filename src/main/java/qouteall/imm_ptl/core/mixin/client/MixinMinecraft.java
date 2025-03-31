@@ -10,6 +10,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderBuffers;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
@@ -55,9 +56,6 @@ public abstract class MixinMinecraft implements IEMinecraftClient {
     
     @Shadow
     private static int fps;
-    
-    @Shadow
-    public abstract ProfilerFiller getProfiler();
     
     @Shadow
     @Nullable
@@ -128,7 +126,7 @@ public abstract class MixinMinecraft implements IEMinecraftClient {
         )
     )
     private void onAfterClientTick(CallbackInfo ci) {
-        getProfiler().push("imm_ptl_client_tick");
+        Profiler.get().push("imm_ptl_client_tick");
         
         // including ticking remote worlds
         ClientWorldLoader.tick();
@@ -140,8 +138,8 @@ public abstract class MixinMinecraft implements IEMinecraftClient {
         ClientTeleportationManager.manageTeleportation(true);
 
         NeoForge.EVENT_BUS.post(new IPGlobal.PostClientTickEvent());
-        
-        getProfiler().pop();
+
+        Profiler.get().pop();
     }
     
     @Inject(

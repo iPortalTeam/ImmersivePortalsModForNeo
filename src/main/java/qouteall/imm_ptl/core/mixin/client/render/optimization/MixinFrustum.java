@@ -74,7 +74,7 @@ public class MixinFrustum implements IEFrustum {
     }
     
     @Inject(
-        method = "cubeInFrustum",
+        method = "cubeInFrustum(DDDDDD)I",
         at = @At("HEAD"),
         cancellable = true
     )

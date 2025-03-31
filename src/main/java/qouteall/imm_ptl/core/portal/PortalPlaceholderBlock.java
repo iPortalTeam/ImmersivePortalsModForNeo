@@ -22,6 +22,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
+import qouteall.imm_ptl.core.IPModMain;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.portal.nether_portal.BreakablePortalEntity;
 
@@ -50,16 +51,6 @@ public class PortalPlaceholderBlock extends Block {
         16.0D,
         16.0D,
         10.0D
-    );
-    
-    public static final PortalPlaceholderBlock instance = new PortalPlaceholderBlock(
-        Properties.of()
-            .noCollission()
-            .sound(SoundType.GLASS)
-            .strength(1.0f, 0)
-            .noOcclusion()
-            .noLootTable()
-            .lightLevel((s) -> 15)
     );
     
     public PortalPlaceholderBlock(Properties properties) {
@@ -123,7 +114,7 @@ public class PortalPlaceholderBlock extends Block {
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             if (hitResult instanceof BlockHitResult blockHitResult) {
                 Block hittingBlock = world.getBlockState(blockHitResult.getBlockPos()).getBlock();
-                return hittingBlock == PortalPlaceholderBlock.instance;
+                return hittingBlock == IPModMain.NETHER_PORTAL_BLOCK.get();
             }
         }
         return false;

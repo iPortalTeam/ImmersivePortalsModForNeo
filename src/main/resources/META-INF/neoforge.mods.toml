@@ -12,7 +12,7 @@ issue_tracker_url="${issue_tracker_url}"
 # The modid of the mod
 modId="immersive_portals_core" #mandatory
 # The version number of the mod
-version="${mod_version}" #mandatory
+version="1.0-SNAPSHOT" #mandatory
 # A display name for the mod
 displayName="Immersive Portals" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://docs.neoforged.net/docs/misc/updatechecker/
@@ -32,7 +32,7 @@ description='''${mod_description}'''
 # The modid of the mod
 modId="q_misc_util" #mandatory
 # The version number of the mod
-version="${mod_version}" #mandatory
+version="1.0-SNAPSHOT" #mandatory
 # A display name for the mod
 displayName="Immersive Portals" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://docs.neoforged.net/docs/misc/updatechecker/
@@ -52,7 +52,7 @@ description='''${mod_description}'''
 # The modid of the mod
 modId="imm_ptl" #mandatory
 # The version number of the mod
-version="${mod_version}" #mandatory
+version="1.0-SNAPSHOT" #mandatory
 # A display name for the mod
 displayName="Immersive Portals" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://docs.neoforged.net/docs/misc/updatechecker/

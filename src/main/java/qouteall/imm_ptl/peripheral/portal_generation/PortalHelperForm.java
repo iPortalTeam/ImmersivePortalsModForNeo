@@ -28,7 +28,7 @@ public class PortalHelperForm extends AbstractDiligentForm {
     @Override
     public void generateNewFrame(ServerLevel fromWorld, BlockPortalShape fromShape, ServerLevel toWorld, BlockPortalShape toShape) {
         for (BlockPos blockPos : toShape.frameAreaWithoutCorner) {
-            toWorld.setBlockAndUpdate(blockPos, PeripheralModMain.portalHelperBlock.defaultBlockState());
+            toWorld.setBlockAndUpdate(blockPos, PeripheralModMain.PORTAL_HELPER.get().defaultBlockState());
         }
         McHelper.findEntitiesByBox(
             ServerPlayer.class,
@@ -72,12 +72,12 @@ public class PortalHelperForm extends AbstractDiligentForm {
     
     @Override
     public Predicate<BlockState> getOtherSideFramePredicate() {
-        return blockState -> blockState.getBlock() == PeripheralModMain.portalHelperBlock;
+        return blockState -> blockState.getBlock() == PeripheralModMain.PORTAL_HELPER.get();
     }
     
     @Override
     public Predicate<BlockState> getThisSideFramePredicate() {
-        return blockState -> blockState.getBlock() == PeripheralModMain.portalHelperBlock;
+        return blockState -> blockState.getBlock() == PeripheralModMain.PORTAL_HELPER.get();
     }
     
     @Override

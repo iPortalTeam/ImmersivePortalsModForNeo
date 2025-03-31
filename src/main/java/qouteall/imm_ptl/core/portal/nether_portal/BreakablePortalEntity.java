@@ -16,6 +16,7 @@ import net.minecraft.world.phys.AABB;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+import qouteall.imm_ptl.core.IPModMain;
 import qouteall.imm_ptl.core.McHelper;
 import qouteall.imm_ptl.core.mc_utils.ServerTaskList;
 import qouteall.imm_ptl.core.portal.Portal;
@@ -125,7 +126,7 @@ public abstract class BreakablePortalEntity extends Portal {
     private void breakPortalOnThisSide() {
         blockPortalShape.area.forEach(
             blockPos -> {
-                if (level().getBlockState(blockPos).getBlock() == PortalPlaceholderBlock.instance) {
+                if (level().getBlockState(blockPos).getBlock() == IPModMain.NETHER_PORTAL_BLOCK.get()) {
                     level().setBlockAndUpdate(
                         blockPos, Blocks.AIR.defaultBlockState()
                     );

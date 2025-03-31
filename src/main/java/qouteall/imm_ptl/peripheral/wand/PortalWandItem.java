@@ -26,6 +26,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
 import qouteall.imm_ptl.core.IPMcHelper;
 import qouteall.imm_ptl.core.block_manipulation.BlockManipulationServer;
+import qouteall.imm_ptl.peripheral.PeripheralModMain;
 import qouteall.imm_ptl.peripheral.platform_specific.PeripheralModEntry;
 
 import java.util.ArrayList;
@@ -44,21 +45,21 @@ public class PortalWandItem extends Item {
 
     public static void init() {
         NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.LeftClickBlock.class, event -> {
-            if (event.getEntity().getMainHandItem().getItem() == instance) {
+            if (event.getEntity().getMainHandItem().getItem() == PeripheralModMain.PORTAL_WAND.get()) {
                 // cannot break block using the wand
                 event.setCanceled(true);
             }
         });
 
         NeoForge.EVENT_BUS.addListener(BlockManipulationServer.CrossPortalInteractionEvent.class, crossPortalInteractionEvent ->
-            crossPortalInteractionEvent.setCanDo(crossPortalInteractionEvent.player.getMainHandItem().getItem() != instance));
+            crossPortalInteractionEvent.setCanDo(crossPortalInteractionEvent.player.getMainHandItem().getItem() != PeripheralModMain.PORTAL_WAND.get()));
     }
     
     public static void initClient() {
         NeoForge.EVENT_BUS.addListener(PlayerTickEvent.Post.class, event -> {
             if (event.getEntity() != null && event.getEntity().level().isClientSide()) {
                 ItemStack itemStack = event.getEntity().getMainHandItem();
-                if (itemStack.getItem() == instance) {
+                if (itemStack.getItem() == PeripheralModMain.PORTAL_WAND.get()) {
                     updateDisplay(itemStack);
                 } else {
                     ClientPortalWandPortalCreation.clearCursorPointing();
@@ -74,15 +75,15 @@ public class PortalWandItem extends Item {
     }
     
     public static void addIntoCreativeTag(CreativeModeTab.Output entries) {
-        ItemStack w1 = new ItemStack(instance);
+        ItemStack w1 = new ItemStack(PeripheralModMain.PORTAL_WAND.get());
         w1.set(COMPONENT_TYPE, Mode.CREATE_PORTAL);
         entries.accept(w1);
         
-        ItemStack w2 = new ItemStack(instance);
+        ItemStack w2 = new ItemStack(PeripheralModMain.PORTAL_WAND.get());
         w2.set(COMPONENT_TYPE, Mode.DRAG_PORTAL);
         entries.accept(w2);
         
-        ItemStack w3 = new ItemStack(instance);
+        ItemStack w3 = new ItemStack(PeripheralModMain.PORTAL_WAND.get());
         w3.set(COMPONENT_TYPE, Mode.COPY_PORTAL);
         entries.accept(w3);
     }

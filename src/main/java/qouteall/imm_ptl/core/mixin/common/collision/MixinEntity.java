@@ -1,5 +1,6 @@
 package qouteall.imm_ptl.core.mixin.common.collision;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
@@ -33,6 +34,9 @@ import qouteall.imm_ptl.core.portal.EndPortalEntity;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.my_util.CountDownInt;
+
+import java.util.List;
+import java.util.Set;
 
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IEEntity, ImmPtlEntityExtension {
@@ -152,7 +156,7 @@ public abstract class MixinEntity implements IEEntity, ImmPtlEntityExtension {
     }
     
     @Redirect(
-        method = "Lnet/minecraft/world/entity/Entity;checkInsideBlocks()V",
+        method = "checkInsideBlocks",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/world/entity/Entity;getBoundingBox()Lnet/minecraft/world/phys/AABB;"
@@ -160,22 +164,6 @@ public abstract class MixinEntity implements IEEntity, ImmPtlEntityExtension {
     )
     private AABB redirectBoundingBoxInCheckingBlockCollision(Entity entity) {
         return ip_getActiveCollisionBox(entity.getBoundingBox());
-    }
-    
-    @Inject(
-        method = "checkInsideBlocks",
-        at = @At(
-            value = "INVOKE_ASSIGN",
-            target = "Lnet/minecraft/world/entity/Entity;getBoundingBox()Lnet/minecraft/world/phys/AABB;",
-            shift = At.Shift.AFTER
-        ),
-        locals = LocalCapture.CAPTURE_FAILHARD,
-        cancellable = true
-    )
-    private void onCheckInsideBlocks(CallbackInfo ci, AABB box) {
-        if (box == null) {
-            ci.cancel();
-        }
     }
     
     // avoid suffocation when colliding with a portal on wall

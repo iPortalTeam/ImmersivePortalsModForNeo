@@ -87,7 +87,6 @@
     "client.MixinGlDebug",
     "client.MixinLivingEntity_C",
     "client.MixinMinecraft",
-    "client.accessor.CoreShadersAccessor",
     "client.accessor.IEClientLevel_Accessor",
     "client.accessor.IEClientLevelData",
     "client.collisions.MixinLocalPlayer",

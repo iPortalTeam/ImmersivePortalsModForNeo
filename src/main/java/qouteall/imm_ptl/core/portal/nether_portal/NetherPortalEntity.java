@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.NetherPortalBlock;
 import net.minecraft.world.phys.Vec3;
 import qouteall.imm_ptl.core.IPGlobal;
+import qouteall.imm_ptl.core.IPModMain;
 import qouteall.imm_ptl.core.platform_specific.O_O;
 import qouteall.imm_ptl.core.portal.PortalPlaceholderBlock;
 import qouteall.q_misc_util.my_util.DQuaternion;
@@ -71,7 +72,7 @@ public class NetherPortalEntity extends BreakablePortalEntity {
         
         return blockPortalShape.area.stream()
             .allMatch(blockPos ->
-                level().getBlockState(blockPos).getBlock() == PortalPlaceholderBlock.instance
+                level().getBlockState(blockPos).getBlock() == IPModMain.NETHER_PORTAL_BLOCK.get()
             ) &&
             blockPortalShape.frameAreaWithoutCorner.stream()
                 .allMatch(blockPos ->
