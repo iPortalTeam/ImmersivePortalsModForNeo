@@ -8,12 +8,13 @@ import qouteall.imm_ptl.core.render.context_management.FogRendererContext;
 
 @Mixin(value = FogRenderer.class, priority = 1100)
 public class MixinFogRenderer {
-    @Shadow
-    private static float fogRed;
-    @Shadow
-    private static float fogGreen;
-    @Shadow
-    private static float fogBlue;
+    // TODO @Nick1st 21.3
+//    @Shadow
+//    private static float fogRed;
+//    @Shadow
+//    private static float fogGreen;
+//    @Shadow
+//    private static float fogBlue;
     @Shadow
     private static int targetBiomeFog = -1;
     @Shadow
@@ -22,26 +23,27 @@ public class MixinFogRenderer {
     private static long biomeChangedTime = -1L;
     
     static {
-        FogRendererContext.copyContextFromObject = context -> {
-            fogRed = context.red;
-            fogGreen = context.green;
-            fogBlue = context.blue;
-            targetBiomeFog = context.targetBiomeFog;
-            previousBiomeFog = context.previousBiomeFog;
-            biomeChangedTime = context.biomeChangedTime;
-        };
-        
-        FogRendererContext.copyContextToObject = context -> {
-            context.red = fogRed;
-            context.green = fogGreen;
-            context.blue = fogBlue;
-            context.targetBiomeFog = targetBiomeFog;
-            context.previousBiomeFog = previousBiomeFog;
-            context.biomeChangedTime = biomeChangedTime;
-        };
-        
-        FogRendererContext.getCurrentFogColor =
-            () -> new Vec3(fogRed, fogGreen, fogBlue);
+        // TODO @Nick1st 21.3
+//        FogRendererContext.copyContextFromObject = context -> {
+//            fogRed = context.red;
+//            fogGreen = context.green;
+//            fogBlue = context.blue;
+//            targetBiomeFog = context.targetBiomeFog;
+//            previousBiomeFog = context.previousBiomeFog;
+//            biomeChangedTime = context.biomeChangedTime;
+//        };
+//
+//        FogRendererContext.copyContextToObject = context -> {
+//            context.red = fogRed;
+//            context.green = fogGreen;
+//            context.blue = fogBlue;
+//            context.targetBiomeFog = targetBiomeFog;
+//            context.previousBiomeFog = previousBiomeFog;
+//            context.biomeChangedTime = biomeChangedTime;
+//        };
+//
+//        FogRendererContext.getCurrentFogColor =
+//            () -> new Vec3(fogRed, fogGreen, fogBlue);
         
         FogRendererContext.init();
     }

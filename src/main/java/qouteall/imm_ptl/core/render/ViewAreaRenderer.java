@@ -81,14 +81,15 @@ public class ViewAreaRenderer {
         
         CHelper.enableDepthClamp();
 
-        CompiledShaderProgram shader = RenderSystem.setShader(MyRenderHelper.PORTAL_AREA);
-        
-        shader.MODEL_VIEW_MATRIX.set(modelViewMatrix);
-        shader.PROJECTION_MATRIX.set(projectionMatrix);
-        
-        FrontClipping.updateClippingEquationUniformForCurrentShader(false);
-        
-        shader.apply();
+        // TODO @Nick1st 21.3
+//        CompiledShaderProgram shader = RenderSystem.setShader(MyRenderHelper.PORTAL_AREA);
+//
+//        shader.MODEL_VIEW_MATRIX.set(modelViewMatrix);
+//        shader.PROJECTION_MATRIX.set(projectionMatrix);
+//
+//        FrontClipping.updateClippingEquationUniformForCurrentShader(false);
+//
+//        shader.apply();
         
         ViewAreaRenderer.buildPortalViewAreaTrianglesBuffer(
             fogColor,
@@ -96,8 +97,9 @@ public class ViewAreaRenderer {
             CHelper.getCurrentCameraPos(),
             RenderStates.getPartialTick()
         );
-        
-        shader.clear();
+
+        // TODO @Nick1st 21.3
+//        shader.clear();
         
         GlStateManager._enableCull();
         CHelper.disableDepthClamp();

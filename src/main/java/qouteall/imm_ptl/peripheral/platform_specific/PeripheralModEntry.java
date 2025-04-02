@@ -18,6 +18,8 @@ public class PeripheralModEntry {
 
     public PeripheralModEntry(IEventBus modEventBus) {
         DATA_COMPONENTS_REGISTRAR.register(modEventBus);
+        PeripheralModMain.BLOCKS.register(modEventBus);
+        PeripheralModMain.ITEMS.register(modEventBus);
         modEventBus.addListener(RegisterEvent.class, registerEvent -> {
             registerEvent.register(BuiltInRegistries.BLOCK.key(), helper -> PeripheralModMain.registerBlocks(helper::register));
             registerEvent.register(BuiltInRegistries.ITEM.key(), helper -> PeripheralModMain.registerItems(helper::register));

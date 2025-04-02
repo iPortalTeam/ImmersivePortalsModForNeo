@@ -2,6 +2,7 @@ package qouteall.imm_ptl.core.mixin.client.render.optimization;
 
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.world.phys.Vec3;
+import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
@@ -80,7 +81,7 @@ public class MixinFrustum implements IEFrustum {
     )
     private void onCubeInFrustum(
         double minX, double minY, double minZ, double maxX, double maxY, double maxZ,
-        CallbackInfoReturnable<Boolean> cir
+        CallbackInfoReturnable<Integer> cir
     ) {
         if (ip_canDetermineInvisibleWithCamCoord(
             (float) (minX - portal_camX),
@@ -90,7 +91,7 @@ public class MixinFrustum implements IEFrustum {
             (float) (maxY - portal_camY),
             (float) (maxZ - portal_camZ)
         )) {
-            cir.setReturnValue(false);
+            cir.setReturnValue(FrustumIntersection.OUTSIDE);
         }
     }
     

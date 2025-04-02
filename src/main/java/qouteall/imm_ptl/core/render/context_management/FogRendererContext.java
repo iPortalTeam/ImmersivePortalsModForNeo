@@ -46,21 +46,22 @@ public class FogRendererContext {
     }
     
     public static void update() {
-        swappingManager.setOuterDimension(RenderStates.originalPlayerDimension);
-        swappingManager.resetChecks();
-        if (ClientWorldLoader.getIsInitialized()) {
-            ClientWorldLoader.getClientWorlds().forEach(world -> {
-                ResourceKey<Level> dimension = world.dimension();
-                swappingManager.contextMap.computeIfAbsent(
-                    dimension,
-                    k -> new StaticFieldsSwappingManager.ContextRecord<>(
-                        dimension,
-                        new FogRendererContext(),
-                        dimension != RenderStates.originalPlayerDimension
-                    )
-                );
-            });
-        }
+        // TODO @Nick1st 21.3
+//        swappingManager.setOuterDimension(RenderStates.originalPlayerDimension);
+//        swappingManager.resetChecks();
+//        if (ClientWorldLoader.getIsInitialized()) {
+//            ClientWorldLoader.getClientWorlds().forEach(world -> {
+//                ResourceKey<Level> dimension = world.dimension();
+//                swappingManager.contextMap.computeIfAbsent(
+//                    dimension,
+//                    k -> new StaticFieldsSwappingManager.ContextRecord<>(
+//                        dimension,
+//                        new FogRendererContext(),
+//                        dimension != RenderStates.originalPlayerDimension
+//                    )
+//                );
+//            });
+//        }
     }
     
     public static Vec3 getFogColorOf(
@@ -108,7 +109,8 @@ public class FogRendererContext {
     }
     
     public static void onPlayerTeleport(ResourceKey<Level> from, ResourceKey<Level> to) {
-        swappingManager.updateOuterDimensionAndChangeContext(to);
+        // TODO @Nick1st 21.3
+        //swappingManager.updateOuterDimensionAndChangeContext(to);
     }
     
 }

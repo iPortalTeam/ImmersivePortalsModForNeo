@@ -51,9 +51,6 @@ public abstract class MixinClientPacketListener implements IEClientPlayNetworkHa
     public abstract void handleSetEntityPassengersPacket(ClientboundSetPassengersPacket entityPassengersSetS2CPacket_1);
     
     @Shadow
-    protected abstract void applyLightData(int x, int z, ClientboundLightUpdatePacketData data);
-    
-    @Shadow
     @Final
     private static Logger LOGGER;
     

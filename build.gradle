@@ -149,7 +149,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
     implementation "maven.modrinth:sodium:mc1.21.3-0.6.9-neoforge"
-    implementation "maven.modrinth:iris:1.8.1+1.21.3-neoforge"
+    compileOnly "maven.modrinth:iris:1.8.1+1.21.3-neoforge"
     implementation "maven.modrinth:cloth-config:16.0.143+neoforge"
 }
 

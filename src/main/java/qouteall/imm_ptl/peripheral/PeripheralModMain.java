@@ -30,7 +30,6 @@ import static net.minecraft.world.item.Items.registerItem;
 public class PeripheralModMain {
 
     // TODO @Nick1st - Rework registry (Best would be at fabrics side)
-    public static Block portalHelperBlock;
 
     public static final CreativeModeTab TAB = CreativeModeTab.builder()
             .icon(() -> new ItemStack(PeripheralModMain.PORTAL_WAND.get()))
@@ -39,8 +38,9 @@ public class PeripheralModMain {
                 PortalWandItem.addIntoCreativeTag(entries);
                 
                 CommandStickItem.addIntoCreativeTag(entries);
-                
-                entries.accept(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("immersive_portals", "portal_helper")).get().value());
+
+                // TODO @Nick1st 21.3
+                //entries.accept(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("immersive_portals", "portal_helper")).get().value());
             })
             .build();
     
@@ -75,19 +75,19 @@ public class PeripheralModMain {
 
     }
 
-    static DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks("immersive_portals");
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks("immersive_portals");
 
     public static DeferredBlock<Block> PORTAL_HELPER = BLOCKS.registerBlock("portal_helper",
-            properties -> new Block(BlockBehaviour.Properties.of().noOcclusion().isRedstoneConductor((a, b, c) -> false)));
+            properties -> new Block(properties.noOcclusion().isRedstoneConductor((a, b, c) -> false)));
 
-    static DeferredRegister.Items ITEMS = DeferredRegister.createItems("immersive_portals");
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems("immersive_portals");
 
-    static DeferredItem<PortalHelperItem> PORTAL_HELPER_ITEM = ITEMS.registerItem("portal_helper",
-            properties -> new PortalHelperItem(PORTAL_HELPER.get(), new Item.Properties()));
+//    static DeferredItem<PortalHelperItem> PORTAL_HELPER_ITEM = ITEMS.registerItem("portal_helper",
+//            properties -> new PortalHelperItem(PORTAL_HELPER.get(), new Item.Properties()));
     public static DeferredItem<CommandStickItem> COMMAND_STICK = ITEMS.registerItem("command_stick",
-            properties -> new CommandStickItem(new Item.Properties()));
+        CommandStickItem::new);
     public static DeferredItem<PortalWandItem> PORTAL_WAND = ITEMS.registerItem("portal_wand",
-            properties -> new PortalWandItem(new Item.Properties()));
+            PortalWandItem::new);
 
 
    public static void registerItems(BiConsumer<ResourceLocation, Item> regFunc) {

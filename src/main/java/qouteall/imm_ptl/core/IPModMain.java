@@ -75,7 +75,9 @@ public class IPModMain {
         NeoForge.EVENT_BUS.addListener(IPGlobal.PostClientTickEvent.class, postClientTickEvent -> IPGlobal.CLIENT_TASK_LIST.processTasks());
 
         NeoForge.EVENT_BUS.addListener(IPGlobal.PreGameRenderEvent.class, preGameRenderEvent -> IPGlobal.PRE_GAME_RENDER_TASK_LIST.processTasks());
-        
+
+        BLOCKS.register(eventBus);
+
         RectangularPortalShape.init();
         SpecialFlatPortalShape.init();
         BoxPortalShape.init();
@@ -162,11 +164,11 @@ public class IPModMain {
         registerBlocks(registerHelper::register);
     }
 
-    static DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks("immersive_portals");
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks("immersive_portals");
 
-    public static DeferredBlock<Block> NETHER_PORTAL_BLOCK = BLOCKS.registerBlock("nether_portal_block",
+    public static final DeferredBlock<Block> NETHER_PORTAL_BLOCK = BLOCKS.registerBlock("nether_portal_block",
             properties -> new PortalPlaceholderBlock(
-            BlockBehaviour.Properties.of()
+            properties
             .noCollission()
             .sound(SoundType.GLASS)
             .strength(1.0f, 0)
