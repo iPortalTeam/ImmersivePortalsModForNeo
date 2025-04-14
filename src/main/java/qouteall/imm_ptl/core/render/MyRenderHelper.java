@@ -15,8 +15,10 @@ import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.ShaderDefines;
 import net.minecraft.client.renderer.ShaderProgram;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import org.apache.commons.lang3.Validate;
 import org.joml.Matrix4f;
 import qouteall.imm_ptl.core.CHelper;
@@ -50,21 +52,27 @@ import static org.lwjgl.opengl.GL11.glReadPixels;
 public class MyRenderHelper {
     
     public static final Minecraft client = Minecraft.getInstance();
+
+    public static void onRegisterCoreShaders(RegisterShadersEvent event) {
+        event.registerShader(BLIT_SCREEN_NOBLEND);
+        event.registerShader(PORTAL_AREA);
+        event.registerShader(PORTAL_DRAW_FB_IN_AREA);
+    }
     
-    public static final ShaderProgram BLIT_SCREEN_NOBLEND = CoreShaders.register(
-        "blit_screen_noblend",
+    public static final ShaderProgram BLIT_SCREEN_NOBLEND = new ShaderProgram(
+        ResourceLocation.fromNamespaceAndPath("immersive_portals", "core/blit_screen_noblend"),
         DefaultVertexFormat.BLIT_SCREEN,
         ShaderDefines.EMPTY
     );
     
-    public static final ShaderProgram PORTAL_AREA = CoreShaders.register(
-        "portal_area",
+    public static final ShaderProgram PORTAL_AREA = new ShaderProgram(
+        ResourceLocation.fromNamespaceAndPath("immersive_portals", "core/portal_area"),
         DefaultVertexFormat.POSITION_COLOR,
         ShaderDefines.EMPTY
     );
     
-    public static final ShaderProgram PORTAL_DRAW_FB_IN_AREA = CoreShaders.register(
-        "portal_draw_fb_in_area",
+    public static final ShaderProgram PORTAL_DRAW_FB_IN_AREA = new ShaderProgram(
+        ResourceLocation.fromNamespaceAndPath("immersive_portals", "core/portal_draw_fb_in_area"),
         DefaultVertexFormat.POSITION_COLOR,
         ShaderDefines.EMPTY
     );

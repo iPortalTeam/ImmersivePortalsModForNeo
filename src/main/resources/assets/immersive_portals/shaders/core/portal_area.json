@@ -4,8 +4,8 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "portal_area",
-  "fragment": "portal_area",
+  "vertex": "immersive_portals:core/portal_area",
+  "fragment": "immersive_portals:core/portal_area",
   "attributes": [
     "Position",
     "Color"

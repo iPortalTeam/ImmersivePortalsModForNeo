@@ -25,6 +25,7 @@ import qouteall.imm_ptl.core.portal.global_portals.WorldWrappingPortal;
 import qouteall.imm_ptl.core.portal.nether_portal.GeneralBreakablePortal;
 import qouteall.imm_ptl.core.portal.nether_portal.NetherPortalEntity;
 import qouteall.imm_ptl.core.render.LoadingIndicatorRenderer;
+import qouteall.imm_ptl.core.render.MyRenderHelper;
 import qouteall.imm_ptl.core.render.PortalEntityRenderer;
 import qouteall.q_misc_util.Helper;
 import qouteall.q_misc_util.my_util.MyTaskList;
@@ -64,6 +65,7 @@ public class IPModEntryClient {
 
     public void onInitializeClient(IEventBus modEventBus) {
         IPModMainClient.init();
+        modEventBus.addListener(MyRenderHelper::onRegisterCoreShaders);
 
         modEventBus.addListener(EntityRenderersEvent.RegisterRenderers.class, IPModEntryClient::initPortalRenderers);
         

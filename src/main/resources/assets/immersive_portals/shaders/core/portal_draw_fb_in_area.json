@@ -4,15 +4,15 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "portal_draw_fb_in_area",
-  "fragment": "portal_draw_fb_in_area",
+  "vertex": "immersive_portals:core/portal_draw_fb_in_area",
+  "fragment": "immersive_portals:core/portal_draw_fb_in_area",
   "attributes": [
     "Position",
     "Color"
   ],
   "samplers": [
     {
-      "name": "DiffuseSampler"
+      "name": "InSampler"
     }
   ],
   "uniforms": [

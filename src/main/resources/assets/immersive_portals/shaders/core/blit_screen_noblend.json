@@ -1,8 +1,8 @@
 {
-  "vertex": "blit_screen_noblend",
-  "fragment": "blit_screen_noblend",
+  "vertex": "immersive_portals:core/blit_screen_noblend",
+  "fragment": "immersive_portals:core/blit_screen_noblend",
   "samplers": [
-    { "name": "DiffuseSampler" }
+    { "name": "InSampler" }
   ],
   "uniforms": [
   ]
