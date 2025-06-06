@@ -16,10 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -27,6 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPGlobal;
 import qouteall.imm_ptl.core.ducks.IEClientPlayNetworkHandler;
+import qouteall.imm_ptl.core.ducks.IEPlayerPositionLookS2CPacket;
 import qouteall.imm_ptl.core.network.ImmPtlNetworkConfig;
 import qouteall.imm_ptl.core.teleportation.ClientTeleportationManager;
 import qouteall.q_misc_util.Helper;
@@ -37,6 +35,7 @@ import java.util.UUID;
 
 @Mixin(ClientPacketListener.class)
 public abstract class MixinClientPacketListener implements IEClientPlayNetworkHandler {
+    @Unique
     private static CountDownInt LOG_LIMIT = new CountDownInt(20);
     
     @Shadow
@@ -72,7 +71,7 @@ public abstract class MixinClientPacketListener implements IEClientPlayNetworkHa
     private void onInit(
         Minecraft minecraft, Connection connection, CommonListenerCookie commonListenerCookie, CallbackInfo ci
     ) {
-        isReProcessingPassengerPacket = false;
+        immersivePortalsForNeo$isReProcessingPassengerPacket = false;
     }
     
     @Inject(
@@ -92,7 +91,7 @@ public abstract class MixinClientPacketListener implements IEClientPlayNetworkHa
         }
 
         // TODO @Nick1st 21.3 This is important networking code
-        //ResourceKey<Level> packetDim = ((IEPlayerPositionLookS2CPacket) packet).ip_getPlayerDimension();
+        //ResourceKey<Level> packetDim = ((IEPlayerPositionLookS2CPacket) (Object) packet).ip_getPlayerDimension();
         ResourceKey<Level> packetDim = Minecraft.getInstance().level.dimension();
 
         LocalPlayer player = Minecraft.getInstance().player;
@@ -120,7 +119,8 @@ public abstract class MixinClientPacketListener implements IEClientPlayNetworkHa
         );
     }
     
-    private boolean isReProcessingPassengerPacket;
+    @Unique
+    private boolean immersivePortalsForNeo$isReProcessingPassengerPacket;
     
     @Inject(
         method = "Lnet/minecraft/client/multiplayer/ClientPacketListener;handleSetEntityPassengersPacket(Lnet/minecraft/network/protocol/game/ClientboundSetPassengersPacket;)V",
@@ -137,12 +137,12 @@ public abstract class MixinClientPacketListener implements IEClientPlayNetworkHa
     ) {
         Entity entity_1 = this.level.getEntity(entityPassengersSetS2CPacket_1.getVehicle());
         if (entity_1 == null) {
-            if (!isReProcessingPassengerPacket) {
+            if (!immersivePortalsForNeo$isReProcessingPassengerPacket) {
                 Helper.log("Re-processed riding packet");
                 IPGlobal.CLIENT_TASK_LIST.addTask(() -> {
-                    isReProcessingPassengerPacket = true;
+                    immersivePortalsForNeo$isReProcessingPassengerPacket = true;
                     handleSetEntityPassengersPacket(entityPassengersSetS2CPacket_1);
-                    isReProcessingPassengerPacket = false;
+                    immersivePortalsForNeo$isReProcessingPassengerPacket = false;
                     return true;
                 });
                 ci.cancel();

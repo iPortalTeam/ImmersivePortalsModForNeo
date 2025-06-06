@@ -24,24 +24,24 @@ public class MixinFogRenderer {
     
     static {
         // TODO @Nick1st 21.3
-//        FogRendererContext.copyContextFromObject = context -> {
+        FogRendererContext.copyContextFromObject = context -> {
 //            fogRed = context.red;
 //            fogGreen = context.green;
 //            fogBlue = context.blue;
-//            targetBiomeFog = context.targetBiomeFog;
-//            previousBiomeFog = context.previousBiomeFog;
-//            biomeChangedTime = context.biomeChangedTime;
-//        };
-//
-//        FogRendererContext.copyContextToObject = context -> {
+            targetBiomeFog = context.targetBiomeFog;
+            previousBiomeFog = context.previousBiomeFog;
+            biomeChangedTime = context.biomeChangedTime;
+        };
+
+        FogRendererContext.copyContextToObject = context -> {
 //            context.red = fogRed;
 //            context.green = fogGreen;
 //            context.blue = fogBlue;
-//            context.targetBiomeFog = targetBiomeFog;
-//            context.previousBiomeFog = previousBiomeFog;
-//            context.biomeChangedTime = biomeChangedTime;
-//        };
-//
+            context.targetBiomeFog = targetBiomeFog;
+            context.previousBiomeFog = previousBiomeFog;
+            context.biomeChangedTime = biomeChangedTime;
+        };
+
 //        FogRendererContext.getCurrentFogColor =
 //            () -> new Vec3(fogRed, fogGreen, fogBlue);
         

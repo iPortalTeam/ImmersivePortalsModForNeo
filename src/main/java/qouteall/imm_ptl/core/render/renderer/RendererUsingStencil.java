@@ -31,7 +31,7 @@ public class RendererUsingStencil extends PortalRenderer {
         if (skipClearing) {
             if (WorldRenderInfo.getTopRenderInfo().doRenderSky) {
                 RenderSystem.depthMask(false);
-                MyRenderHelper.renderScreenTriangle(FogRendererContext.getCurrentFogColor.get());
+                MyRenderHelper.renderScreenTriangle(Vec3.ZERO);
                 RenderSystem.depthMask(true);
             }
         }

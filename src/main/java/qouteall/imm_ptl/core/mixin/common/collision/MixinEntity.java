@@ -163,7 +163,8 @@ public abstract class MixinEntity implements IEEntity, ImmPtlEntityExtension {
         )
     )
     private AABB redirectBoundingBoxInCheckingBlockCollision(Entity entity) {
-        return ip_getActiveCollisionBox(entity.getBoundingBox());
+        var result = ip_getActiveCollisionBox(entity.getBoundingBox());
+        return result;
     }
     
     // avoid suffocation when colliding with a portal on wall

@@ -7,10 +7,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.RenderBuffers;
-import net.minecraft.client.renderer.SectionBufferBuilderPack;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.resources.ResourceKey;
@@ -23,6 +20,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
+import org.joml.Vector4f;
 import qouteall.imm_ptl.core.CHelper;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 import qouteall.imm_ptl.core.IPGlobal;
@@ -146,7 +144,7 @@ public class MyGameRenderer {
         Camera oldCamera = client.gameRenderer.getMainCamera();
         // TODO @Nick1st 21.3
 //        PostChain oldTransparencyShader = ((IEWorldRenderer) worldRenderer).portal_getTransparencyShader();
-//        RenderBuffers oldRenderBuffers = ((IEWorldRenderer) worldRenderer).ip_getRenderBuffers();
+        RenderBuffers oldRenderBuffers = ((IEWorldRenderer) worldRenderer).ip_getRenderBuffers();
         RenderBuffers oldClientRenderBuffers = client.renderBuffers();
         SectionBufferBuilderPack oldSectionRenderDispatcherFixedBuffers =
             ((IESectionRenderDispatcher) worldRenderer.getSectionRenderDispatcher())
@@ -256,8 +254,7 @@ public class MyGameRenderer {
         ((IEWorldRenderer) oldWorldRenderer).portal_setChunkInfoList(oldChunkInfoList);
         VisibleSectionDiscovery.returnList(newChunkInfoList);
 
-        // TODO @Nick1st 21.3
-        //((IEWorldRenderer) worldRenderer).ip_setRenderBuffers(oldRenderBuffers);
+        ((IEWorldRenderer) worldRenderer).ip_setRenderBuffers(oldRenderBuffers);
         ((IEMinecraftClient) client).ip_setRenderBuffers(oldClientRenderBuffers);
         ((IESectionRenderDispatcher) worldRenderer.getSectionRenderDispatcher())
             .ip_setFixedBuffers(oldSectionRenderDispatcherFixedBuffers);
@@ -303,9 +300,14 @@ public class MyGameRenderer {
         boolean isFoggy = client.level.effects().isFoggyAt(Mth.floor(x), Mth.floor(y)) ||
             client.gui.getBossOverlay().shouldCreateWorldFog();
         // TODO @Nick1st 21.3
-//        FogRenderer.setupFog(
-//            camera, FogRenderer.FogMode.FOG_TERRAIN, Math.max(g, 32.0F), isFoggy, RenderStates.getPartialTick()
-//        );
+        Vector4f fogColor = FogRenderer.computeFogColor(camera,
+                RenderStates.getPartialTick(),
+                client.level,
+                client.options.getEffectiveRenderDistance(),
+                client.gameRenderer.getDarkenWorldAmount(RenderStates.getPartialTick()));
+        FogRenderer.setupFog(
+            camera, FogRenderer.FogMode.FOG_TERRAIN, fogColor, Math.max(g, 32.0F), isFoggy, RenderStates.getPartialTick()
+        );
 //        FogRenderer.levelFogColor();
     }
     

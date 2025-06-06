@@ -18,7 +18,6 @@ import java.util.function.Supplier;
  * {@link FogRenderer}
  * {@link qouteall.imm_ptl.core.mixin.client.multiworld_awareness.MixinFogRenderer}
  */
-@SuppressWarnings("SpellCheckingInspection")
 public class FogRendererContext {
     public float red;
     public float green;
@@ -44,24 +43,27 @@ public class FogRendererContext {
         
         
     }
+
+    static {
+        init();
+    }
     
     public static void update() {
-        // TODO @Nick1st 21.3
-//        swappingManager.setOuterDimension(RenderStates.originalPlayerDimension);
-//        swappingManager.resetChecks();
-//        if (ClientWorldLoader.getIsInitialized()) {
-//            ClientWorldLoader.getClientWorlds().forEach(world -> {
-//                ResourceKey<Level> dimension = world.dimension();
-//                swappingManager.contextMap.computeIfAbsent(
-//                    dimension,
-//                    k -> new StaticFieldsSwappingManager.ContextRecord<>(
-//                        dimension,
-//                        new FogRendererContext(),
-//                        dimension != RenderStates.originalPlayerDimension
-//                    )
-//                );
-//            });
-//        }
+        swappingManager.setOuterDimension(RenderStates.originalPlayerDimension);
+        swappingManager.resetChecks();
+        if (ClientWorldLoader.getIsInitialized()) {
+            ClientWorldLoader.getClientWorlds().forEach(world -> {
+                ResourceKey<Level> dimension = world.dimension();
+                swappingManager.contextMap.computeIfAbsent(
+                    dimension,
+                    k -> new StaticFieldsSwappingManager.ContextRecord<>(
+                        dimension,
+                        new FogRendererContext(),
+                        dimension != RenderStates.originalPlayerDimension
+                    )
+                );
+            });
+        }
     }
     
     public static Vec3 getFogColorOf(
@@ -109,8 +111,7 @@ public class FogRendererContext {
     }
     
     public static void onPlayerTeleport(ResourceKey<Level> from, ResourceKey<Level> to) {
-        // TODO @Nick1st 21.3
-        //swappingManager.updateOuterDimensionAndChangeContext(to);
+        swappingManager.updateOuterDimensionAndChangeContext(to);
     }
     
 }

@@ -36,10 +36,7 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.slf4j.Logger;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -302,20 +299,19 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         }
     }
 
-    // TODO @Nick1st 21.3
-//    @Redirect(
-//        method = "lambda$addMainPass$2", // lambda in renderLevel
-//        at = @At(
-//            value = "INVOKE",
-//            target = "Lcom/mojang/blaze3d/systems/RenderSystem;clear(I)V",
-//            remap = false
-//        )
-//    )
-//    private static void redirectClearing(int flags) {
-//        if (!IPCGlobal.renderer.replaceFrameBufferClearing()) {
-//            RenderSystem.clear(flags);
-//        }
-//    }
+    @Redirect(
+        method = "lambda$renderLevel$0", // lambda in renderLevel
+        at = @At(
+            value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/systems/RenderSystem;clear(I)V",
+            remap = false
+        )
+    )
+    private static void redirectClearing(int flags) {
+        if (!IPCGlobal.renderer.replaceFrameBufferClearing()) {
+            RenderSystem.clear(flags);
+        }
+    }
     
     @Redirect(
         method = "allChanged",
@@ -412,34 +408,33 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         ClientWorldLoader._onWorldRendererReloaded();
     }
 
-    // TODO @Nick1st 21.3
-//    @WrapOperation(
-//        method = "addSkyPass",
-//        at = @At(
-//            value = "INVOKE",
-//            target = "Lcom/mojang/blaze3d/framegraph/FramePass;executes(Ljava/lang/Runnable;)V"
-//        )
-//    )
-//    private void wrapAddSkyPassExecute(FramePass instance, Runnable runnable, Operation<Void> original) {
-//        original.call(instance, (Runnable) () -> {
-//            if (WorldRenderInfo.isRendering()) {
-//                if (!WorldRenderInfo.getTopRenderInfo().doRenderSky) {
-//                    if (!IrisInterface.invoker.isShaders()) {
-//                        // skip sky rendering (except for iris)
-//                        return;
-//                    }
-//                }
-//            }
-//
-//            if (PortalRendering.isRenderingOddNumberOfMirrors()) {
-//                MyRenderHelper.applyMirrorFaceCulling();
-//            }
-//
-//            runnable.run();
-//
-//            MyRenderHelper.recoverFaceCulling();
-//        });
-//    }
+    @WrapOperation(
+        method = "addSkyPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/Camera;FLnet/minecraft/client/renderer/FogParameters;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V",
+        at = @At(
+            value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/framegraph/FramePass;executes(Ljava/lang/Runnable;)V"
+        )
+    )
+    private void wrapAddSkyPassExecute(FramePass instance, Runnable runnable, Operation<Void> original) {
+        original.call(instance, (Runnable) () -> {
+            if (WorldRenderInfo.isRendering()) {
+                if (!WorldRenderInfo.getTopRenderInfo().doRenderSky) {
+                    if (!IrisInterface.invoker.isShaders()) {
+                        // skip sky rendering (except for iris)
+                        return;
+                    }
+                }
+            }
+
+            if (PortalRendering.isRenderingOddNumberOfMirrors()) {
+                MyRenderHelper.applyMirrorFaceCulling();
+            }
+
+            runnable.run();
+
+            MyRenderHelper.recoverFaceCulling();
+        });
+    }
     
 //    // vanilla clears translucentFramebuffer even when transparencyShader is null
 //    // it makes the framebuffer to be wrongly bound in fabulous mode
@@ -507,6 +502,7 @@ public abstract class MixinLevelRenderer implements IEWorldRenderer {
         }
     }
     
+    @Unique
     private boolean ip_isChunkCompiled(ImmPtlViewArea immPtlViewArea, BlockPos blockPos) {
         SectionPos sectionPos = SectionPos.of(blockPos);
         var renderChunk = immPtlViewArea.rawGet(

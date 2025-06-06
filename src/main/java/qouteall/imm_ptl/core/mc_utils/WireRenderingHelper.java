@@ -11,6 +11,7 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import qouteall.imm_ptl.core.CHelper;
+import qouteall.imm_ptl.core.miscellaneous.IPVanillaCopy;
 import qouteall.imm_ptl.core.portal.Portal;
 import qouteall.imm_ptl.core.portal.animation.StableClientTimer;
 import qouteall.imm_ptl.core.portal.animation.UnilateralPortalState;
@@ -58,19 +59,54 @@ public class WireRenderingHelper {
         float green = ((color >> 8) & 0xff) / 255f;
         float blue = (color & 0xff) / 255f;
 
-        // TODO @Nick1st 21.3
-//        LevelRenderer.renderLineBox(
-//            matrixStack,
-//            vertexConsumer,
-//            -boxSize / 2,
-//            -boxSize / 2,
-//            -boxSize / 2,
-//            boxSize / 2,
-//            boxSize / 2,
-//            boxSize / 2,
-//            red, green, blue, alpha
-//        );
+        renderLineBox(
+            matrixStack,
+            vertexConsumer,
+            -boxSize / 2,
+            -boxSize / 2,
+            -boxSize / 2,
+            boxSize / 2,
+            boxSize / 2,
+            boxSize / 2,
+            red, green, blue, alpha,
+            red, green, blue
+        );
         matrixStack.popPose();
+    }
+
+    @IPVanillaCopy
+    public static void renderLineBox(PoseStack poseStack, VertexConsumer consumer, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, float red, float green, float blue, float alpha, float red2, float green2, float blue2) {
+        PoseStack.Pose pose = poseStack.last();
+        float f = (float)minX;
+        float g = (float)minY;
+        float h = (float)minZ;
+        float i = (float)maxX;
+        float j = (float)maxY;
+        float k = (float)maxZ;
+        consumer.addVertex(pose, f, g, h).setColor(red, green2, blue2, alpha).setNormal(pose, 1.0F, 0.0F, 0.0F);
+        consumer.addVertex(pose, i, g, h).setColor(red, green2, blue2, alpha).setNormal(pose, 1.0F, 0.0F, 0.0F);
+        consumer.addVertex(pose, f, g, h).setColor(red2, green, blue2, alpha).setNormal(pose, 0.0F, 1.0F, 0.0F);
+        consumer.addVertex(pose, f, j, h).setColor(red2, green, blue2, alpha).setNormal(pose, 0.0F, 1.0F, 0.0F);
+        consumer.addVertex(pose, f, g, h).setColor(red2, green2, blue, alpha).setNormal(pose, 0.0F, 0.0F, 1.0F);
+        consumer.addVertex(pose, f, g, k).setColor(red2, green2, blue, alpha).setNormal(pose, 0.0F, 0.0F, 1.0F);
+        consumer.addVertex(pose, i, g, h).setColor(red, green, blue, alpha).setNormal(pose, 0.0F, 1.0F, 0.0F);
+        consumer.addVertex(pose, i, j, h).setColor(red, green, blue, alpha).setNormal(pose, 0.0F, 1.0F, 0.0F);
+        consumer.addVertex(pose, i, j, h).setColor(red, green, blue, alpha).setNormal(pose, -1.0F, 0.0F, 0.0F);
+        consumer.addVertex(pose, f, j, h).setColor(red, green, blue, alpha).setNormal(pose, -1.0F, 0.0F, 0.0F);
+        consumer.addVertex(pose, f, j, h).setColor(red, green, blue, alpha).setNormal(pose, 0.0F, 0.0F, 1.0F);
+        consumer.addVertex(pose, f, j, k).setColor(red, green, blue, alpha).setNormal(pose, 0.0F, 0.0F, 1.0F);
+        consumer.addVertex(pose, f, j, k).setColor(red, green, blue, alpha).setNormal(pose, 0.0F, -1.0F, 0.0F);
+        consumer.addVertex(pose, f, g, k).setColor(red, green, blue, alpha).setNormal(pose, 0.0F, -1.0F, 0.0F);
+        consumer.addVertex(pose, f, g, k).setColor(red, green, blue, alpha).setNormal(pose, 1.0F, 0.0F, 0.0F);
+        consumer.addVertex(pose, i, g, k).setColor(red, green, blue, alpha).setNormal(pose, 1.0F, 0.0F, 0.0F);
+        consumer.addVertex(pose, i, g, k).setColor(red, green, blue, alpha).setNormal(pose, 0.0F, 0.0F, -1.0F);
+        consumer.addVertex(pose, i, g, h).setColor(red, green, blue, alpha).setNormal(pose, 0.0F, 0.0F, -1.0F);
+        consumer.addVertex(pose, f, j, k).setColor(red, green, blue, alpha).setNormal(pose, 1.0F, 0.0F, 0.0F);
+        consumer.addVertex(pose, i, j, k).setColor(red, green, blue, alpha).setNormal(pose, 1.0F, 0.0F, 0.0F);
+        consumer.addVertex(pose, i, g, k).setColor(red, green, blue, alpha).setNormal(pose, 0.0F, 1.0F, 0.0F);
+        consumer.addVertex(pose, i, j, k).setColor(red, green, blue, alpha).setNormal(pose, 0.0F, 1.0F, 0.0F);
+        consumer.addVertex(pose, i, j, h).setColor(red, green, blue, alpha).setNormal(pose, 0.0F, 0.0F, 1.0F);
+        consumer.addVertex(pose, i, j, k).setColor(red, green, blue, alpha).setNormal(pose, 0.0F, 0.0F, 1.0F);
     }
     
     public static DQuaternion getRandomSmoothRotation(Random random) {

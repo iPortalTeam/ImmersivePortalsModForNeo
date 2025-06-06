@@ -292,8 +292,9 @@ public class MyRenderHelper {
         BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
         
         RenderSystem.getModelViewStack().popMatrix();
-        
-        Objects.requireNonNull(RenderSystem.getShader()).clear();
+
+        // TODO @Nick1st 1.21.3 Fix this
+        //Objects.requireNonNull(RenderSystem.getShader()).clear();
         RenderSystem.clearShader();
     }
     

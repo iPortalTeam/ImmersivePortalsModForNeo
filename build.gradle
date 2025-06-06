@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.78'
+    id 'net.neoforged.moddev' version '2.0.90'
     id 'idea'
 }
 
@@ -148,7 +148,8 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    implementation "maven.modrinth:sodium:mc1.21.3-0.6.9-neoforge"
+    compileOnly "maven.modrinth:sodium:mc1.21.3-0.6.13-neoforge"
+    //implementation "maven.modrinth:sodium:mc1.21.3-0.6.9-neoforge"
     compileOnly "maven.modrinth:iris:1.8.1+1.21.3-neoforge"
     implementation "maven.modrinth:cloth-config:16.0.143+neoforge"
 }
