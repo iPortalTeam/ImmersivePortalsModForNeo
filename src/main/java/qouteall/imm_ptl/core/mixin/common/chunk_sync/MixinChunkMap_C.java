@@ -67,13 +67,14 @@ public abstract class MixinChunkMap_C implements IEChunkMap {
         ci.cancel();
     }
     
-    /**
-     * @author qouteall
-     * @reason
-     */
-    @Overwrite
-    private void onChunkReadyToSend(LevelChunk chunk) {
+    @Inject(
+        method = "onChunkReadyToSend",
+        at = @At("HEAD"),
+        cancellable = true
+    )
+    private void onOnChunkReadyToSend(LevelChunk chunk, CallbackInfo ci) {
         ImmPtlChunkTracking.onChunkProvidedDeferred(chunk);
+        ci.cancel();
     }
 
     /**
