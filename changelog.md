@@ -7,6 +7,12 @@ and this project tries to adhere to [Semantic Versioning](https://semver.org/spe
 ## [Unreleased Changes]
 None currently
 
+## [6.0.8] - 2026-6-4
+
+### Updated
+
+- Sodium compat (v0.8.12-alpha.4)
+
 ## [6.0.7] - 2025-06-18
 
 ### Fixed
