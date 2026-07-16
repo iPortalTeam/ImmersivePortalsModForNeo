@@ -5,7 +5,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project tries to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased Changes]
-None currently
+
+### Fixed
+
+- Sodium 0.8.x compat: `OcclusionCuller.Visitor` was promoted to a top-level
+  interface (`RenderSectionVisitor`), and `Viewport.isBoxVisible`'s old
+  6-float AABB signature was split into `isBoxVisible(int,int,int)` and
+  `isBoxVisibleDirect(float,float,float,float)`.
+- Portals rendering through occluding geometry (or falling back to
+  compatibility mode) with a shaderpack active, caused by the deferred
+  framebuffer's depth-stencil format not matching Iris's actual main
+  render target format.
+- Framebuffer thrashing/stutter caused by resizing the deferred
+  framebuffer array every time the lag-adaptive portal layer count
+  toggled.
+- Severe stutter (frame time spikes to 900ms+) when a portal is visible
+  with Distant Horizons installed, caused by DH doing synchronous LOD
+  generation for the portal's alternate-world view every frame.
 
 ## [6.0.7] - 2025-06-18
 
