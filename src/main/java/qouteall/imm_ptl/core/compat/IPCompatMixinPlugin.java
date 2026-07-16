@@ -49,7 +49,12 @@ public class IPCompatMixinPlugin implements IMixinConfigPlugin {
             boolean cardinalCompLoaded = modList.getModFileById("cardinal-components-base") != null;
             return cardinalCompLoaded;
         }
-        
+
+        if (mixinClassName.contains("Dh")) {
+            boolean distantHorizonsLoaded = modList.getModFileById("distanthorizons") != null;
+            return distantHorizonsLoaded;
+        }
+
         return false;
     }
     
