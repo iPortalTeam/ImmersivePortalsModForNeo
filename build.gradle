@@ -46,6 +46,13 @@ repositories {
         name "tterrag maven"
         url "https://maven.tterrag.com/"
     }
+    maven {
+        // CaffeineMC publishes unwrapped Sodium artifacts here, unlike Modrinth's maven
+        // which packages the real classes inside a JarInJar shim that Gradle's compile
+        // classpath can't see through.
+        name "CaffeineMC"
+        url "https://maven.caffeinemc.net/releases"
+    }
 
     flatDir {
         dir "deps"
@@ -133,8 +140,17 @@ dependencies {
     /*implementation "maven.modrinth:embeddium:Na1PoLYF"
     compileOnly "maven.modrinth:oculus:1.20.1-1.6.15a"*/
 
-    implementation "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
+    // Modrinth's published sodium jar wraps the real mod classes in a JarInJar shim that
+    // Gradle's compile classpath can't see through, so compile against CaffeineMC's own
+    // maven instead, which publishes the classes unwrapped.
+    compileOnly "net.caffeinemc:sodium-neoforge:0.8.12+mc1.21.1"
+    compileOnly "net.caffeinemc:sodium-neoforge-mod:0.8.12+mc1.21.1"
+    compileOnly "net.caffeinemc:sodium-neoforge-api:0.8.12+mc1.21.1"
     implementation "maven.modrinth:iris:1.8.1+1.21.1-neoforge"
+
+    // Distant Horizons compat mixin -- its classes aren't jarjar-wrapped, so Modrinth's
+    // published artifact works directly with no extraction workaround needed.
+    compileOnly "maven.modrinth:distanthorizons:3.2.0-b-1.21.1"
 
     implementation "maven.modrinth:cloth-config:15.0.140+neoforge"
     implementation "maven.modrinth:pehkui:3.8.3+1.21-neoforge"
@@ -154,7 +170,7 @@ dependencies {
     implementation "maven.modrinth:oritech:0.16.2"
     implementation "maven.modrinth:architectury-api:13.0.8+neoforge"
     implementation "maven.modrinth:geckolib:DTo3uxPN"
-    implementation "maven.modrinth:stitch:4.0.1"
+    // implementation "maven.modrinth:stitch:4.0.1" // no longer resolvable on Modrinth maven, unrelated to sodium fix
 
     // Create
     implementation "maven.modrinth:create:1.21.1-6.0.6"

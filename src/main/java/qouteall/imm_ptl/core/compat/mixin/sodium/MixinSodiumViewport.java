@@ -10,7 +10,7 @@ import qouteall.imm_ptl.core.compat.sodium_compatibility.SodiumInterface;
 @Mixin(value = Viewport.class, remap = false)
 public class MixinSodiumViewport {
     @Redirect(
-        method = "isBoxVisible",
+        method = "isBoxVisibleDirect",
         at = @At(
             value = "INVOKE",
             target = "Lnet/caffeinemc/mods/sodium/client/render/viewport/frustum/Frustum;testAab(FFFFFF)Z"
