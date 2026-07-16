@@ -68,20 +68,45 @@ public class IrisPortalRenderer extends PortalRenderer {
         // As I tested, in Nvidia videocard, glCopyImageSubData can convert depth32 into depth24stencil8.
         // but in AMD videocard it cannot. AMD videocard only supports converting depth32 into depth32stencil8.
         IPCGlobal.useSeparatedStencilFormat = !IPMcHelper.isNvidiaVideocard();
-        
-        if (deferredFbs.length != PortalRendering.getMaxPortalLayer() + 1) {
+
+        // Size the array off the static configured max, not PortalRendering.getMaxPortalLayer()
+        // (which drops to 1 whenever RenderStates.isLaggy is true). Sizing off the dynamic value
+        // caused a destroy-and-recreate of every deferred framebuffer each time isLaggy toggled,
+        // which is itself expensive enough to cause more lag -- a self-sustaining stutter cycle.
+        // The lag-adaptive behavior still works: it just limits how many of these pre-allocated
+        // slots actually get rendered into, rather than deallocating and reallocating them.
+        if (deferredFbs.length != IPGlobal.maxPortalLayer + 1) {
             for (SecondaryFrameBuffer fb : deferredFbs) {
                 fb.fb.destroyBuffers();
             }
-            
-            deferredFbs = new SecondaryFrameBuffer[PortalRendering.getMaxPortalLayer() + 1];
+
+            deferredFbs = new SecondaryFrameBuffer[IPGlobal.maxPortalLayer + 1];
             for (int i = 0; i < deferredFbs.length; i++) {
                 deferredFbs[i] = new SecondaryFrameBuffer();
             }
+
+            // The vendor heuristic above doesn't reliably match what the main render target's
+            // depth texture actually ends up as once Iris has touched it (a GPU-vendor-detection
+            // timing issue relative to when the main target's buffers were allocated). Query its
+            // real current internal format and let that override the heuristic, so the newly
+            // (re)created deferred FBs below match reality instead of a guess. Only needs doing
+            // when the FBs are (re)created, not every frame, since the format is baked in once.
+            RenderTarget mainTargetForFormatCheck = client.getMainRenderTarget();
+            int mainDepthTexForFormatCheck = mainTargetForFormatCheck.getDepthTextureId();
+            if (mainDepthTexForFormatCheck > 0) {
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, mainDepthTexForFormatCheck);
+                int mainFormatForFormatCheck = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_INTERNAL_FORMAT);
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+                if (mainFormatForFormatCheck == GL30.GL_DEPTH32F_STENCIL8) {
+                    IPCGlobal.useSeparatedStencilFormat = true;
+                } else if (mainFormatForFormatCheck == GL30.GL_DEPTH24_STENCIL8) {
+                    IPCGlobal.useSeparatedStencilFormat = false;
+                }
+            }
         }
-        
+
         CHelper.checkGlError();
-        
+
         for (SecondaryFrameBuffer deferredFb : deferredFbs) {
             deferredFb.prepare();
             IPPortingLibCompat.setIsStencilEnabled(deferredFb.fb, true);
@@ -135,6 +160,28 @@ public class IrisPortalRenderer extends PortalRenderer {
             
             int errorCode = GL11.glGetError();
             if (errorCode != GL_NO_ERROR) {
+                int mainDepthTex = mcFrameBuffer.getDepthTextureId();
+                int deferredDepthTex = deferredFbs[portalLayer].fb.getDepthTextureId();
+                int mainInternalFormat = 0;
+                int deferredInternalFormat = 0;
+                if (mainDepthTex > 0) {
+                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, mainDepthTex);
+                    mainInternalFormat = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_INTERNAL_FORMAT);
+                }
+                if (deferredDepthTex > 0) {
+                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, deferredDepthTex);
+                    deferredInternalFormat = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_INTERNAL_FORMAT);
+                }
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+                qouteall.q_misc_util.Helper.LOGGER.error(
+                    "[ImmPtl] Depth blit from main framebuffer ({}x{}, depthTex={}, internalFormat=0x{}) " +
+                        "to deferred framebuffer ({}x{}, depthTex={}, internalFormat=0x{}) failed with GL error 0x{}",
+                    mcFrameBuffer.viewWidth, mcFrameBuffer.viewHeight,
+                    mainDepthTex, Integer.toHexString(mainInternalFormat),
+                    deferredFbs[portalLayer].fb.viewWidth, deferredFbs[portalLayer].fb.viewHeight,
+                    deferredDepthTex, Integer.toHexString(deferredInternalFormat),
+                    Integer.toHexString(errorCode)
+                );
                 IPGlobal.renderMode = IPGlobal.RenderMode.compatibility;
                 CHelper.printChat("[Immersive Portals]" +
                     "Switched to compatibility portal rendering mode." +
